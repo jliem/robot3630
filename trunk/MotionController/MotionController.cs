@@ -16,6 +16,10 @@ using Microsoft.Dss.ServiceModel.DsspServiceBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Net;
+using System.Windows.Forms;
 using System.Xml;
 using W3C.Soap;
 using motioncontroller = Robotics.CoroBot.MotionController;
@@ -98,6 +102,46 @@ namespace Robotics.CoroBot.MotionController
             //InitializeWaypoints(new string[] { "0,1", "1,2", "0,3", "-1,2", "0,0" });
             InitializeWaypoints(new string[] { "0,.3", ".3,.6", "0,.9", "-.3,.6", "0,0" });
             SetEncoderInterval(200);
+        }
+
+        /// <summary>
+        /// Example of how to read the robot's camera
+        /// </summary>
+        private Image getSnapshot()
+        {
+            System.Net.WebClient client = new WebClient();
+            //client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadCompleted);
+
+            // TODO: Refactor this out
+            String robotIP = "128.61.18.18";
+
+            String fileDownloadLocation = @"C:\Documents and Settings\JL\Desktop\robot.jpg";
+
+            try
+            {
+                // This is how to do it without downloading a file (untested)
+                /*
+                Stream input = client.OpenRead(new Uri("http://" + robotIP + ":50000/corobotcamera"));
+                Image image = Image.FromStream(input);
+                input.Close();
+                return image;
+                */
+
+                client.DownloadFile(new Uri("http://" + robotIP + ":50000/corobotcamera"),
+                    fileDownloadLocation);
+
+                if (File.Exists(fileDownloadLocation))
+                {
+                    return Image.FromFile(fileDownloadLocation);
+                }
+            }
+            catch (WebException we)
+            {
+                MessageBox.Show("Could not download " + we.Response.ResponseUri);
+                MessageBox.Show(we.StackTrace);
+            }
+
+            return null;
         }
 
         private void InitializeWaypoints(string[] points)
