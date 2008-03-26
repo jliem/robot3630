@@ -5,8 +5,8 @@ Task 2
 Image processing
 ---
 o  Detect a target
-o  Determine angle
-o  Determine distance (when far)
+o  Determine angle (i.e. when are we square with target?)
+o  Determine distance (when robot is far away, out of IR range)
 
 
 Movement
@@ -17,8 +17,8 @@ o  Moving and turning a certain distance given as parameter
 
 IR
 ---
-o  http://128.61.18.18:50000/corobotir
-o  Figure out distance when very close
+o  Parse webpage at http://128.61.18.18:50000/corobotir to read IR sensors (hacky way) or connect to IR service and do it the proper way
+o  Figure out distance when robot is close to target
 
 
 
