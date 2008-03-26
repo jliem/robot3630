@@ -1,0 +1,24 @@
+CS 3630 Task List
+
+Task 2
+
+Image processing
+---
+o  Detect a target
+o  Determine angle
+o  Determine distance (when far)
+
+
+Movement
+---
+o  Calibration
+o  Moving and turning a certain distance given as parameter
+
+
+IR
+---
+o  http://128.61.18.18:50000/corobotir
+o  Figure out distance when very close
+
+
+
