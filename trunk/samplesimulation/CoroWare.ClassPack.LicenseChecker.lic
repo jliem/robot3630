@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-16"?>
+<License Version="1.0">
+		<ValidationKey>cbpYque56p79P33xv+ptyZoYaoaXwPLCAh3y57xqC9rSw9iCjmXeM2VPVpY0/CHWgWyCTfBlAELY4TNeZbBLSA==</ValidationKey>
+		<CreationDate>Thursday, March 13, 2008 8:31:31 AM</CreationDate>
+		<FirstUseDate>Thursday, March 13, 2008 8:31:31 AM</FirstUseDate>
+		<ModificationDate>Thursday, March 13, 2008 8:31:31 AM</ModificationDate><Statistics>
+		<DateTimeLastAccessed>1/1/0001 12:00:00 AM</DateTimeLastAccessed>
+		<AccessCount>0</AccessCount>
+		<HitCount>0</HitCount>
+		<DaysCount>0</DaysCount>
+		<UsageCount>0</UsageCount>
+</Statistics><Issuer>
+		<FullName />
+		<Email />
+		<Url />
+</Issuer><Product>
+		<Assembly>CoroWareClassPackLicenser, Version=0.16.0.0, Culture=neutral, PublicKeyToken=c3b3c7a44b2a6956</Assembly>
+		<IsInGac>False</IsInGac>
+		<FilePath>
+		</FilePath>
+		<ShortName>CoroWareClassPackLicenser</ShortName>
+		<FullName>CoroWareClassPackLicenser, Version=0.16.0.0, Culture=neutral, PublicKeyToken=c3b3c7a44b2a6956</FullName>
+		<Version>0.16.0.0</Version>
+		<Developer>
+		</Developer>
+		<Description>
+		</Description>
+		<IsLicensed>False</IsLicensed>
+</Product><Constraints><Constraint>
+  <Name>Demo Constraint</Name>
+  <Type>OpenLicense.LicenseFile.Constraints.DemoConstraint</Type>
+  <Description>This DemoConstraint constrains the user to a given time period or duration.  It supports start and end date that the license will expire.  It also support a duration, to constrain the license to.</Description>
+  <Duration>80</Duration>
+  <InfoUrl />
+  <PurchaseUrl />
+  <Condition />
+  <StartDate />
+  <EndDate>Friday, May 30, 2008 12:00:00 AM</EndDate>
+  <DateLastAccessed>Thursday, March 13, 2008 8:30:45 AM</DateLastAccessed>
+</Constraint></Constraints><User>
+		<Name />
+		<Email />
+		<Organization />
+</User></License>
