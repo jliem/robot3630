@@ -41,6 +41,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.bMin = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnSetBin = new System.Windows.Forms.Button();
+            this.btnRobotMoved = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -158,11 +159,22 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.btnSetBin.UseVisualStyleBackColor = true;
             this.btnSetBin.Click += new System.EventHandler(this.btnSetBin_Click);
             // 
+            // btnRobotMoved
+            // 
+            this.btnRobotMoved.Location = new System.Drawing.Point(661, 317);
+            this.btnRobotMoved.Name = "btnRobotMoved";
+            this.btnRobotMoved.Size = new System.Drawing.Size(147, 23);
+            this.btnRobotMoved.TabIndex = 13;
+            this.btnRobotMoved.Text = "Robot moved";
+            this.btnRobotMoved.UseVisualStyleBackColor = true;
+            this.btnRobotMoved.Click += new System.EventHandler(this.btnRobotMoved_Click);
+            // 
             // Display
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(837, 748);
+            this.Controls.Add(this.btnRobotMoved);
             this.Controls.Add(this.btnSetBin);
             this.Controls.Add(this.bMax);
             this.Controls.Add(this.bMin);
@@ -200,5 +212,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private System.Windows.Forms.TextBox bMin;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnSetBin;
+        private System.Windows.Forms.Button btnRobotMoved;
     }
 }

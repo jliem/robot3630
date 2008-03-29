@@ -215,8 +215,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         {
             cam.QueryFrameResponse response = new cam.QueryFrameResponse();
 
-            String filePath = @"E:\SVNCode\3630\Images\red (" + imageCounter + ").jpg";
-
             if (imageCounter >= 4)
             {
                 timer.Enabled = false;
@@ -226,32 +224,24 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             //imageCounter++;
 
 
-            if (File.Exists(filePath))
-            {
+            //Bitmap bitmap = new Bitmap(filePath);
+            Bitmap bitmap = this.getImage();
 
-                //Bitmap bitmap = new Bitmap(filePath);
-                Bitmap bitmap = this.getImage();
+            response.Size = new Size(bitmap.Width, bitmap.Height);
+            
+            // Convert to byte array
+            using (MemoryStream ms = new MemoryStream()) {
+                bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
-                response.Size = new Size(bitmap.Width, bitmap.Height);
-                
-                // Convert to byte array
-                using (MemoryStream ms = new MemoryStream()) {
-                    bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                response.Frame = ms.ToArray();
 
-                    response.Frame = ms.ToArray();
-
-                }
-                
-                disp.SetImage(bitmap);
-
-                //disp.Write("Retrieved image from " + filePath);
-
-                return response;
             }
-            else
-            {
-                return null;
-            }
+            
+            disp.SetImage(bitmap);
+
+            //disp.Write("Retrieved image from " + filePath);
+
+            return response;
 
             //    System.Net.WebClient client = new WebClient();
             //    //client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadCompleted);

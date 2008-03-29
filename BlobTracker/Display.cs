@@ -91,5 +91,10 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
             bt.AddColorBin(bin);
         }
+
+        private void btnRobotMoved_Click(object sender, EventArgs e)
+        {
+            Write("***** Robot has moved *****");
+        }
     }
 }
