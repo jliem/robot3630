@@ -16,6 +16,8 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         // the text property on a TextBox control.
         delegate void SetTextCallback(string text);
 
+        private ColorBin bin;
+
         public Display(BlobTrackerService bt)
         {
             this.bt = bt;
@@ -64,6 +66,30 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                 btnPause.Text = "Unpause";
             }
 
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSetBin_Click(object sender, EventArgs e)
+        {
+            if (bin != null)
+            {
+                // Remove existing bin
+                bt.RemoveColorBin(bin);
+            }
+
+            bin = new ColorBin();
+            bin.RedMin = int.Parse(rMin.Text);
+            bin.RedMax = int.Parse(rMax.Text);
+            bin.BlueMin = int.Parse(bMin.Text);
+            bin.BlueMax = int.Parse(bMax.Text);
+            bin.GreenMin = int.Parse(gMin.Text);
+            bin.GreenMax = int.Parse(gMax.Text);
+
+            bt.AddColorBin(bin);
         }
     }
 }
