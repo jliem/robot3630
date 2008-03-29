@@ -1,0 +1,9 @@
+C:\Microsoft Robotics Studio (1.5)\bin\BlobTracker.Y2007.M03.Proxy.dll
+C:\Microsoft Robotics Studio (1.5)\bin\BlobTracker.Y2007.M03.Proxy.pdb
+C:\Microsoft Robotics Studio (1.5)\bin\BlobTracker.Y2007.M03.proxy.xml
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Microsoft.Robotics.Services.Sample.BlobTracker.Resources.DssModel.dss
+obj\Debug\Microsoft.Robotics.Services.Sample.BlobTracker.Properties.Resources.resources
+obj\Debug\BlobTracker.Y2007.M03.proxy.csproj.GenerateResource.Cache
+obj\Debug\BlobTracker.Y2007.M03.Proxy.dll
+obj\Debug\BlobTracker.Y2007.M03.Proxy.pdb

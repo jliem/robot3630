@@ -1,0 +1,8 @@
+C:\Microsoft Robotics Studio (1.5)\bin\SampleSimulation.Y2008.M01.dll
+C:\Microsoft Robotics Studio (1.5)\bin\SampleSimulation.Y2008.M01.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\SampleSimulation.Y2008.M01.dll
+obj\Debug\SampleSimulation.Y2008.M01.pdb
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\SampleSimulation.Y2008.M01.dll
+obj\Release\SampleSimulation.Y2008.M01.pdb
