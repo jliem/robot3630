@@ -126,21 +126,31 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             //);
 
             // Set up color detectors
-            ColorBin red = new ColorBin();
-            red.RedMin = 150;
-            red.RedMax = 255;
-            red.BlueMin = 0;
-            red.BlueMax = 100;
-            red.GreenMin = 0;
-            red.GreenMax = 100;
-            _state.ColorBins.Add(red);
+            //ColorBin red = new ColorBin();
+            //red.RedMin = 200;
+            //red.RedMax = 256;
+            //red.BlueMin = 0;
+            //red.BlueMax = 160;
+            //red.GreenMin = 0;
+            //red.GreenMax = 160;
+            //_state.ColorBins.Add(red);
 
             _timer = new System.Timers.Timer();
             _timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
 
-            _timer.Interval = 5000;
+            _timer.Interval = 3000;
             _timer.Enabled = true;
 
+        }
+
+        public void RemoveColorBin(ColorBin bin)
+        {
+            _state.ColorBins.Remove(bin);
+        }
+
+        public void AddColorBin(ColorBin bin)
+        {
+            _state.ColorBins.Add(bin);
         }
 
         public void toggleTimer()
@@ -182,7 +192,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         /// <returns></returns>
         private Bitmap getImage()
         {
-            String robotIP = "localhost";
+            String robotIP = "128.61.18.18";
 
             //String webCam = @"http://localhost:50000/simulatedwebcam/c773b79a-8de4-422e-9d8c-0a21878ab2ef/jpeg";
             String url = @"http://" + robotIP + @":50000/corobotcamera";
@@ -213,13 +223,14 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                 imageCounter = -1; // In case the user restarts it
             }
 
-            imageCounter++;
+            //imageCounter++;
 
 
             if (File.Exists(filePath))
             {
 
-                Bitmap bitmap = new Bitmap(filePath);
+                //Bitmap bitmap = new Bitmap(filePath);
+                Bitmap bitmap = this.getImage();
 
                 response.Size = new Size(bitmap.Width, bitmap.Height);
                 
@@ -228,12 +239,12 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                     bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
 
                     response.Frame = ms.ToArray();
+
                 }
-
-
+                
                 disp.SetImage(bitmap);
 
-                disp.Write("Retrieved image from " + filePath);
+                //disp.Write("Retrieved image from " + filePath);
 
                 return response;
             }
@@ -313,17 +324,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             cam.QueryFrameResponse response = this.getFakeQueryFrameResponse();
 
             frame = response.Frame;
-            
+
             width = response.Size.Width;
             height = response.Size.Height;
-
-            // ********** Converting from byte[] to image is not working ********** 
-
-            //Stream stream = new MemoryStream(frame);
-            //Bitmap bitmap = new Bitmap(stream);
-
-            //Bitmap bitmap = this.getImage();
-            //disp.SetImage(bitmap);
 
             ImageProcessedRequest processed = new ImageProcessedRequest();
 
@@ -332,6 +335,18 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                 _mainPort.Post(new ImageProcessed(processed));
                 yield break;
             }
+
+
+            // ********** Converting from byte[] to image is not working ********** 
+
+            //Bitmap bitmap = null;
+            //using (MemoryStream stream = new MemoryStream(frame))
+            //{
+            //    bitmap = new Bitmap(stream);
+            //}
+
+            ////Bitmap bitmap = this.getImage();
+            //disp.SetImage(bitmap);
 
             int size = width * height * 3;
 
@@ -351,27 +366,58 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
             int offset;
 
-            for (int y = 0; y < height; y++)
+            //TextWriter tw = new StreamWriter("log.txt");
+            //byte[] newFrame = new byte[frame.Length];
+            Bitmap bitmap = new Bitmap(width, height);
+
+            if (bins.Count <= 0)
             {
-                offset = y * width * 3;
-                offset = 0;
+                disp.Write("No bins found");
+                yield return null;
+            }
 
-                for (int x = 0; x < width; x++, offset += 3)
+            
+            for (int i=0; i<bins.Count; i++) {
+                ColorBin currentBin = bins[i];
+
+                disp.Write("Checking bin: " + currentBin.RedMin + "-" + currentBin.RedMax + ", " +
+                    currentBin.GreenMin + "-" + currentBin.GreenMax + ", " +
+                    currentBin.BlueMin + "-" + currentBin.BlueMax);
+
+                for (int y = 0; y < height; y++)
                 {
-                    int r, g, b;
+                    offset = y * width * 3;
 
-                    b = frame[offset];
-                    g = frame[offset + 1];
-                    r = frame[offset + 2];
-
-                    for (int i = 0; i < bins.Count; i++)
+                    for (int x = 0; x < width; x++, offset += 3)
                     {
-                        ColorBin bin = bins[i];
+                        int r, g, b;
 
-                        if (bin.Test(r, g, b))
+                        b = frame[offset];
+                        g = frame[offset + 1];
+                        r = frame[offset + 2];
+
+                        //for (int i = 0; i < bins.Count; i++)
+                        //{
+                        //    ColorBin bin = bins[i];
+
+                        if (currentBin.Test(r, g, b))
                         {
                             results[i].AddPixel(x, y);
+                            //Console.WriteLine(x + "," + y);
+
+                            bitmap.SetPixel(x, height - y - 1, Color.FromArgb(r, g, b));
+
                         }
+                        else
+                        {
+                            bitmap.SetPixel(x, y, Color.White);
+
+                            //newFrame[offset] = 255;
+                            //newFrame[offset + 1] = 255;
+                            //newFrame[offset + 2] = 255;
+                        }
+
+                        //}
                     }
                 }
             }
@@ -392,9 +438,15 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                 }
             }
 
-            disp.Write("BlobTracker is posting results");
+//            disp.Write("BlobTracker is posting results");
             ImageProcessed imgP = new ImageProcessed(processed);
             
+            //using (MemoryStream stream = new MemoryStream(newFrame))
+            //{
+            //    bitmap = new Bitmap(stream);
+            //}
+            disp.SetImage(bitmap);
+
             _mainPort.Post(imgP);
 
         }

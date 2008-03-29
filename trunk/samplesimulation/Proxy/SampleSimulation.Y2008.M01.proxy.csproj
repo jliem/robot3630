@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7B608F54-07CC-44B4-B380-BCA4F884D29C}</ProjectGuid>
+    <ProjectGuid>{25554161-84C8-4B73-9C0C-8C62FB915CC2}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -65,18 +65,6 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mscorlib">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="Ccr.Core">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="DssBase">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
     <Reference Include="DssRuntime.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
@@ -86,6 +74,18 @@
         <Private>False</Private>
     </Reference>
     <Reference Include="SimulationEngine.Proxy">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="Ccr.Core">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="DssBase">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>

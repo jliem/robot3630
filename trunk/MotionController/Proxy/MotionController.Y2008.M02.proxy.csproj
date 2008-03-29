@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3FDA6CBD-7749-4804-8C2A-466186E1948C}</ProjectGuid>
+    <ProjectGuid>{90CA895F-237B-4B8C-9C1C-2639A9771010}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -94,6 +94,10 @@
         <Private>False</Private>
     </Reference>
     <Reference Include="CoroBotMotorEncoders.Y2007.M06.Proxy">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="BlobTracker.Y2007.M03.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>

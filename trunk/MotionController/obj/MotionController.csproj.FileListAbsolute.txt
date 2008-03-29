@@ -9,3 +9,6 @@ C:\Microsoft Robotics Studio (1.5)\Projects\CoroBot\MotionController\obj\Release
 E:\SVNCode\3630\MotionController\obj\Release\ResolveAssemblyReference.cache
 E:\SVNCode\3630\MotionController\obj\Release\MotionController.Y2008.M02.dll
 E:\SVNCode\3630\MotionController\obj\Release\MotionController.Y2008.M02.pdb
+E:\SVNCode\3630\MotionController\obj\Debug\ResolveAssemblyReference.cache
+E:\SVNCode\3630\MotionController\obj\Debug\MotionController.Y2008.M02.dll
+E:\SVNCode\3630\MotionController\obj\Debug\MotionController.Y2008.M02.pdb

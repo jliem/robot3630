@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{708FD593-C4C5-48CA-98E8-11BA6F3CE4B5}</ProjectGuid>
+    <ProjectGuid>{B8DCB1C0-2EA8-478D-98B1-F49A91BEB52A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -65,15 +65,19 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Windows.Forms">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
     <Reference Include="DssRuntime.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
     <Reference Include="DssRuntime">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="mscorlib">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
@@ -85,19 +89,15 @@
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
-    <Reference Include="System.Windows.Forms">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="RoboticsCommon.Proxy">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
     <Reference Include="System">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing">
+        <SpecificVersion>False</SpecificVersion>
+        <Private>False</Private>
+    </Reference>
+    <Reference Include="RoboticsCommon.Proxy">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>

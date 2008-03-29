@@ -27,6 +27,8 @@ using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using cbencoder = CoroWare.Robotics.Services.CoroBotMotorEncoders.Proxy;
 using ds = Microsoft.Dss.Services.Directory;
 
+using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
+
 namespace Robotics.CoroBot.MotionController
 {
     
@@ -67,7 +69,11 @@ namespace Robotics.CoroBot.MotionController
         private cbdrive.CoroBotDriveOperations _drivePort = new cbdrive.CoroBotDriveOperations();
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
-        
+
+        [Partner("BlobTracker", Contract = blob.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        blob.BlobTrackerOperations _blobPort = new blob.BlobTrackerOperations();
+        blob.BlobTrackerOperations _blobNotify = new blob.BlobTrackerOperations();
+
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -96,12 +102,34 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
+            // Subscribe to blob tracker
+            _blobPort.Subscribe(_blobNotify);
+            Activate<ITask>(Arbiter.Receive<blob.ImageProcessed>(true, _blobNotify, OnImageProcessed));
+
             drivingState = DrivingStates.Stopped;
             prevWaypoint = new Vector2(0, 0);
             prevHeading = Math.PI / 2;
             //InitializeWaypoints(new string[] { "0,1", "1,2", "0,3", "-1,2", "0,0" });
-            InitializeWaypoints(new string[] { "0,.3", ".3,.6", "0,.9", "-.3,.6", "0,0" });
+            //InitializeWaypoints(new string[] { "0,.3", ".3,.6", "0,.9", "-.3,.6", "0,0" });
             SetEncoderInterval(200);
+        }
+
+        void OnImageProcessed(blob.ImageProcessed imageProcessed)
+        {
+            
+            if (imageProcessed.Body.Results.Count == 1)
+            {
+                if (imageProcessed.Body.Results[0].Area > 100) //object detected
+                {
+                    //_drivePort.SetDrivePower(0.5, 0.5);
+                    MessageBox.Show("Object detected");
+                }
+                else //search object
+                {
+                    //_drivePort.SetDrivePower(-0.3, 0.3);
+                    MessageBox.Show("No object found");
+                }
+            }
         }
 
         /// <summary>
