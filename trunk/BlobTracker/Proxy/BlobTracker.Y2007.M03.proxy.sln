@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlobTracker.Y2007.M03.proxy", "BlobTracker.Y2007.M03.proxy.csproj", "{638C2DCF-2EFE-4DA2-8580-CBDED9A5CABA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlobTracker.Y2007.M03.proxy", "BlobTracker.Y2007.M03.proxy.csproj", "{813776DE-82AF-4C33-AD74-4BF23F12FD0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,10 +8,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{638C2DCF-2EFE-4DA2-8580-CBDED9A5CABA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{638C2DCF-2EFE-4DA2-8580-CBDED9A5CABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{638C2DCF-2EFE-4DA2-8580-CBDED9A5CABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{638C2DCF-2EFE-4DA2-8580-CBDED9A5CABA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{813776DE-82AF-4C33-AD74-4BF23F12FD0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{813776DE-82AF-4C33-AD74-4BF23F12FD0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{813776DE-82AF-4C33-AD74-4BF23F12FD0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{813776DE-82AF-4C33-AD74-4BF23F12FD0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

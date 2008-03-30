@@ -67,7 +67,7 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BlobTracker.Y2007.M03.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d185a51f257aaa63, processorArchitecture=MSIL" />
+    <Reference Include="BlobTracker.Y2007.M03.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d159440a8502d2da, processorArchitecture=MSIL" />
     <Reference Include="corobotdrive.y2007.m05.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>

@@ -6,11 +6,13 @@
     <members>
         <member name="T:Robotics.SampleSimulation.Proxy.Contract">
             <summary>
-            SampleSimulation Contract
+            SampleSimulation Contract class
             </summary>
         </member>
         <member name="F:Robotics.SampleSimulation.Proxy.Contract.Identifier">
-            The Unique Contract Identifier for the SampleSimulation service
+            <summary>
+            The Dss Service contract
+            </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.Contract.ServiceModel">
             The Dss Service dssModel Contract(s)
@@ -32,7 +34,7 @@
         </member>
         <member name="T:Robotics.SampleSimulation.Proxy.SampleSimulationState">
             <summary>
-            Sample Simulation State
+            The SampleSimulation State
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.SampleSimulationState.CopyTo(Microsoft.Dss.Core.IDssSerializable)">
@@ -57,7 +59,7 @@
         </member>
         <member name="T:Robotics.SampleSimulation.Proxy.TableEntity">
             <summary>
-            Table Entity
+            An entity for approximating a table.
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.TableEntity.CopyTo(Microsoft.Dss.Core.IDssSerializable)">
@@ -82,7 +84,7 @@
         </member>
         <member name="T:Robotics.SampleSimulation.Proxy.SampleSimulationOperations">
             <summary>
-            Sample Simulation Operations
+            SampleSimulation Main Operations Port
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.SampleSimulationOperations.DsspDefaultLookup">
@@ -117,22 +119,22 @@
         </member>
         <member name="T:Robotics.SampleSimulation.Proxy.Get">
             <summary>
-            Get
+            SampleSimulation Get Operation
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.Get.#ctor">
             <summary>
-            Get
+            SampleSimulation Get Operation
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.Get.#ctor(Microsoft.Dss.ServiceModel.Dssp.GetRequestType)">
             <summary>
-            Get
+            SampleSimulation Get Operation
             </summary>
         </member>
         <member name="M:Robotics.SampleSimulation.Proxy.Get.#ctor(Microsoft.Dss.ServiceModel.Dssp.GetRequestType,Microsoft.Ccr.Core.PortSet{Robotics.SampleSimulation.Proxy.SampleSimulationState,W3C.Soap.Fault})">
             <summary>
-            Get
+            SampleSimulation Get Operation
             </summary>
         </member>
         <member name="T:Robotics.SampleSimulation.Properties.Resources">

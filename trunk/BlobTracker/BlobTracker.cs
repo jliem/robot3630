@@ -59,6 +59,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         cam.WebCamOperations _camPort = new cam.WebCamOperations();
         cam.WebCamOperations _camNotify = new cam.WebCamOperations();
 
+        // The gui
         private Display disp;
 
         private System.Timers.Timer _timer;
@@ -70,8 +71,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             }
         }
 
-        // Used for fake query frames
-        private int imageCounter = 0;
 
         /// <summary>
         /// Default Service Constructor
@@ -80,6 +79,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                 base(creationPort)
         {
 
+            // Create a new thread to run the GUI
             // I hate C#, this is the stupidest thing I've ever seen.
             disp = new Display(this);
             Thread thread = new Thread(new ThreadStart(CreateDisplay));
@@ -126,14 +126,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             //);
 
             // Set up color detectors
-            //ColorBin red = new ColorBin();
-            //red.RedMin = 200;
-            //red.RedMax = 256;
-            //red.BlueMin = 0;
-            //red.BlueMax = 160;
-            //red.GreenMin = 0;
-            //red.GreenMax = 160;
-            //_state.ColorBins.Add(red);
 
             _timer = new System.Timers.Timer();
             _timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -190,42 +182,43 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         /// converting from byte[] to image isn't working for some reason
         /// </summary>
         /// <returns></returns>
-        private Bitmap getImage()
+        private Bitmap getSnapshot()
         {
             String robotIP = "128.61.18.18";
 
             //String webCam = @"http://localhost:50000/simulatedwebcam/c773b79a-8de4-422e-9d8c-0a21878ab2ef/jpeg";
             String url = @"http://" + robotIP + @":50000/corobotcamera";
 
-            System.Net.WebClient client = new WebClient();
-            Stream input = client.OpenRead(new Uri(url));
+            Bitmap bitmap = null;
 
-            Bitmap bitmap = new Bitmap(input);
-            input.Close();
+            try
+            {
+                System.Net.WebClient client = new WebClient();
+
+                using (Stream input = client.OpenRead(new Uri(url)))
+                {
+                    bitmap = new Bitmap(input);
+                }
+                
+            }
+            catch (WebException we)
+            {
+                MessageBox.Show("Unable to connect: " + we.StackTrace);
+            }
 
             return bitmap;
         }
 
         /// <summary>
-        /// Reads an image from disk instead of from the camera, but returns
-        /// the same kind of object the camera would.
+        /// Reads an image, then packages it into a QueryFrameResponse
+        /// as though we were reading from the webcam
         /// </summary>
         /// <returns></returns>
         private cam.QueryFrameResponse getFakeQueryFrameResponse()
         {
             cam.QueryFrameResponse response = new cam.QueryFrameResponse();
 
-            if (imageCounter >= 4)
-            {
-                timer.Enabled = false;
-                imageCounter = -1; // In case the user restarts it
-            }
-
-            //imageCounter++;
-
-
-            //Bitmap bitmap = new Bitmap(filePath);
-            Bitmap bitmap = this.getImage();
+            Bitmap bitmap = this.getSnapshot();
 
             response.Size = new Size(bitmap.Width, bitmap.Height);
             
@@ -242,41 +235,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             //disp.Write("Retrieved image from " + filePath);
 
             return response;
-
-            //    System.Net.WebClient client = new WebClient();
-            //    //client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadCompleted);
-
-            //    // TODO: Refactor this out
-            //    String robotIP = "128.61.18.18";
-
-            //    String fileDownloadLocation = @"C:\Documents and Settings\JL\Desktop\robot.jpg";
-
-            //    try
-            //    {
-            //        // This is how to do it without downloading a file (untested)
-            //        /*
-            //        Stream input = client.OpenRead(new Uri("http://" + robotIP + ":50000/corobotcamera"));
-            //        Image image = Image.FromStream(input);
-            //        input.Close();
-            //        return image;
-            //        */
-
-            //        client.DownloadFile(new Uri("http://" + robotIP + ":50000/corobotcamera"),
-            //            fileDownloadLocation);
-
-            //        if (File.Exists(fileDownloadLocation))
-            //        {
-            //            return Image.FromFile(fileDownloadLocation);
-            //        }
-            //    }
-            //    catch (WebException we)
-            //    {
-            //        MessageBox.Show("Could not download " + we.Response.ResponseUri);
-            //        MessageBox.Show(we.StackTrace);
-            //    }
-
-            //    return null;
-            //}
         }
 
         IEnumerator<ITask> ProcessImage(List<ColorBin> bins)
@@ -356,8 +314,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
             int offset;
 
-            //TextWriter tw = new StreamWriter("log.txt");
-            //byte[] newFrame = new byte[frame.Length];
             Bitmap bitmap = new Bitmap(width, height);
 
             if (bins.Count <= 0)
@@ -386,10 +342,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                         g = frame[offset + 1];
                         r = frame[offset + 2];
 
-                        //for (int i = 0; i < bins.Count; i++)
-                        //{
-                        //    ColorBin bin = bins[i];
-
                         if (currentBin.Test(r, g, b))
                         {
                             results[i].AddPixel(x, y);
@@ -401,13 +353,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
                         else
                         {
                             bitmap.SetPixel(x, y, Color.White);
-
-                            //newFrame[offset] = 255;
-                            //newFrame[offset + 1] = 255;
-                            //newFrame[offset + 2] = 255;
                         }
-
-                        //}
                     }
                 }
             }
@@ -431,10 +377,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 //            disp.Write("BlobTracker is posting results");
             ImageProcessed imgP = new ImageProcessed(processed);
             
-            //using (MemoryStream stream = new MemoryStream(newFrame))
-            //{
-            //    bitmap = new Bitmap(stream);
-            //}
             disp.SetImage(bitmap);
 
             _mainPort.Post(imgP);
