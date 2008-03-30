@@ -1,0 +1,21 @@
+Color Bin Notes
+
+red (5) CoC, 7 ft away, facing straight -- 170-256, 0-40, 0-40
+red (6), CoC, 5-6 ft away, facing straight -- 150-256, 0-50, 0-50
+red (7), CoC, 4 ft, straight -- 150-256, 0-50, 0-60
+red (8), CoC, 2 ft, straight -- 100-256, 0-80, 0-130
+red (9), CoC, 2 ft, straight -- 100-256, 0-90, 0-130
+
+100-256, 0-90, 0-130 works for min and max distance for red
+
+yellow (1), CoC, 2 ft straight: 170-220, 150-210, 120-140
+yellow (3), CoC, 8 ft straight: 190-240, 190-230, 70-150
+
+yellow max and min, gets more accurate towards min: 190-240, 190-230, 70-150
+
+purple (1), 8 ft, straight: 10-50, 15-40, 85-115
+purple (2), 2 ft, straight: 45-65, 35-65, 90-115
+purple (3), 8 ft, straight: 10-65, 15-65, 50-115
+purple (4), 2 ft, straight: 45-80, 35-75, 90-130
+
+purple ideal: 10-80, 15-75, 85-130
