@@ -46,9 +46,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnSetInterval = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtInterval = new System.Windows.Forms.TextBox();
-            this.btnSetInterval = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -69,7 +69,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.textBox.Name = "textBox";
             this.textBox.ReadOnly = true;
             this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox.Size = new System.Drawing.Size(824, 246);
+            this.textBox.Size = new System.Drawing.Size(824, 218);
             this.textBox.TabIndex = 1;
             // 
             // btnPause
@@ -99,7 +99,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.rMin.Size = new System.Drawing.Size(43, 20);
             this.rMin.TabIndex = 4;
             this.rMin.Text = "200";
-            this.rMin.GotFocus += new System.EventHandler(text_GotFocus);
+            this.rMin.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // rMax
             // 
@@ -108,8 +108,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.rMax.Size = new System.Drawing.Size(43, 20);
             this.rMax.TabIndex = 5;
             this.rMax.Text = "256";
-            this.rMax.GotFocus += new System.EventHandler(text_GotFocus);
-
+            this.rMax.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // gMax
             // 
@@ -118,8 +117,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.gMax.Size = new System.Drawing.Size(43, 20);
             this.gMax.TabIndex = 8;
             this.gMax.Text = "100";
-            this.gMin.GotFocus += new System.EventHandler(text_GotFocus);
-
+            this.gMax.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // gMin
             // 
@@ -128,8 +126,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.gMin.Size = new System.Drawing.Size(43, 20);
             this.gMin.TabIndex = 7;
             this.gMin.Text = "0";
-            this.gMax.GotFocus += new System.EventHandler(text_GotFocus);
-
+            this.gMin.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // Green
             // 
@@ -147,8 +144,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.bMax.Size = new System.Drawing.Size(43, 20);
             this.bMax.TabIndex = 11;
             this.bMax.Text = "100";
-            this.bMin.GotFocus += new System.EventHandler(text_GotFocus);
-
+            this.bMax.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // bMin
             // 
@@ -157,8 +153,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.bMin.Size = new System.Drawing.Size(43, 20);
             this.bMin.TabIndex = 10;
             this.bMin.Text = "0";
-            this.bMax.GotFocus += new System.EventHandler(text_GotFocus);
-
+            this.bMin.GotFocus += new System.EventHandler(this.text_GotFocus);
             // 
             // label3
             // 
@@ -239,6 +234,16 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Timer Control";
             // 
+            // btnSetInterval
+            // 
+            this.btnSetInterval.Location = new System.Drawing.Point(10, 46);
+            this.btnSetInterval.Name = "btnSetInterval";
+            this.btnSetInterval.Size = new System.Drawing.Size(113, 23);
+            this.btnSetInterval.TabIndex = 15;
+            this.btnSetInterval.Text = "Set Interval";
+            this.btnSetInterval.UseVisualStyleBackColor = true;
+            this.btnSetInterval.Click += new System.EventHandler(this.btnSetInterval_Click);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -255,16 +260,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.txtInterval.Size = new System.Drawing.Size(61, 20);
             this.txtInterval.TabIndex = 14;
             this.txtInterval.Text = "3000";
-            // 
-            // btnSetInterval
-            // 
-            this.btnSetInterval.Location = new System.Drawing.Point(10, 46);
-            this.btnSetInterval.Name = "btnSetInterval";
-            this.btnSetInterval.Size = new System.Drawing.Size(113, 23);
-            this.btnSetInterval.TabIndex = 15;
-            this.btnSetInterval.Text = "Set Interval";
-            this.btnSetInterval.UseVisualStyleBackColor = true;
-            this.btnSetInterval.Click += new System.EventHandler(this.btnSetInterval_Click);
             // 
             // Display
             // 

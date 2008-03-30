@@ -59,17 +59,18 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private void btnPause_Click(object sender, EventArgs e)
         {
 
-            bt.toggleTimer();
-
             if (bt.timer.Enabled == true)
-            {
-                Write("*** UNPAUSED ***");
-                btnPause.Text = "Pause";
-            }
-            else
             {
                 Write("*** PAUSED ***");
                 btnPause.Text = "Unpause";
+                bt.SetTimerEnabled(false);
+            }
+            else
+            {
+                Write("*** UNPAUSED ***");
+                btnPause.Text = "Pause";
+                bt.SetTimerEnabled(true);
+         
             }
 
         }
