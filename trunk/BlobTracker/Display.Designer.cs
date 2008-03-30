@@ -49,6 +49,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.btnSetInterval = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtInterval = new System.Windows.Forms.TextBox();
+            this.txtBin = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -166,7 +167,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // btnSetBin
             // 
-            this.btnSetBin.Location = new System.Drawing.Point(59, 114);
+            this.btnSetBin.Location = new System.Drawing.Point(59, 95);
             this.btnSetBin.Name = "btnSetBin";
             this.btnSetBin.Size = new System.Drawing.Size(75, 23);
             this.btnSetBin.TabIndex = 12;
@@ -176,7 +177,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // btnRobotMoved
             // 
-            this.btnRobotMoved.Location = new System.Drawing.Point(661, 413);
+            this.btnRobotMoved.Location = new System.Drawing.Point(661, 446);
             this.btnRobotMoved.Name = "btnRobotMoved";
             this.btnRobotMoved.Size = new System.Drawing.Size(147, 23);
             this.btnRobotMoved.TabIndex = 13;
@@ -204,6 +205,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txtBin);
             this.groupBox1.Controls.Add(this.bMin);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.rMin);
@@ -216,7 +218,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(661, 100);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 147);
+            this.groupBox1.Size = new System.Drawing.Size(178, 171);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Bin Control";
@@ -227,7 +229,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtInterval);
             this.groupBox2.Controls.Add(this.btnPause);
-            this.groupBox2.Location = new System.Drawing.Point(661, 265);
+            this.groupBox2.Location = new System.Drawing.Point(661, 293);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(142, 124);
             this.groupBox2.TabIndex = 17;
@@ -260,6 +262,14 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.txtInterval.Size = new System.Drawing.Size(61, 20);
             this.txtInterval.TabIndex = 14;
             this.txtInterval.Text = "3000";
+            // 
+            // txtBin
+            // 
+            this.txtBin.Location = new System.Drawing.Point(18, 130);
+            this.txtBin.Name = "txtBin";
+            this.txtBin.Size = new System.Drawing.Size(133, 20);
+            this.txtBin.TabIndex = 13;
+            this.txtBin.Text = "0";
             // 
             // Display
             // 
@@ -309,5 +319,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtInterval;
         private System.Windows.Forms.Button btnSetInterval;
+        private System.Windows.Forms.TextBox txtBin;
     }
 }
