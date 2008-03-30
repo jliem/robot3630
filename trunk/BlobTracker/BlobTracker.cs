@@ -145,9 +145,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             _state.ColorBins.Add(bin);
         }
 
-        public void toggleTimer()
+        public void SetTimerEnabled(Boolean value)
         {
-            _timer.Enabled = !(_timer.Enabled);
+            _timer.Enabled = value;
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
