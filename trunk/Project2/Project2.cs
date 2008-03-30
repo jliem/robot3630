@@ -20,6 +20,8 @@ using System.Xml;
 using W3C.Soap;
 using project2 = Robotics.Project2;
 
+using cbir = CoroWare.Robotics.Services.CoroBotIR.Proxy;
+
 using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
 
 using motioncontroller = Robotics.CoroBot.MotionController;
@@ -59,12 +61,17 @@ namespace Robotics.Project2
                 CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
         motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
 
+        // IR
+        //[Partner("IR", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
+        
         /// <summary>
         /// Default Service Constructor
         /// </summary>
         public Project2Service(DsspServiceCreationPort creationPort) : 
                 base(creationPort)
         {
+            
         }
         
         /// <summary>
@@ -76,8 +83,15 @@ namespace Robotics.Project2
 			// Add service specific initialization here.
 
             _blobPort.Subscribe(_blobNotify);
-            
+
             Activate<ITask>(Arbiter.Receive<blob.ImageProcessed>(true, _blobNotify, OnImageProcessed));
+
+            //Console.WriteLine(_irPort.Get());
+
+            //Activate(Arbiter.Choice(_irPort.Get(),
+            //    delegate( success) { },
+            //    delegate(Fault f) { LogError(f); }
+            //));
         }
 
         void OnImageProcessed(blob.ImageProcessed imageProcessed)
@@ -103,6 +117,49 @@ namespace Robotics.Project2
                     }
                 }
             }
+        }
+
+        void MakeDecision(blob.FoundBlob foundBlob)
+        {
+            int meanX = (int)(foundBlob.MeanX);
+
+            int irDistance = 0; //= irService.getDistance();
+
+	        if (irDistance <= .6)
+            {
+                // We are in IR Sensor range
+                if (irDistance <= .1)
+                { 
+			        return; // We win!
+		        }
+		        else if (irDistance > .3) { 
+			        //driveforward(.5 ft);
+		        }
+		        else {
+			        //driveforward(.25 ft); // We are 1 ft away move slowly
+		        }
+        			
+	        }
+	        else
+            {
+                // We need to go off of vision
+	            int center = 295;
+                int buffer = 5;
+
+	            if ((meanX >= center - buffer)  && (meanX <= center + buffer))
+                {
+		            //driveforward(.5 ft);
+	            }
+	            else if (meanX > center)
+                {
+		            //turn(-.1);
+	            }
+                else
+                {
+                    //turn(.1);
+                }
+            }
+
         }
 
         #region UNUSED

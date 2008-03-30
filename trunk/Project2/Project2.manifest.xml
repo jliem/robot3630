@@ -6,6 +6,15 @@
     <CreateServiceList>
         <ServiceRecordType>
             <dssp:Contract>http://schemas.tempuri.org/2008/03/project2.html</dssp:Contract>
+			<dssp:PartnerList>
+				<dssp:Partner>
+					<dssp:Contract>http://www.coroware.com/2007/05/corobotir.html</dssp:Contract>
+					<dssp:Service>dssp.tcp://128.61.18.18:50001/corobotir</dssp:Service>
+					<dssp:PartnerList />
+					<dssp:Name>project2:corobotir</dssp:Name>
+				</dssp:Partner>
+			</dssp:PartnerList>
+			<Name>this:Project2</Name>
         </ServiceRecordType>
     </CreateServiceList>
 </Manifest>
