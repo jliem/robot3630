@@ -42,7 +42,16 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.label3 = new System.Windows.Forms.Label();
             this.btnSetBin = new System.Windows.Forms.Button();
             this.btnRobotMoved = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtInterval = new System.Windows.Forms.TextBox();
+            this.btnSetInterval = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // picBox
@@ -65,9 +74,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(661, 80);
+            this.btnPause.Location = new System.Drawing.Point(10, 87);
             this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new System.Drawing.Size(153, 36);
+            this.btnPause.Size = new System.Drawing.Size(113, 23);
             this.btnPause.TabIndex = 2;
             this.btnPause.Text = "Pause";
             this.btnPause.UseVisualStyleBackColor = true;
@@ -76,7 +85,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(658, 169);
+            this.label1.Location = new System.Drawing.Point(15, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(27, 13);
             this.label1.TabIndex = 3;
@@ -85,40 +94,47 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // rMin
             // 
-            this.rMin.Location = new System.Drawing.Point(702, 166);
+            this.rMin.Location = new System.Drawing.Point(59, 17);
             this.rMin.Name = "rMin";
             this.rMin.Size = new System.Drawing.Size(43, 20);
             this.rMin.TabIndex = 4;
             this.rMin.Text = "200";
+            this.rMin.GotFocus += new System.EventHandler(text_GotFocus);
             // 
             // rMax
             // 
-            this.rMax.Location = new System.Drawing.Point(751, 166);
+            this.rMax.Location = new System.Drawing.Point(108, 17);
             this.rMax.Name = "rMax";
             this.rMax.Size = new System.Drawing.Size(43, 20);
             this.rMax.TabIndex = 5;
             this.rMax.Text = "256";
+            this.rMax.GotFocus += new System.EventHandler(text_GotFocus);
+
             // 
             // gMax
             // 
-            this.gMax.Location = new System.Drawing.Point(751, 192);
+            this.gMax.Location = new System.Drawing.Point(108, 43);
             this.gMax.Name = "gMax";
             this.gMax.Size = new System.Drawing.Size(43, 20);
             this.gMax.TabIndex = 8;
             this.gMax.Text = "100";
+            this.gMin.GotFocus += new System.EventHandler(text_GotFocus);
+
             // 
             // gMin
             // 
-            this.gMin.Location = new System.Drawing.Point(702, 192);
+            this.gMin.Location = new System.Drawing.Point(59, 43);
             this.gMin.Name = "gMin";
             this.gMin.Size = new System.Drawing.Size(43, 20);
             this.gMin.TabIndex = 7;
             this.gMin.Text = "0";
+            this.gMax.GotFocus += new System.EventHandler(text_GotFocus);
+
             // 
             // Green
             // 
             this.Green.AutoSize = true;
-            this.Green.Location = new System.Drawing.Point(658, 195);
+            this.Green.Location = new System.Drawing.Point(15, 46);
             this.Green.Name = "Green";
             this.Green.Size = new System.Drawing.Size(36, 13);
             this.Green.TabIndex = 6;
@@ -126,24 +142,28 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // bMax
             // 
-            this.bMax.Location = new System.Drawing.Point(751, 218);
+            this.bMax.Location = new System.Drawing.Point(108, 69);
             this.bMax.Name = "bMax";
             this.bMax.Size = new System.Drawing.Size(43, 20);
             this.bMax.TabIndex = 11;
             this.bMax.Text = "100";
+            this.bMin.GotFocus += new System.EventHandler(text_GotFocus);
+
             // 
             // bMin
             // 
-            this.bMin.Location = new System.Drawing.Point(702, 218);
+            this.bMin.Location = new System.Drawing.Point(59, 69);
             this.bMin.Name = "bMin";
             this.bMin.Size = new System.Drawing.Size(43, 20);
             this.bMin.TabIndex = 10;
             this.bMin.Text = "0";
+            this.bMax.GotFocus += new System.EventHandler(text_GotFocus);
+
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(658, 221);
+            this.label3.Location = new System.Drawing.Point(15, 72);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(28, 13);
             this.label3.TabIndex = 9;
@@ -151,7 +171,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // btnSetBin
             // 
-            this.btnSetBin.Location = new System.Drawing.Point(702, 263);
+            this.btnSetBin.Location = new System.Drawing.Point(59, 114);
             this.btnSetBin.Name = "btnSetBin";
             this.btnSetBin.Size = new System.Drawing.Size(75, 23);
             this.btnSetBin.TabIndex = 12;
@@ -161,7 +181,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // btnRobotMoved
             // 
-            this.btnRobotMoved.Location = new System.Drawing.Point(661, 317);
+            this.btnRobotMoved.Location = new System.Drawing.Point(661, 413);
             this.btnRobotMoved.Name = "btnRobotMoved";
             this.btnRobotMoved.Size = new System.Drawing.Size(147, 23);
             this.btnRobotMoved.TabIndex = 13;
@@ -169,29 +189,103 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.btnRobotMoved.UseVisualStyleBackColor = true;
             this.btnRobotMoved.Click += new System.EventHandler(this.btnRobotMoved_Click);
             // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(661, 49);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(153, 35);
+            this.btnSave.TabIndex = 14;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Location = new System.Drawing.Point(661, 23);
+            this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.Size = new System.Drawing.Size(299, 20);
+            this.txtFilePath.TabIndex = 15;
+            this.txtFilePath.Text = "E:\\SVNCode\\3630\\Images\\test.jpg";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.bMin);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.rMin);
+            this.groupBox1.Controls.Add(this.rMax);
+            this.groupBox1.Controls.Add(this.btnSetBin);
+            this.groupBox1.Controls.Add(this.Green);
+            this.groupBox1.Controls.Add(this.bMax);
+            this.groupBox1.Controls.Add(this.gMin);
+            this.groupBox1.Controls.Add(this.gMax);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Location = new System.Drawing.Point(661, 100);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(178, 147);
+            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Bin Control";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btnSetInterval);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.txtInterval);
+            this.groupBox2.Controls.Add(this.btnPause);
+            this.groupBox2.Location = new System.Drawing.Point(661, 265);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(142, 124);
+            this.groupBox2.TabIndex = 17;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Timer Control";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 23);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(64, 13);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Interval (ms)";
+            // 
+            // txtInterval
+            // 
+            this.txtInterval.Location = new System.Drawing.Point(75, 20);
+            this.txtInterval.Name = "txtInterval";
+            this.txtInterval.Size = new System.Drawing.Size(61, 20);
+            this.txtInterval.TabIndex = 14;
+            this.txtInterval.Text = "3000";
+            // 
+            // btnSetInterval
+            // 
+            this.btnSetInterval.Location = new System.Drawing.Point(10, 46);
+            this.btnSetInterval.Name = "btnSetInterval";
+            this.btnSetInterval.Size = new System.Drawing.Size(113, 23);
+            this.btnSetInterval.TabIndex = 15;
+            this.btnSetInterval.Text = "Set Interval";
+            this.btnSetInterval.UseVisualStyleBackColor = true;
+            this.btnSetInterval.Click += new System.EventHandler(this.btnSetInterval_Click);
+            // 
             // Display
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(837, 748);
+            this.ClientSize = new System.Drawing.Size(1038, 748);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.txtFilePath);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnRobotMoved);
-            this.Controls.Add(this.btnSetBin);
-            this.Controls.Add(this.bMax);
-            this.Controls.Add(this.bMin);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.gMax);
-            this.Controls.Add(this.gMin);
-            this.Controls.Add(this.Green);
-            this.Controls.Add(this.rMax);
-            this.Controls.Add(this.rMin);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnPause);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.picBox);
             this.Name = "Display";
             this.Text = "Display";
             this.Load += new System.EventHandler(this.Display_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -213,5 +307,12 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnSetBin;
         private System.Windows.Forms.Button btnRobotMoved;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.TextBox txtFilePath;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtInterval;
+        private System.Windows.Forms.Button btnSetInterval;
     }
 }
