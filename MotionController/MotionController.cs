@@ -116,60 +116,27 @@ namespace Robotics.CoroBot.MotionController
 
         void OnImageProcessed(blob.ImageProcessed imageProcessed)
         {
-            
-            if (imageProcessed.Body.Results.Count == 1)
+            Console.WriteLine("Motion controller has received ImageProcessed signal");
+
+            if (imageProcessed.Body.Results.Count > 0)
             {
-                if (imageProcessed.Body.Results[0].Area > 100) //object detected
+
+                // Display results for each blob found
+                for (int i=0; i<imageProcessed.Body.Results.Count; i++)
                 {
-                    //_drivePort.SetDrivePower(0.5, 0.5);
-                    MessageBox.Show("Object detected");
-                }
-                else //search object
-                {
-                    //_drivePort.SetDrivePower(-0.3, 0.3);
-                    MessageBox.Show("No object found");
-                }
-            }
-        }
+                    blob.FoundBlob foundBlob = imageProcessed.Body.Results[i];
 
-        /// <summary>
-        /// Example of how to read the robot's camera
-        /// </summary>
-        private Image getSnapshot()
-        {
-            System.Net.WebClient client = new WebClient();
-            //client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadCompleted);
+                    if (foundBlob.Area > 100) //object detected
+                    {
 
-            // TODO: Refactor this out
-            String robotIP = "128.61.18.18";
-
-            String fileDownloadLocation = @"C:\Documents and Settings\JL\Desktop\robot.jpg";
-
-            try
-            {
-                // This is how to do it without downloading a file (untested)
-                /*
-                Stream input = client.OpenRead(new Uri("http://" + robotIP + ":50000/corobotcamera"));
-                Image image = Image.FromStream(input);
-                input.Close();
-                return image;
-                */
-
-                client.DownloadFile(new Uri("http://" + robotIP + ":50000/corobotcamera"),
-                    fileDownloadLocation);
-
-                if (File.Exists(fileDownloadLocation))
-                {
-                    return Image.FromFile(fileDownloadLocation);
+                        Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Blob is too small: area=" + foundBlob.Area);
+                    }
                 }
             }
-            catch (WebException we)
-            {
-                MessageBox.Show("Could not download " + we.Response.ResponseUri);
-                MessageBox.Show(we.StackTrace);
-            }
-
-            return null;
         }
 
         private void InitializeWaypoints(string[] points)

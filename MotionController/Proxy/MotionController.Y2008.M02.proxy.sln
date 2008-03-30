@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionController.Y2008.M02.proxy", "MotionController.Y2008.M02.proxy.csproj", "{D34192EC-2318-4D21-BDF4-E2B1FA69B159}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionController.Y2008.M02.proxy", "MotionController.Y2008.M02.proxy.csproj", "{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,10 +8,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D34192EC-2318-4D21-BDF4-E2B1FA69B159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D34192EC-2318-4D21-BDF4-E2B1FA69B159}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D34192EC-2318-4D21-BDF4-E2B1FA69B159}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D34192EC-2318-4D21-BDF4-E2B1FA69B159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

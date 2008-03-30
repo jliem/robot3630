@@ -3,7 +3,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D34192EC-2318-4D21-BDF4-E2B1FA69B159}</ProjectGuid>
+    <ProjectGuid>{E3DD1B8D-BF74-4FEB-AAEF-585769BD5C46}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
@@ -98,14 +98,6 @@
         <Private>False</Private>
     </Reference>
     <Reference Include="BlobTracker.Y2007.M03.Proxy">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Drawing">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
         <SpecificVersion>False</SpecificVersion>
         <Private>False</Private>
     </Reference>
