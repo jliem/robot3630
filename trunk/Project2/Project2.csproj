@@ -1,17 +1,17 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50215</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{73BB2DB3-62A0-4256-BC71-38883A5290A3}</ProjectGuid>
+    <ProjectGuid>{AA5C6F51-1E3B-4137-A7C4-88BB6B6FDA0E}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>BlobTrackerCalibrate.Y2007.M04.Proxy</AssemblyName>
-    <RootNamespace>Microsoft.Robotics.Services.Sample.BlobTrackerCalibrate</RootNamespace>
+    <AssemblyName>Project2.Y2008.M03</AssemblyName>
+    <RootNamespace>Robotics.Project2</RootNamespace>
     <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.5)\samples\mrisamples.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
@@ -32,8 +32,9 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE;INSTRUMENTED;DSSPROXY</DefineConstants>
-    <DocumentationFile>BlobTrackerCalibrate.Y2007.M04.proxy.xml</DocumentationFile>
+    <DefineConstants>DEBUG;TRACE;INSTRUMENTED</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -51,8 +52,9 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;INSTRUMENTED;DSSPROXY</DefineConstants>
-    <DocumentationFile>BlobTrackerCalibrate.Y2007.M04.proxy.xml</DocumentationFile>
+    <DefineConstants>TRACE;INSTRUMENTED</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <FileAlignment>4096</FileAlignment>
@@ -65,77 +67,51 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BlobTracker.Y2007.M03.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d185a51f257aaa63, processorArchitecture=MSIL" />
+    <Reference Include="DssRuntime">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="mscorlib">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Ccr.Core">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="DssBase">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System.Windows.Forms">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="DssRuntime.Proxy">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="DssRuntime">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="BlobTracker.Y2007.M03.Proxy">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Drawing">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
+    <Reference Include="RoboticsCommon.proxy, Version=1.5.507.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="RoboticsCommon.Proxy">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
-    </Reference>
-    <Reference Include="Ccr.Adapters.WinForms">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml">
-        <SpecificVersion>False</SpecificVersion>
-        <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
-
-  </ItemGroup>
-<ItemGroup>
-  <Compile Include="AssemblyInfo.cs" />
-  <Compile Include="Microsoft.Robotics.Services.Sample.BlobTrackerCalibrate.Proxy.BlobTrackerCalibrateTypes.cs" />
-  <Compile Include="Properties\Resources.Designer.cs">
-    <AutoGen>True</AutoGen>
-    <DesignTime>True</DesignTime>
-    <DependentUpon>Resources.resx</DependentUpon>
-  </Compile>
-  <AppDesigner Include="Properties" />
-</ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\DssModel.dss" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Project2.cs" />
+    <Compile Include="Project2Types.cs" />
+    <AppDesigner Include="Properties" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="Project2.manifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="E:\SVNCode\3630\MotionController\MotionController.csproj">
+      <Project>{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}</Project>
+      <Name>MotionController</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup Condition="'$(DelaySign)'!=''">
     <ProxyDelaySign>/delaysign+</ProxyDelaySign>
@@ -143,6 +119,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent></PostBuildEvent>
+    <PostBuildEvent>"C:\Microsoft Robotics Studio (1.5)\bin\dssproxy.exe" /dll:"$(TargetPath)" /proxyprojectpath:"$(ProjectDir)Proxy " /keyfile:"$(AssemblyOriginatorKeyFile)" $(ProxyDelaySign) $(CompactFrameworkProxyGen) /binpath:". " /referencepath:"C:\Microsoft Robotics Studio (1.5)\bin\ " /referencepath:"C:\Microsoft Robotics Studio (1.5)\bin\ " </PostBuildEvent>
   </PropertyGroup>
 </Project>

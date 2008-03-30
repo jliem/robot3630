@@ -1,9 +1,0 @@
-C:\Microsoft Robotics Studio (1.5)\bin\BlobTrackerCalibrate.Y2007.M04.Proxy.dll
-C:\Microsoft Robotics Studio (1.5)\bin\BlobTrackerCalibrate.Y2007.M04.Proxy.pdb
-C:\Microsoft Robotics Studio (1.5)\bin\BlobTrackerCalibrate.Y2007.M04.proxy.xml
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\Microsoft.Robotics.Services.Sample.BlobTrackerCalibrate.Resources.DssModel.dss
-obj\Debug\Microsoft.Robotics.Services.Sample.BlobTrackerCalibrate.Properties.Resources.resources
-obj\Debug\BlobTrackerCalibrate.Y2007.M04.proxy.csproj.GenerateResource.Cache
-obj\Debug\BlobTrackerCalibrate.Y2007.M04.Proxy.dll
-obj\Debug\BlobTrackerCalibrate.Y2007.M04.Proxy.pdb

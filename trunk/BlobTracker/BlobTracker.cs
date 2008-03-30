@@ -55,9 +55,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         [Partner("SubMgr", Contract = sm.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.CreateAlways)]
         sm.SubscriptionManagerPort _subMgrPort = new sm.SubscriptionManagerPort();
 
-        [Partner("WebCam", Contract = cam.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
-        cam.WebCamOperations _camPort = new cam.WebCamOperations();
-        cam.WebCamOperations _camNotify = new cam.WebCamOperations();
+        //[Partner("WebCam", Contract = cam.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        //cam.WebCamOperations _camPort = new cam.WebCamOperations();
+        //cam.WebCamOperations _camNotify = new cam.WebCamOperations();
 
         // The gui
         private Display disp;
@@ -84,7 +84,6 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             disp = new Display(this);
             Thread thread = new Thread(new ThreadStart(CreateDisplay));
             thread.Start();
-            
         }
 
         /// <summary>
@@ -384,29 +383,29 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         }
 
         #region UNUSED
-        void StartTimer(DateTime signal)
-        {
-            //_camPort = ServiceForwarder<cam.WebCamOperations>(FindPartner("WebCam").Service);
-            LogInfo(LogGroups.Console, "Subscribe to webcam");
-            Activate(
-                Arbiter.Choice(
-                    _camPort.Subscribe(_camNotify),
-                    OnSubscribed,
-                    OnSubscribeFailed
-                )
-            );
-        }
+        //void StartTimer(DateTime signal)
+        //{
+        //    //_camPort = ServiceForwarder<cam.WebCamOperations>(FindPartner("WebCam").Service);
+        //    LogInfo(LogGroups.Console, "Subscribe to webcam");
+        //    Activate(
+        //        Arbiter.Choice(
+        //            _camPort.Subscribe(_camNotify),
+        //            OnSubscribed,
+        //            OnSubscribeFailed
+        //        )
+        //    );
+        //}
 
-        void OnSubscribed(SubscribeResponseType success)
-        {
-            LogInfo(LogGroups.Console, "Subscribed to camera");
-        }
+        //void OnSubscribed(SubscribeResponseType success)
+        //{
+        //    LogInfo(LogGroups.Console, "Subscribed to camera");
+        //}
 
-        void OnSubscribeFailed(Fault fault)
-        {
-            LogError(LogGroups.Console, "Failed to subscribe to camera");
-            _mainPort.Post(new DsspDefaultDrop());
-        }
+        //void OnSubscribeFailed(Fault fault)
+        //{
+        //    LogError(LogGroups.Console, "Failed to subscribe to camera");
+        //    _mainPort.Post(new DsspDefaultDrop());
+        //}
 
         /// <summary>
         /// Get Handler
