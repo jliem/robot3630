@@ -97,6 +97,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             bin.GreenMax = int.Parse(gMax.Text);
 
             bt.AddColorBin(bin);
+
+            txtBin.Text = bin.RedMin + "-" + bin.RedMax + ", " + bin.GreenMin + "-" +
+                bin.GreenMax + ", " + bin.BlueMin + "-" + bin.BlueMax;
         }
 
         private void btnRobotMoved_Click(object sender, EventArgs e)
