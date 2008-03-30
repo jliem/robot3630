@@ -1,5 +1,0 @@
-C:\Microsoft Robotics Studio (1.5)\bin\MotionController.Y2008.M02.dll
-C:\Microsoft Robotics Studio (1.5)\bin\MotionController.Y2008.M02.pdb
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\MotionController.Y2008.M02.dll
-obj\Debug\MotionController.Y2008.M02.pdb
