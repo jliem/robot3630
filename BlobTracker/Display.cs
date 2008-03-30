@@ -5,6 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
+using System.Threading;
 
 namespace Microsoft.Robotics.Services.Sample.BlobTracker
 {
@@ -26,6 +28,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
         private void Display_Load(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Maximized;
         }
 
         public void SetImage(Image img)
@@ -45,8 +48,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             }
             else
             {
-                this.textBox.Text += message + Environment.NewLine;
-                this.textBox.SelectionStart = textBox.Text.Length - 1;
+                this.textBox.AppendText(message + Environment.NewLine);
+
+                this.textBox.SelectionStart = textBox.Text.Length;
                 textBox.ScrollToCaret();
             }
         }
@@ -59,10 +63,12 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
             if (bt.timer.Enabled == true)
             {
+                Write("*** UNPAUSED ***");
                 btnPause.Text = "Pause";
             }
             else
             {
+                Write("*** PAUSED ***");
                 btnPause.Text = "Unpause";
             }
 
@@ -95,6 +101,37 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private void btnRobotMoved_Click(object sender, EventArgs e)
         {
             Write("***** Robot has moved *****");
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            String filePath = txtFilePath.Text;
+
+            if (File.Exists(filePath))
+            {
+                Write("Could not write to " + filePath + " because there was already a file there");
+            }
+            else
+            {
+                Bitmap img = (Bitmap)(picBox.Image);
+                img.Save(filePath, System.Drawing.Imaging.ImageFormat.Bmp);
+
+                Write("Saved image to " + filePath);
+            }
+        }
+
+        private void btnSetInterval_Click(object sender, EventArgs e)
+        {
+            bt.timer.Interval = int.Parse(txtInterval.Text);
+            Write("Interval set to " + bt.timer.Interval);
+        }
+
+        private void text_GotFocus(object sender, EventArgs e)
+        {
+            // C# sucks, apparently this doesn't work b/c mouse_down gets called and
+            // the text is immediately deselected
+            TextBox box = (TextBox)sender;
+            box.SelectAll();
         }
     }
 }
