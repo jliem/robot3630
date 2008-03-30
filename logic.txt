@@ -1,0 +1,28 @@
+function makeDecision(int meanX){
+
+	int irDistance = irService.getDistance();
+	if(irDistance <= .6){  // We are in IR Sensor range
+		if(irDistance <= .1){ 
+			return; // We win!
+		}
+		else if(irDistance > .3){ 
+			driveforward(.5 ft);
+		}
+		else {
+			driveforward(.25 ft); // We are 1 ft away move slowly
+		}
+			
+	}
+	else { // We need to go off of vision
+	int center = 295;
+	if (meanX >= center - 5  && meanX <= center + 5){
+		driveforward(.5 ft);
+	}
+	else if (meanX > center){
+		turn(-.1);
+	}
+	else (meanX < center){
+		turn(.1);
+	}
+
+}
