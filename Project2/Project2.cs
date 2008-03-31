@@ -67,7 +67,20 @@ namespace Robotics.Project2
         // IR
         //[Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
-        
+
+        private const double MOTOR_POWER = 0.4;
+        // Positive is counter-clockwise
+        private const double MIN_TURN_AMOUNT = 2;
+        private const double INITIAL_TURN_AMOUNT = 10;
+
+        /// <summary>
+        /// The number of degrees the robot last rotated.
+        /// </summary>
+        private double lastRotation = 0;
+
+        private double turnAmountInDegrees = INITIAL_TURN_AMOUNT;
+
+
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -177,6 +190,23 @@ namespace Robotics.Project2
             return distance;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lastRotation"></param>
+        /// <returns></returns>
+        double adjustTurningDistance(double lastRotation)
+        {
+            double result = Math.Abs(lastRotation) - 2;
+
+            if (result < MIN_TURN_AMOUNT)
+            {
+                result = MIN_TURN_AMOUNT;
+            }
+
+            return result;
+        }
+
         void MakeDecision(blob.FoundBlob foundBlob)
         {
             int meanX = (int)(foundBlob.MeanX);
@@ -196,11 +226,11 @@ namespace Robotics.Project2
 			        return; // We win!
 		        }
 		        else if (irDistance > .3) {
-                    _motionPort.Post(new Drive(new DriveRequest(0.15, .4)));
+                    _motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
 			        //driveforward(.5 ft);
 		        }
 		        else {
-                    _motionPort.Post(new Drive(new DriveRequest(0.07, .4)));
+                    _motionPort.Post(new Drive(new DriveRequest(0.07, MOTOR_POWER)));
 			        //driveforward(.25 ft); // We are 1 ft away move slowly
 		        }
         			
@@ -210,26 +240,49 @@ namespace Robotics.Project2
                 // We need to go off of vision
 	            int center = 295;
                 int buffer = 5;
-                int turnAmountInDegrees = 10; // positive is turning counter-clockwise
 
 	            if ((meanX >= center - buffer)  && (meanX <= center + buffer))
                 {
 		            //driveforward(.5 ft);
-                    _motionPort.Post(new Drive(new DriveRequest(0.15, .4)));
+                    _motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
+
+                    // If we moved forward, there was no turn, so reset the turning amount
+                    turnAmountInDegrees = INITIAL_TURN_AMOUNT;
+                    lastRotation = 0;
 	            }
 	            else if (meanX > center)
                 {
-		            //turn(-.1);
-                    // Turn left
-                    double radians = turnAmountInDegrees * Math.PI / 180;
-                    _motionPort.Post(new Turn(new TurnRequest(radians, .4)));
+                    // Turn right
+
+                    // Find out whether we were previously turning left. If so, we turned too far
+                    // and should reduce the turn amount.
+                    if (lastRotation > 0)
+                    {
+                        turnAmountInDegrees = adjustTurningDistance(lastRotation);                        
+                    }
+
+                    // Turning right means make it negative
+
+                    double radians = turnAmountInDegrees * Math.PI / 180 * -1;
+                    _motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
+
+                    lastRotation = turnAmountInDegrees * -1;
 	            }
                 else
                 {
-                    //turn(.1);
-                    // Turn right
-                    double radians = turnAmountInDegrees * Math.PI / 180 * -1;
-                    _motionPort.Post(new Turn(new TurnRequest(radians, .4)));
+                    // Turn left
+
+                    // Find out whether we were previously turning right. If so, we turned too far
+                    // and should reduce the turn amount.
+                    if (lastRotation < 0)
+                    {
+                        turnAmountInDegrees = adjustTurningDistance(lastRotation);
+                    }
+
+                    double radians = turnAmountInDegrees * Math.PI / 180;
+                    _motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
+
+                    lastRotation = turnAmountInDegrees;
                 }
             }
 
