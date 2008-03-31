@@ -22,6 +22,9 @@ using motioncontroller = Robotics.CoroBot.MotionController;
 using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using cbencoder = CoroWare.Robotics.Services.CoroBotMotorEncoders.Proxy;
 using ds = Microsoft.Dss.Services.Directory;
+using System.Net;
+using System.IO;
+using System.Timers;
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -76,12 +79,75 @@ namespace Robotics.CoroBot.MotionController
 
             SetEncoderInterval(200);
 
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
+            timer.Interval = 500;
+            timer.Enabled = true;
+
             WinFormsServicePort.Post(new Microsoft.Ccr.Adapters.WinForms.RunForm(StartForm));
         }
 
         private System.Windows.Forms.Form StartForm()
         {
             return new MotionForm(_mainPort);
+        }
+
+
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            this.EncoderHandler(null);
+        }
+
+        private int GetFakeEncoderValue()
+        {
+            int encoderValue = 0;
+
+            String robotIP = "128.61.22.166";
+
+            WebClient client = new WebClient();
+            String url = @"http://" + robotIP + @":50000/corobotmotorencoders";
+
+            //using (StreamReader reader = new StreamReader(file))
+            using (StreamReader reader = new StreamReader(client.OpenRead(new Uri(url))))
+            {
+                String line;
+                while ((line = reader.ReadLine()) != null)
+                {
+
+                    //<LeftValue>0</LeftValue>
+
+                    String startText = @"<LeftValue>";
+                    String endText = @"</LeftValue>";
+
+                    int start = line.IndexOf(startText);
+
+                    if (start >= 0)
+                    {
+                        int end = line.IndexOf(endText, start);
+
+                        if (end >= start)
+                        {
+                            try
+                            {
+                                String result = line.Substring(start + startText.Length,
+                                    end - start - startText.Length);
+
+                                encoderValue = int.Parse(result);
+                            }
+                            catch (ArgumentOutOfRangeException aoore)
+                            {
+                                Console.WriteLine(aoore.Message + System.Environment.NewLine +
+                                    aoore.StackTrace);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return encoderValue;
+
         }
 
         private void SetEncoderInterval(int m)
@@ -169,7 +235,10 @@ namespace Robotics.CoroBot.MotionController
 
         private void EncoderHandler(cbencoder.Replace notification)
         {
-            int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
+            //int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
+
+            int encoder = Math.Abs(GetFakeEncoderValue() - oldEncoderValue);
+
             _state.EncoderCountdown -= encoder;
             _state.EncoderCalibration += encoder;
             switch (_state.DrivingState)
