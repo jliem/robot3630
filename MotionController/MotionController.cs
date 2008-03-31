@@ -16,18 +16,12 @@ using Microsoft.Dss.ServiceModel.DsspServiceBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Net;
-using System.Windows.Forms;
 using System.Xml;
 using W3C.Soap;
 using motioncontroller = Robotics.CoroBot.MotionController;
 using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using cbencoder = CoroWare.Robotics.Services.CoroBotMotorEncoders.Proxy;
 using ds = Microsoft.Dss.Services.Directory;
-
-using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -37,27 +31,15 @@ namespace Robotics.CoroBot.MotionController
     /// Implementation class for MotionController
     /// </summary>
     [DisplayName("MotionController")]
-    [Description("CS3630 Project 1 - CoroBot Motion Controller")]
+    [Description("CoroBot Simple Motion Controller")]
     [Contract(Contract.Identifier)]
     public class MotionControllerService : DsspServiceBase
     {
-        protected const double RobotCircumference = .3302 * Math.PI;
-        private enum DrivingStates { Stopped, TurningLeft, TurningRight, MovingForward };
-
-        //Driving state members
-        private DrivingStates drivingState;
-        private LinkedList<Vector2> waypoints;
-        private Vector2 prevWaypoint;
-        private double prevHeading;
-        private double amountToTurn;
-        private double amountToDrive;
-        private double prevLeftEncoderDistance;
-        private double prevRightEncoderDistance;
-        
         /// <summary>
         /// _state
         /// </summary>
         private MotionControllerState _state = new MotionControllerState();
+        private int oldEncoderValue;
         
         /// <summary>
         /// _main Port
@@ -69,11 +51,7 @@ namespace Robotics.CoroBot.MotionController
         private cbdrive.CoroBotDriveOperations _drivePort = new cbdrive.CoroBotDriveOperations();
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
-
-        [Partner("BlobTracker", Contract = blob.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
-        blob.BlobTrackerOperations _blobPort = new blob.BlobTrackerOperations();
-        blob.BlobTrackerOperations _blobNotify = new blob.BlobTrackerOperations();
-
+        
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -88,97 +66,22 @@ namespace Robotics.CoroBot.MotionController
         protected override void Start()
         {
 			base.Start();
-			// Add service specific initialization here.
-            LogInfo("In our start.");
-            //SpawnIterator(ConnectToDriveService);
 
-            // Subscribe to Drive service
-            cbdrive.CoroBotDriveOperations drivePort = new cbdrive.CoroBotDriveOperations();
-            _drivePort.Subscribe(drivePort);
-            Activate(Arbiter.Receive<cbdrive.Replace>(true, drivePort, DriveHandler));
+            _state.Power = .4;
 
             // Subscribe to Encoder service
             cbencoder.CoroBotMotorEncodersOperations encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
-            // Subscribe to blob tracker
-            _blobPort.Subscribe(_blobNotify);
-            Activate<ITask>(Arbiter.Receive<blob.ImageProcessed>(true, _blobNotify, OnImageProcessed));
-
-            drivingState = DrivingStates.Stopped;
-            prevWaypoint = new Vector2(0, 0);
-            prevHeading = Math.PI / 2;
-            //InitializeWaypoints(new string[] { "0,1", "1,2", "0,3", "-1,2", "0,0" });
-            //InitializeWaypoints(new string[] { "0,.3", ".3,.6", "0,.9", "-.3,.6", "0,0" });
             SetEncoderInterval(200);
+
+            WinFormsServicePort.Post(new Microsoft.Ccr.Adapters.WinForms.RunForm(StartForm));
         }
 
-        void OnImageProcessed(blob.ImageProcessed imageProcessed)
+        private System.Windows.Forms.Form StartForm()
         {
-            Console.WriteLine("Motion controller has received ImageProcessed signal");
-
-            if (imageProcessed.Body.Results.Count > 0)
-            {
-
-                // Display results for each blob found
-                for (int i=0; i<imageProcessed.Body.Results.Count; i++)
-                {
-                    blob.FoundBlob foundBlob = imageProcessed.Body.Results[i];
-
-                    if (foundBlob.Area > 100) //object detected
-                    {
-
-                        Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Blob is too small: area=" + foundBlob.Area);
-                    }
-                }
-            }
-        }
-
-        private void InitializeWaypoints(string[] points)
-        {
-            waypoints = new LinkedList<Vector2>();
-            foreach (string point in points)
-            {
-                string[] split = point.Split(',');
-                double x = double.Parse(split[0]);
-                double y = double.Parse(split[1]);
-                waypoints.AddLast(new Vector2(x, y));
-            }
-            BeginNextWaypoint();
-        }
-
-        private void BeginNextWaypoint()
-        {
-            if (waypoints.Count == 0)
-            {
-                SendStopMessage();
-                return;
-            }
-            
-            Vector2 driveVector = waypoints.First.Value.Subtract(prevWaypoint);
-            amountToDrive = driveVector.Norm;
-            amountToTurn = driveVector.Angle - prevHeading;
-            if (amountToTurn < -Math.PI) amountToTurn += (2 * Math.PI);
-            if (amountToTurn > Math.PI) amountToTurn -= (2 * Math.PI);
-            amountToTurn = GetWheelTurnDistance(amountToTurn);
-
-            if (amountToTurn > 0)
-            {
-                SendTurnLeftMessage();
-            }
-            else if (amountToTurn < 0)
-            {
-                SendTurnRightMessage();
-            }
-            else
-            {
-                SendDriveForwardMessage();
-            }
+            return new MotionForm(_mainPort);
         }
 
         private void SetEncoderInterval(int m)
@@ -201,11 +104,10 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendTurnLeftMessage()
         {
-            drivingState = DrivingStates.TurningLeft;
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
-            newState.Rotation = .4;
+            newState.Rotation = _state.Power;
             newState.Translation = 0;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success) { },
@@ -215,11 +117,10 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendTurnRightMessage()
         {
-            drivingState = DrivingStates.TurningRight;
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
-            newState.Rotation = -.6;
+            newState.Rotation = -_state.Power;
             newState.Translation = 0;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success) { },
@@ -229,12 +130,24 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendDriveForwardMessage()
         {
-            drivingState = DrivingStates.MovingForward;
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = 0;
-            newState.Translation = .6;
+            newState.Translation = _state.Power;
+            Activate(Arbiter.Choice(_drivePort.Replace(newState),
+                delegate(DefaultReplaceResponseType success) { },
+                delegate(Fault f) { LogError(f); }
+            ));
+        }
+
+        private void SendDriveBackwardMessage()
+        {
+            cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
+            newState.InSequenceNumber = 0;
+            newState.DriveEnable = true;
+            newState.Rotation = 0;
+            newState.Translation = -_state.Power;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success) { },
                 delegate(Fault f) { LogError(f); }
@@ -243,7 +156,6 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendStopMessage()
         {
-            drivingState = DrivingStates.Stopped;
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = false;
@@ -255,30 +167,49 @@ namespace Robotics.CoroBot.MotionController
             ));
         }
 
-        private void DriveHandler(cbdrive.Replace notification)
-        {
-            
-        }
-
         private void EncoderHandler(cbencoder.Replace notification)
         {
-            cbencoder.CoroBotMotorEncodersState s = notification.Body;
-            double changeInLeft = s.LeftDistance - prevLeftEncoderDistance;
-            prevLeftEncoderDistance = s.LeftDistance;
-            double changeInRight = s.RightDistance - prevRightEncoderDistance;
-            prevRightEncoderDistance = s.RightDistance;
-
-            LogInfo("Encoder: " + changeInRight);
-
-            switch (drivingState)
+            int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
+            _state.EncoderCountdown -= encoder;
+            _state.EncoderCalibration += encoder;
+            switch (_state.DrivingState)
             {
                 case DrivingStates.Stopped:
+                    SendStopMessage();
                     break;
-                case DrivingStates.TurningLeft:
-                    amountToTurn -= changeInRight;
-                    if (amountToTurn <= 0)
+                case DrivingStates.MovingForward:
+                    if (_state.EncoderCountdown <= 0)
+                    {
+                        _state.DrivingState = DrivingStates.Stopped;
+                        SendStopMessage();
+                    }
+                    else
                     {
                         SendDriveForwardMessage();
+                    }
+                    break;
+                case DrivingStates.MovingBackward:
+                    if (_state.EncoderCountdown <= 0)
+                    {
+                        _state.DrivingState = DrivingStates.Stopped;
+                        SendStopMessage();
+                    }
+                    else
+                    {
+                        SendDriveBackwardMessage();
+                    }
+                    break;
+                case DrivingStates.CalibratingDrive:
+                    SendDriveForwardMessage();
+                    break;
+                case DrivingStates.CalibratingTurn:
+                    SendTurnRightMessage();
+                    break;
+                case DrivingStates.TurningLeft:
+                    if (_state.EncoderCountdown <= 0)
+                    {
+                        _state.DrivingState = DrivingStates.Stopped;
+                        SendStopMessage();
                     }
                     else
                     {
@@ -286,28 +217,14 @@ namespace Robotics.CoroBot.MotionController
                     }
                     break;
                 case DrivingStates.TurningRight:
-                    amountToTurn += changeInLeft;
-                    if (amountToTurn >= 0)
+                    if (_state.EncoderCountdown <= 0)
                     {
-                        SendDriveForwardMessage();
+                        _state.DrivingState = DrivingStates.TurningRight;
+                        SendStopMessage();
                     }
                     else
                     {
                         SendTurnRightMessage();
-                    }
-                    break;
-                case DrivingStates.MovingForward:
-                    amountToDrive -= changeInLeft;
-                    if (amountToDrive <= 0)
-                    {
-                        prevHeading = waypoints.First.Value.Subtract(prevWaypoint).Angle;
-                        prevWaypoint = waypoints.First.Value;
-                        waypoints.RemoveFirst();
-                        BeginNextWaypoint();
-                    }
-                    else
-                    {
-                        SendDriveForwardMessage();
                     }
                     break;
                 default:
@@ -315,40 +232,83 @@ namespace Robotics.CoroBot.MotionController
             }
         }
 
-        private double GetWheelTurnDistance(double theta)
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> DriveHandler(Drive drive)
         {
-            double ratio = theta / (Math.PI * 2);
-            return ratio * RobotCircumference;
+            _state.EncoderCountdown = _state.DistanceCalibration * Math.Abs(drive.Body.Distance);
+            
+            if (drive.Body.Distance > 0)
+            {
+                _state.DrivingState = DrivingStates.MovingForward;
+            }
+            else
+            {
+                _state.DrivingState = DrivingStates.MovingBackward;
+            }
+
+            if (drive.Body.Power != 0)
+            {
+                _state.Power = drive.Body.Power;
+            }
+            yield break;
         }
 
-        private class Vector2
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> TurnHandler(Turn turn)
         {
-            private double x, y;
-            public double X { get { return x; } set { x = value; } }
-            public double Y { get { return y; } set { y = value; } }
-            public double Norm { get { return Math.Sqrt(x * x + y * y); } }
-            public double Angle { get { return Math.Atan2(y,x); } }
+            _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
 
-            public Vector2 Clone()
+            if (turn.Body.Radians > 0)
             {
-                return new Vector2(x,y);
+                _state.DrivingState = DrivingStates.TurningLeft;
+            }
+            else
+            {
+                _state.DrivingState = DrivingStates.TurningRight;
             }
 
-            public Vector2 Add(Vector2 v)
+            if (turn.Body.Power != 0)
             {
-                return new Vector2(x + v.X, y + v.Y);
+                _state.Power = turn.Body.Power;
             }
+            yield break;
+        }
 
-            public Vector2 Subtract(Vector2 v)
-            {
-                return new Vector2(x - v.X, y - v.Y);
-            }
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> StopHandler(Stop stop)
+        {
+            _state.DrivingState = DrivingStates.Stopped;
+            yield break;
+        }
 
-            public Vector2(double x, double y)
-            {
-                this.x = x;
-                this.y = y;
-            }
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> BeginCalibrateDriveHandler(BeginCalibrateDrive calibrate)
+        {
+            _state.EncoderCalibration = 0;
+            _state.DrivingState = DrivingStates.CalibratingDrive;
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> BeginCalibrateTurnHandler(BeginCalibrateTurn calibrate)
+        {
+            _state.EncoderCalibration = 0;
+            _state.DrivingState = DrivingStates.CalibratingTurn;
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> SetDriveCalibrationHandler(SetDriveCalibration calibrate)
+        {
+            _state.DistanceCalibration = _state.EncoderCalibration / calibrate.Body.Distance;
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> SetTurnCalibrationHandler(SetTurnCalibration calibrate)
+        {
+            _state.TurningCalibration = _state.EncoderCalibration / calibrate.Body.Radians;
+            yield break;
         }
         
         /// <summary>

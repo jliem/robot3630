@@ -67,10 +67,7 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BlobTracker.Y2007.M03.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ed2a7fa3939ed1a4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\BlobTracker.Y2007.M03.proxy.dll</HintPath>
-    </Reference>
+    <Reference Include="Ccr.Adapters.WinForms, Version=1.5.507.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="corobotdrive.y2007.m05.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -95,11 +92,11 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RoboticsCommon.proxy, Version=1.5.507.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
@@ -111,10 +108,22 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MotionController.cs" />
     <Compile Include="MotionControllerTypes.cs" />
+    <Compile Include="MotionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MotionForm.Designer.cs">
+      <DependentUpon>MotionForm.cs</DependentUpon>
+    </Compile>
     <AppDesigner Include="Properties" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MotionController.manifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MotionForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MotionForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

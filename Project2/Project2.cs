@@ -64,7 +64,7 @@ namespace Robotics.Project2
         motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
 
         // IR
-        //[Partner("IR", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        //[Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
         
         /// <summary>
