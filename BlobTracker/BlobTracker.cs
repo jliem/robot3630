@@ -183,7 +183,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         /// <returns></returns>
         private Bitmap getSnapshot()
         {
-            String robotIP = "128.61.18.18";
+            String robotIP = "128.61.22.166";
 
             //String webCam = @"http://localhost:50000/simulatedwebcam/c773b79a-8de4-422e-9d8c-0a21878ab2ef/jpeg";
             String url = @"http://" + robotIP + @":50000/corobotcamera";

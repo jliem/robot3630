@@ -27,6 +27,7 @@ using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
 using motioncontroller = Robotics.CoroBot.MotionController;
 using System.IO;
 using System.Net;
+using Robotics.CoroBot.MotionController;
 
 namespace Robotics.Project2
 {
@@ -111,6 +112,7 @@ namespace Robotics.Project2
                     {
 
                         Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY + ")");
+                        this.MakeDecision(foundBlob);
                     }
                     else
                     {
@@ -126,7 +128,7 @@ namespace Robotics.Project2
 
             //String file = @"C:\Documents and Settings\JL\Desktop\corobotir.htm";
 
-            String robotIP = "128.61.18.18";
+            String robotIP = "128.61.22.166";
 
             WebClient client = new WebClient();
             String url = @"http://" + robotIP + @":50000/corobotir";
@@ -140,11 +142,11 @@ namespace Robotics.Project2
                     // Looking for <LastFrontRange>25.4</LastFrontRange>
                     // or <th>Front (Meters):</th><td>25.4</td>
 
-                    String startText = @"<th>Front (Meters):</th><td>";
-                    String endText = "</td>";
+                    //String startText = @"<th>Front (Meters):</th><td>";
+                    //String endText = "</td>";
 
-                    //String startText = @"<LastFrontRange>";
-                    //String endText = "</LastFrontRange>";
+                    String startText = @"<LastFrontRange>";
+                    String endText = "</LastFrontRange>";
 
                     int start = line.IndexOf(startText);
 
@@ -163,7 +165,7 @@ namespace Robotics.Project2
                             }
                             catch (ArgumentOutOfRangeException aoore)
                             {
-                                Console.WriteLine(aoore.Message + Environment.NewLine +
+                                Console.WriteLine(aoore.Message + System.Environment.NewLine +
                                     aoore.StackTrace);
                             }
                         }
@@ -179,7 +181,12 @@ namespace Robotics.Project2
         {
             int meanX = (int)(foundBlob.MeanX);
 
-            int irDistance = this.GetFakeIRDistance();
+            double irDistance = this.GetFakeIRDistance();
+
+            Console.WriteLine("Distance is " + irDistance);
+
+            if (true)
+                return;
 
 	        if (irDistance <= .6)
             {
@@ -188,10 +195,12 @@ namespace Robotics.Project2
                 { 
 			        return; // We win!
 		        }
-		        else if (irDistance > .3) { 
+		        else if (irDistance > .3) {
+                    _motionPort.Post(new Drive(new DriveRequest(0.15, .4)));
 			        //driveforward(.5 ft);
 		        }
 		        else {
+                    _motionPort.Post(new Drive(new DriveRequest(0.07, .4)));
 			        //driveforward(.25 ft); // We are 1 ft away move slowly
 		        }
         			
@@ -201,18 +210,26 @@ namespace Robotics.Project2
                 // We need to go off of vision
 	            int center = 295;
                 int buffer = 5;
+                int turnAmountInDegrees = 10; // positive is turning counter-clockwise
 
 	            if ((meanX >= center - buffer)  && (meanX <= center + buffer))
                 {
 		            //driveforward(.5 ft);
+                    _motionPort.Post(new Drive(new DriveRequest(0.15, .4)));
 	            }
 	            else if (meanX > center)
                 {
 		            //turn(-.1);
+                    // Turn left
+                    double radians = turnAmountInDegrees * Math.PI / 180;
+                    _motionPort.Post(new Turn(new TurnRequest(radians, .4)));
 	            }
                 else
                 {
                     //turn(.1);
+                    // Turn right
+                    double radians = turnAmountInDegrees * Math.PI / 180 * -1;
+                    _motionPort.Post(new Turn(new TurnRequest(radians, .4)));
                 }
             }
 
