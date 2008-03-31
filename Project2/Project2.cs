@@ -25,6 +25,8 @@ using cbir = CoroWare.Robotics.Services.CoroBotIR.Proxy;
 using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
 
 using motioncontroller = Robotics.CoroBot.MotionController;
+using System.IO;
+using System.Net;
 
 namespace Robotics.Project2
 {
@@ -71,7 +73,6 @@ namespace Robotics.Project2
         public Project2Service(DsspServiceCreationPort creationPort) : 
                 base(creationPort)
         {
-            
         }
         
         /// <summary>
@@ -119,11 +120,66 @@ namespace Robotics.Project2
             }
         }
 
+        double GetFakeIRDistance()
+        {
+            double distance = 0;
+
+            //String file = @"C:\Documents and Settings\JL\Desktop\corobotir.htm";
+
+            String robotIP = "128.61.18.18";
+
+            WebClient client = new WebClient();
+            String url = @"http://" + robotIP + @":50000/corobotir";
+
+            //using (StreamReader reader = new StreamReader(file))
+            using (StreamReader reader = new StreamReader(client.OpenRead(new Uri(url))))
+            {
+                String line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // Looking for <LastFrontRange>25.4</LastFrontRange>
+                    // or <th>Front (Meters):</th><td>25.4</td>
+
+                    String startText = @"<th>Front (Meters):</th><td>";
+                    String endText = "</td>";
+
+                    //String startText = @"<LastFrontRange>";
+                    //String endText = "</LastFrontRange>";
+
+                    int start = line.IndexOf(startText);
+
+                    if (start >= 0)
+                    {
+                        int end = line.IndexOf(endText, start);
+
+                        if (end >= start)
+                        {
+                            try
+                            {
+                                String result = line.Substring(start + startText.Length,
+                                    end - start - startText.Length);
+
+                                distance = double.Parse(result);
+                            }
+                            catch (ArgumentOutOfRangeException aoore)
+                            {
+                                Console.WriteLine(aoore.Message + Environment.NewLine +
+                                    aoore.StackTrace);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return distance;
+        }
+
         void MakeDecision(blob.FoundBlob foundBlob)
         {
             int meanX = (int)(foundBlob.MeanX);
 
-            int irDistance = 0; //= irService.getDistance();
+            int irDistance = this.GetFakeIRDistance();
 
 	        if (irDistance <= .6)
             {
