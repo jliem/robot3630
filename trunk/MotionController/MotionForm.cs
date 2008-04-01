@@ -12,9 +12,15 @@ namespace Robotics.CoroBot.MotionController
     {
         MotionControllerOperations _port;
 
-        public MotionForm(MotionControllerOperations port)
+        private double motorPower;
+
+        private double calibrate = 2;
+
+        public MotionForm(MotionControllerOperations port, double motorPower)
         {
             _port = port;
+            this.motorPower = motorPower;
+
             InitializeComponent();
         }
 
@@ -22,7 +28,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDistControl.Text.Length > 0)
             {
-                _port.Post(new Drive(new DriveRequest(double.Parse(txtDistControl.Text), .4)));
+                _port.Post(new Drive(new DriveRequest(double.Parse(txtDistControl.Text)/calibrate, motorPower)));
             }
         }
 
@@ -30,7 +36,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDistControl.Text.Length > 0)
             {
-                _port.Post(new Drive(new DriveRequest(-1 * double.Parse(txtDistControl.Text), .4)));
+                _port.Post(new Drive(new DriveRequest(-1 * double.Parse(txtDistControl.Text)/calibrate, motorPower)));
             }
         }
 
@@ -38,8 +44,8 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDegreeControl.Text.Length > 0)
             {
-                double radians = double.Parse(txtDegreeControl.Text) * Math.PI / 180;
-                _port.Post(new Turn(new TurnRequest(radians, .4)));
+                double radians = double.Parse(txtDegreeControl.Text)/calibrate * Math.PI / 180;
+                _port.Post(new Turn(new TurnRequest(radians, motorPower)));
             }
         }
 
@@ -47,8 +53,8 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDegreeControl.Text.Length > 0)
             {
-                double radians = -1 * double.Parse(txtDegreeControl.Text) * Math.PI / 180;
-                _port.Post(new Turn(new TurnRequest(radians, .4)));
+                double radians = -1 * double.Parse(txtDegreeControl.Text)/calibrate * Math.PI / 180;
+                _port.Post(new Turn(new TurnRequest(radians, motorPower)));
             }
         }
 

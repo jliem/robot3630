@@ -71,6 +71,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\BlobTracker.Y2007.M03.proxy.dll</HintPath>
     </Reference>
+    <Reference Include="corobotdrive.y2007.m05.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL" />
     <Reference Include="corobotir.y2007.m05.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL" />
     <Reference Include="DssRuntime">
       <SpecificVersion>False</SpecificVersion>
