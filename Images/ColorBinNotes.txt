@@ -45,7 +45,7 @@ green far blob test: 20-80, 130-210, 90-170
 
 green final: 20-90, 130-170, 90-170
 
-yellow drop far: 170-230, 160-240, 90-150
+yellow drop far: 160-230, 160-240, 80-150
 
 purple drop close: 15-65, 25-60, 90-140
 purple drop far: 40-80, 30-65, 100-150
