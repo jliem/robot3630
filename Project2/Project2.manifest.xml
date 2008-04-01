@@ -1,68 +1,17 @@
 <?xml version="1.0"?>
-<Manifest xmlns:ssc32="http://www.coroware.com/2007/01/ssc32.html" xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html" xmlns:this="urn:uuid:090cd2a2-0987-4b40-b16a-2f9f2795e704" xmlns:corobotmotorencoders="http://www.coroware.com/2007/06/corobotmotorencoders.html" xmlns:motioncontroller="http://schemas.tempuri.org/2008/02/motioncontroller.html" xmlns:corobotdrive="http://www.coroware.com/2007/05/corobotdrive.html" xmlns:blobtracker="http://schemas.microsoft.com/robotics/2007/03/blobtracker.html" xmlns:project2="http://schemas.tempuri.org/2008/03/project2.html" xmlns="http://schemas.microsoft.com/xw/2004/10/manifest.html">
+<Manifest xmlns:project2="http://schemas.tempuri.org/2008/03/project2.html" xmlns:this="urn:uuid:3476ed0c-fbfe-408e-ac38-9cfd032e9296" xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html" xmlns="http://schemas.microsoft.com/xw/2004/10/manifest.html">
   <CreateServiceList>
     <ServiceRecordType>
       <dssp:Contract>http://schemas.tempuri.org/2008/03/project2.html</dssp:Contract>
       <dssp:PartnerList>
         <dssp:Partner>
-          <dssp:Contract>http://schemas.microsoft.com/robotics/2007/03/blobtracker.html</dssp:Contract>
+          <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
+          <dssp:Service>dssp.tcp://128.61.22.166:50000/corobotdrive</dssp:Service>
           <dssp:PartnerList />
-          <dssp:Name>project2:BlobTracker</dssp:Name>
-          <dssp:ServiceName>this:BlobTracker</dssp:ServiceName>
-        </dssp:Partner>
-        <dssp:Partner>
-          <dssp:Contract>http://schemas.tempuri.org/2008/02/motioncontroller.html</dssp:Contract>
-          <dssp:PartnerList />
-          <dssp:Name>project2:MotionController</dssp:Name>
-          <dssp:ServiceName>this:MotionController</dssp:ServiceName>
+          <dssp:Name>project2:drive</dssp:Name>
         </dssp:Partner>
       </dssp:PartnerList>
       <Name>this:Project2</Name>
-    </ServiceRecordType>
-    <ServiceRecordType>
-      <dssp:Contract>http://schemas.microsoft.com/robotics/2007/03/blobtracker.html</dssp:Contract>
-      <dssp:PartnerList />
-      <Name>this:BlobTracker</Name>
-    </ServiceRecordType>
-    <ServiceRecordType>
-      <dssp:Contract>http://schemas.tempuri.org/2008/02/motioncontroller.html</dssp:Contract>
-      <dssp:PartnerList>
-        <dssp:Partner>
-          <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
-          <dssp:PartnerList />
-          <dssp:Name>motioncontroller:drive</dssp:Name>
-          <dssp:ServiceName>this:CoroBotDrive</dssp:ServiceName>
-        </dssp:Partner>
-        <dssp:Partner>
-          <dssp:Contract>http://www.coroware.com/2007/06/corobotmotorencoders.html</dssp:Contract>
-          <dssp:PartnerList />
-          <dssp:Name>motioncontroller:encoder</dssp:Name>
-          <dssp:ServiceName>this:CoroBotMotorEncoders</dssp:ServiceName>
-        </dssp:Partner>
-      </dssp:PartnerList>
-      <Name>this:MotionController</Name>
-    </ServiceRecordType>
-    <ServiceRecordType>
-      <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
-      <dssp:PartnerList>
-        <dssp:Partner>
-          <dssp:Contract>http://www.coroware.com/2007/01/ssc32.html</dssp:Contract>
-          <dssp:PartnerList />
-          <dssp:Name>corobotdrive:ServoController</dssp:Name>
-          <dssp:ServiceName>this:ServoControllerBoard</dssp:ServiceName>
-        </dssp:Partner>
-      </dssp:PartnerList>
-      <Name>this:CoroBotDrive</Name>
-    </ServiceRecordType>
-    <ServiceRecordType>
-      <dssp:Contract>http://www.coroware.com/2007/06/corobotmotorencoders.html</dssp:Contract>
-      <dssp:PartnerList />
-      <Name>this:CoroBotMotorEncoders</Name>
-    </ServiceRecordType>
-    <ServiceRecordType>
-      <dssp:Contract>http://www.coroware.com/2007/01/ssc32.html</dssp:Contract>
-      <dssp:PartnerList />
-      <Name>this:ServoControllerBoard</Name>
     </ServiceRecordType>
   </CreateServiceList>
 </Manifest>

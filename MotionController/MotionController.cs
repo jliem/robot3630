@@ -43,6 +43,8 @@ namespace Robotics.CoroBot.MotionController
         /// </summary>
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
+        private const double MOTOR_POWER = 0.6;
+
         
         /// <summary>
         /// _main Port
@@ -70,7 +72,7 @@ namespace Robotics.CoroBot.MotionController
         {
 			base.Start();
 
-            _state.Power = .4;
+            _state.Power = MOTOR_POWER;
 
             // Subscribe to Encoder service
             cbencoder.CoroBotMotorEncodersOperations encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
@@ -90,7 +92,7 @@ namespace Robotics.CoroBot.MotionController
 
         private System.Windows.Forms.Form StartForm()
         {
-            return new MotionForm(_mainPort);
+            return new MotionForm(_mainPort, _state.Power);
         }
 
 

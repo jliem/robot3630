@@ -25,6 +25,7 @@ using cbir = CoroWare.Robotics.Services.CoroBotIR.Proxy;
 using blob = Microsoft.Robotics.Services.Sample.BlobTracker.Proxy;
 
 using motioncontroller = Robotics.CoroBot.MotionController;
+using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using System.IO;
 using System.Net;
 using Robotics.CoroBot.MotionController;
@@ -60,18 +61,22 @@ namespace Robotics.Project2
         blob.BlobTrackerOperations _blobNotify = new blob.BlobTrackerOperations();
 
         // Partner with motion controller
-        [Partner("MotionController", Contract = motioncontroller.Contract.Identifier,
-                CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
-        motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
+        //[Partner("MotionController", Contract = motioncontroller.Contract.Identifier,
+        //        CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
+        //motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
+
+        // Partner with driver
+        [Partner("drive", Contract = cbdrive.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        private cbdrive.CoroBotDriveOperations _drivePort = new cbdrive.CoroBotDriveOperations();
 
         // IR
         //[Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
 
-        private const double MOTOR_POWER = 0.4;
+        private const double MOTOR_POWER = 0.6;
         // Positive is counter-clockwise
-        private const double MIN_TURN_AMOUNT = 2;
-        private const double INITIAL_TURN_AMOUNT = 10;
+        private const double MIN_TURN_AMOUNT = 25;
+        private const double INITIAL_TURN_AMOUNT = 90;
 
         /// <summary>
         /// The number of degrees the robot last rotated.
