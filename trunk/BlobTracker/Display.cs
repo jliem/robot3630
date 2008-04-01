@@ -98,7 +98,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
 
             bt.AddColorBin(bin);
 
-            txtBin.Text = bin.RedMin + "-" + bin.RedMax + ", " + bin.GreenMin + "-" +
+            txtCurrent.Text = bin.RedMin + "-" + bin.RedMax + ", " + bin.GreenMin + "-" +
                 bin.GreenMax + ", " + bin.BlueMin + "-" + bin.BlueMax;
         }
 
@@ -137,5 +137,25 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             TextBox box = (TextBox)sender;
             box.SelectAll();
         }
+
+        private void btnUp_Click(object sender, EventArgs e)
+        {
+            rMax.Text = "" + (int.Parse(rMax.Text) + Delta());
+            gMax.Text = "" + (int.Parse(gMax.Text) + Delta());
+            bMax.Text = "" + (int.Parse(bMax.Text) + Delta());
+        }
+
+        private int Delta()
+        {
+            return int.Parse(txtDelta.Text);
+        }
+
+        private void btnDown_Click(object sender, EventArgs e)
+        {
+            rMin.Text = "" + (int.Parse(rMin.Text) - Delta());
+            gMin.Text = "" + (int.Parse(gMin.Text) - Delta());
+            bMin.Text = "" + (int.Parse(bMin.Text) - Delta());
+        }
+
     }
 }
