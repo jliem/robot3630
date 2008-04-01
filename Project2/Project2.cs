@@ -29,6 +29,7 @@ using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using System.IO;
 using System.Net;
 using Robotics.CoroBot.MotionController;
+using System.Timers;
 
 namespace Robotics.Project2
 {
@@ -61,9 +62,9 @@ namespace Robotics.Project2
         blob.BlobTrackerOperations _blobNotify = new blob.BlobTrackerOperations();
 
         // Partner with motion controller
-        //[Partner("MotionController", Contract = motioncontroller.Contract.Identifier,
-        //        CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
-        //motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
+        [Partner("MotionController", Contract = motioncontroller.Contract.Identifier,
+                CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
+        motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
 
         // Partner with driver
         [Partner("drive", Contract = cbdrive.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
@@ -85,6 +86,7 @@ namespace Robotics.Project2
 
         private double turnAmountInDegrees = INITIAL_TURN_AMOUNT;
 
+        private System.Timers.Timer imageTimer;
 
         /// <summary>
         /// Default Service Constructor
@@ -92,6 +94,7 @@ namespace Robotics.Project2
         public Project2Service(DsspServiceCreationPort creationPort) : 
                 base(creationPort)
         {
+            imageTimer = new System.Timers.Timer();
         }
         
         /// <summary>
@@ -102,9 +105,9 @@ namespace Robotics.Project2
 			base.Start();
 			// Add service specific initialization here.
 
-            _blobPort.Subscribe(_blobNotify);
+            //_blobPort.Subscribe(_blobNotify);
 
-            Activate<ITask>(Arbiter.Receive<blob.ImageProcessed>(true, _blobNotify, OnImageProcessed));
+            //Activate<ITask>(Arbiter.Receive<blob.ImageProcessed>(true, _blobNotify, OnImageProcessed));
 
             //Console.WriteLine(_irPort.Get());
 
@@ -112,6 +115,67 @@ namespace Robotics.Project2
             //    delegate( success) { },
             //    delegate(Fault f) { LogError(f); }
             //));
+
+            imageTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
+            imageTimer.Interval = 3000;
+            imageTimer.Enabled = true;
+            
+        }
+
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            GetNewImage();
+        }
+
+        void GetNewImage()
+        {
+            Activate(Arbiter.Choice(_blobPort.Get(),
+                ProcessImage, delegate(Fault f) { LogInfo("Error on Get"); }));
+        }
+
+        private void SendDriveForwardMessage(double rotation, double translation)
+        {
+            cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
+            newState.InSequenceNumber = 0;
+            newState.DriveEnable = true;
+            newState.Rotation = rotation;
+            newState.Translation = translation;
+            Activate(Arbiter.Choice(_drivePort.Replace(newState),
+                delegate(DefaultReplaceResponseType success) { },
+                delegate(Fault f) { LogError(f); }
+            ));
+        }
+
+        void ProcessImage(blob.BlobTrackerState state)
+        {
+            Console.WriteLine("Project 2 is in ProcessImage");
+
+            if (state.Results.Count > 0)
+            {
+
+                // Display results for each blob found
+                for (int i = 0; i < state.Results.Count; i++)
+                {
+                    blob.FoundBlob foundBlob = state.Results[i];
+
+                    if (foundBlob.Area > 100) //object detected
+                    {
+
+                        Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY + ")");
+                        this.MakeDecision(foundBlob);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Blob is too small: area=" + foundBlob.Area);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("No blobs to process");
+            }
+
         }
 
         void OnImageProcessed(blob.ImageProcessed imageProcessed)
@@ -220,9 +284,6 @@ namespace Robotics.Project2
 
             Console.WriteLine("Distance is " + irDistance);
 
-            if (true)
-                return;
-
 	        if (irDistance <= .6)
             {
                 // We are in IR Sensor range
@@ -231,11 +292,11 @@ namespace Robotics.Project2
 			        return; // We win!
 		        }
 		        else if (irDistance > .3) {
-                    _motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
+                    //_motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
 			        //driveforward(.5 ft);
 		        }
 		        else {
-                    _motionPort.Post(new Drive(new DriveRequest(0.07, MOTOR_POWER)));
+                    //_motionPort.Post(new Drive(new DriveRequest(0.07, MOTOR_POWER)));
 			        //driveforward(.25 ft); // We are 1 ft away move slowly
 		        }
         			
@@ -246,10 +307,12 @@ namespace Robotics.Project2
 	            int center = 295;
                 int buffer = 5;
 
+                Console.WriteLine("Center is " + center + ", Mean x is " + meanX);
+
 	            if ((meanX >= center - buffer)  && (meanX <= center + buffer))
                 {
-		            //driveforward(.5 ft);
-                    _motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
+                    //_motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
+                    SendDriveForwardMessage(0, 0.5);
 
                     // If we moved forward, there was no turn, so reset the turning amount
                     turnAmountInDegrees = INITIAL_TURN_AMOUNT;
@@ -258,6 +321,7 @@ namespace Robotics.Project2
 	            else if (meanX > center)
                 {
                     // Turn right
+                    Console.WriteLine("Robot is turning right");
 
                     // Find out whether we were previously turning left. If so, we turned too far
                     // and should reduce the turn amount.
@@ -269,13 +333,16 @@ namespace Robotics.Project2
                     // Turning right means make it negative
 
                     double radians = turnAmountInDegrees * Math.PI / 180 * -1;
-                    _motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
+                    //_motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
 
                     lastRotation = turnAmountInDegrees * -1;
+
+                    SendDriveForwardMessage(-0.2, 0.5);
 	            }
                 else
                 {
                     // Turn left
+                    Console.WriteLine("Robot is turning left");
 
                     // Find out whether we were previously turning right. If so, we turned too far
                     // and should reduce the turn amount.
@@ -288,6 +355,8 @@ namespace Robotics.Project2
                     _motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
 
                     lastRotation = turnAmountInDegrees;
+
+                    SendDriveForwardMessage(0.2, 0.5);
                 }
             }
 
