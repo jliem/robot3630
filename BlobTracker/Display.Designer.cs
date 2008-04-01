@@ -45,11 +45,16 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.btnSave = new System.Windows.Forms.Button();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtCurrent = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnSetInterval = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtInterval = new System.Windows.Forms.TextBox();
-            this.txtBin = new System.Windows.Forms.TextBox();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.btnDown = new System.Windows.Forms.Button();
+            this.txtDelta = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -205,7 +210,9 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.txtBin);
+            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.txtCurrent);
             this.groupBox1.Controls.Add(this.bMin);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.rMin);
@@ -218,10 +225,18 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(661, 100);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(178, 171);
+            this.groupBox1.Size = new System.Drawing.Size(178, 198);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Bin Control";
+            // 
+            // txtCurrent
+            // 
+            this.txtCurrent.Location = new System.Drawing.Point(59, 162);
+            this.txtCurrent.Name = "txtCurrent";
+            this.txtCurrent.Size = new System.Drawing.Size(113, 20);
+            this.txtCurrent.TabIndex = 13;
+            this.txtCurrent.Text = "0";
             // 
             // groupBox2
             // 
@@ -229,7 +244,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtInterval);
             this.groupBox2.Controls.Add(this.btnPause);
-            this.groupBox2.Location = new System.Drawing.Point(661, 293);
+            this.groupBox2.Location = new System.Drawing.Point(661, 304);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(142, 124);
             this.groupBox2.TabIndex = 17;
@@ -263,19 +278,59 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             this.txtInterval.TabIndex = 14;
             this.txtInterval.Text = "3000";
             // 
-            // txtBin
+            // btnUp
             // 
-            this.txtBin.Location = new System.Drawing.Point(18, 130);
-            this.txtBin.Name = "txtBin";
-            this.txtBin.Size = new System.Drawing.Size(133, 20);
-            this.txtBin.TabIndex = 13;
-            this.txtBin.Text = "0";
+            this.btnUp.Location = new System.Drawing.Point(845, 136);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(75, 23);
+            this.btnUp.TabIndex = 18;
+            this.btnUp.Text = "Max Up";
+            this.btnUp.UseVisualStyleBackColor = true;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            // 
+            // btnDown
+            // 
+            this.btnDown.Location = new System.Drawing.Point(845, 169);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(75, 23);
+            this.btnDown.TabIndex = 19;
+            this.btnDown.Text = "Min Down";
+            this.btnDown.UseVisualStyleBackColor = true;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+            // 
+            // txtDelta
+            // 
+            this.txtDelta.Location = new System.Drawing.Point(845, 110);
+            this.txtDelta.Name = "txtDelta";
+            this.txtDelta.Size = new System.Drawing.Size(46, 20);
+            this.txtDelta.TabIndex = 20;
+            this.txtDelta.Text = "5";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(9, 165);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.TabIndex = 21;
+            this.label4.Text = "Current:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(59, 124);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(113, 20);
+            this.textBox1.TabIndex = 22;
+            this.textBox1.Text = "0";
             // 
             // Display
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1038, 748);
+            this.Controls.Add(this.txtDelta);
+            this.Controls.Add(this.btnDown);
+            this.Controls.Add(this.btnUp);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtFilePath);
@@ -319,6 +374,11 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtInterval;
         private System.Windows.Forms.Button btnSetInterval;
-        private System.Windows.Forms.TextBox txtBin;
+        private System.Windows.Forms.TextBox txtCurrent;
+        private System.Windows.Forms.Button btnUp;
+        private System.Windows.Forms.Button btnDown;
+        private System.Windows.Forms.TextBox txtDelta;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
