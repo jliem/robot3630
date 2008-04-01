@@ -6,7 +6,7 @@
       <dssp:PartnerList>
         <dssp:Partner>
           <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
-          <dssp:Service>dssp.tcp://128.61.22.166:50000/corobotdrive</dssp:Service>
+          <dssp:Service>dssp.tcp://128.61.22.166:50001/corobotdrive</dssp:Service>
           <dssp:PartnerList />
           <dssp:Name>project2:drive</dssp:Name>
         </dssp:Partner>

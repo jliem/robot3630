@@ -79,6 +79,8 @@ namespace Robotics.Project2
         private const double MIN_TURN_AMOUNT = 25;
         private const double INITIAL_TURN_AMOUNT = 90;
 
+        private const double SWITCH_TO_IR_DISTANCE = 0.6;
+
         /// <summary>
         /// The number of degrees the robot last rotated.
         /// </summary>
@@ -87,6 +89,10 @@ namespace Robotics.Project2
         private double turnAmountInDegrees = INITIAL_TURN_AMOUNT;
 
         private System.Timers.Timer imageTimer;
+        private System.Timers.Timer irTimer;
+        private System.Timers.Timer stopTimer;
+
+        private Boolean hasStarted = false;
 
         /// <summary>
         /// Default Service Constructor
@@ -95,6 +101,8 @@ namespace Robotics.Project2
                 base(creationPort)
         {
             imageTimer = new System.Timers.Timer();
+            irTimer = new System.Timers.Timer();
+            stopTimer = new System.Timers.Timer();
         }
         
         /// <summary>
@@ -120,7 +128,25 @@ namespace Robotics.Project2
 
             imageTimer.Interval = 3000;
             imageTimer.Enabled = true;
+
+            irTimer.Elapsed += new ElapsedEventHandler(OnIRTimedEvent);
+
+            irTimer.Interval = 4000;
+            irTimer.Enabled = false;
+
+            stopTimer.Elapsed += new ElapsedEventHandler(OnStopTimedEvent);
+            stopTimer.Enabled = false;
             
+        }
+
+        private void OnStopTimedEvent(object source, ElapsedEventArgs e)
+        {
+            SendStopMessage();
+        }
+
+        private void OnIRTimedEvent(object source, ElapsedEventArgs e)
+        {
+            irMode();
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -134,17 +160,72 @@ namespace Robotics.Project2
                 ProcessImage, delegate(Fault f) { LogInfo("Error on Get"); }));
         }
 
+        private void SendStopMessage()
+        {
+            cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
+            newState.InSequenceNumber = 0;
+            newState.DriveEnable = false;
+            
+            Console.WriteLine("Sending stop message");
+
+            Activate(Arbiter.Choice(_drivePort.Replace(newState),
+                delegate(DefaultReplaceResponseType success) { },
+                delegate(Fault f) { LogError(f); }
+            ));
+        }
+
         private void SendDriveForwardMessage(double rotation, double translation)
         {
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
+
+            double rotationClip = 0.8;
+
+            if (rotation > rotationClip)
+            {
+                rotation = rotationClip;
+            }
+            else if (rotation < -1*rotationClip)
+            {
+                rotation = -1*rotationClip;
+            }
+
+            if (translation > 1)
+            {
+                translation = 1;
+            }
+            else if (translation < -1)
+            {
+                translation = -1;
+            }
+
+
             newState.Rotation = rotation;
             newState.Translation = translation;
+
+            Console.WriteLine("Turning with rotation " + rotation + " and translation " + translation);
+
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success) { },
                 delegate(Fault f) { LogError(f); }
             ));
+        }
+
+        void SwitchToIRMode()
+        {
+            imageTimer.Enabled = false;
+            irTimer.Enabled = true;
+
+            Console.WriteLine("Robot is in IR mode");
+        }
+
+        void SwitchToVisionMode()
+        {
+            irTimer.Enabled = false;
+            imageTimer.Enabled = true;
+
+            Console.WriteLine("Robot is in vision mode");
         }
 
         void ProcessImage(blob.BlobTrackerState state)
@@ -162,18 +243,32 @@ namespace Robotics.Project2
                     if (foundBlob.Area > 100) //object detected
                     {
 
+                        hasStarted = true;
+
                         Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY + ")");
-                        this.MakeDecision(foundBlob);
+                        this.visionMode(foundBlob);
                     }
                     else
                     {
                         Console.WriteLine("Blob is too small: area=" + foundBlob.Area);
+
+                        if (hasStarted)
+                        {
+                            Console.WriteLine("Blob too small, robot is switching to IR mode");
+                            SwitchToIRMode();
+                        }
                     }
                 }
             }
             else
             {
                 Console.WriteLine("No blobs to process");
+
+                if (hasStarted)
+                {
+                    Console.WriteLine("No blobs found, robot is switching to IR mode");
+                    SwitchToIRMode();
+                }
             }
 
         }
@@ -194,7 +289,7 @@ namespace Robotics.Project2
                     {
 
                         Console.WriteLine("Blob detected at (" + foundBlob.MeanX + "," + foundBlob.MeanY + ")");
-                        this.MakeDecision(foundBlob);
+                        this.visionMode(foundBlob);
                     }
                     else
                     {
@@ -276,49 +371,85 @@ namespace Robotics.Project2
             return result;
         }
 
-        void MakeDecision(blob.FoundBlob foundBlob)
+        void irMode()
         {
-            int meanX = (int)(foundBlob.MeanX);
 
             double irDistance = this.GetFakeIRDistance();
 
             Console.WriteLine("Distance is " + irDistance);
 
-	        if (irDistance <= .6)
+            if (irDistance <= SWITCH_TO_IR_DISTANCE)
             {
+
                 // We are in IR Sensor range
-                if (irDistance <= .1)
-                { 
-			        return; // We win!
-		        }
-		        else if (irDistance > .3) {
-                    //_motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
-			        //driveforward(.5 ft);
-		        }
-		        else {
+                //imageTimer.Enabled = false;
+
+                if (irDistance <= .1524)
+                {
+                    imageTimer.Enabled = false;
+                    irTimer.Enabled = false;
+                    Console.WriteLine("Robot has arrived at its destination!");
+                    return; // We win!
+                }
+                else
+                {
+                    stopTimer.Interval = 200;
+                    SendDriveForwardMessage(0, 0.2);
+                    stopTimer.Interval = 0;
+
                     //_motionPort.Post(new Drive(new DriveRequest(0.07, MOTOR_POWER)));
-			        //driveforward(.25 ft); // We are 1 ft away move slowly
-		        }
-        			
-	        }
-	        else
+                    //driveforward(.25 ft); // We are 1 ft away move slowly
+                }
+
+            }
+            else
+            {
+                // Still too far away to use IR
+                // Switch to vision mode
+                SwitchToVisionMode();
+            }
+        }
+
+        void visionMode(blob.FoundBlob foundBlob)
+        {
+            double meanX = (foundBlob.MeanX);
+            double irDistance = this.GetFakeIRDistance();
+
+            Console.WriteLine("Distance is " + irDistance);
+
+            if (irDistance <= SWITCH_TO_IR_DISTANCE)
+            {
+                // Switch to IR mode
+                Console.WriteLine("Robot is within IR range!");
+                SwitchToIRMode();
+            }
+            else
             {
                 // We need to go off of vision
-	            int center = 295;
+                double center = 295;
                 int buffer = 5;
 
                 Console.WriteLine("Center is " + center + ", Mean x is " + meanX);
 
-	            if ((meanX >= center - buffer)  && (meanX <= center + buffer))
+                double delta = (center - meanX) / 320;
+                double multiplier = 0.45;
+
+                double rotation = delta * multiplier;
+
+                double translation = 0.3;
+
+                Console.WriteLine("Delta is " + delta + " and rotation is " + rotation);
+
+                if ((meanX >= center - buffer) && (meanX <= center + buffer))
                 {
                     //_motionPort.Post(new Drive(new DriveRequest(0.15, MOTOR_POWER)));
-                    SendDriveForwardMessage(0, 0.5);
+                    SendDriveForwardMessage(0, translation);
 
                     // If we moved forward, there was no turn, so reset the turning amount
                     turnAmountInDegrees = INITIAL_TURN_AMOUNT;
                     lastRotation = 0;
-	            }
-	            else if (meanX > center)
+                }
+                else if (meanX > center)
                 {
                     // Turn right
                     Console.WriteLine("Robot is turning right");
@@ -327,7 +458,7 @@ namespace Robotics.Project2
                     // and should reduce the turn amount.
                     if (lastRotation > 0)
                     {
-                        turnAmountInDegrees = adjustTurningDistance(lastRotation);                        
+                        turnAmountInDegrees = adjustTurningDistance(lastRotation);
                     }
 
                     // Turning right means make it negative
@@ -337,8 +468,8 @@ namespace Robotics.Project2
 
                     lastRotation = turnAmountInDegrees * -1;
 
-                    SendDriveForwardMessage(-0.2, 0.5);
-	            }
+                    SendDriveForwardMessage(rotation - 0.1, translation);
+                }
                 else
                 {
                     // Turn left
@@ -352,11 +483,11 @@ namespace Robotics.Project2
                     }
 
                     double radians = turnAmountInDegrees * Math.PI / 180;
-                    _motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
+                    //_motionPort.Post(new Turn(new TurnRequest(radians, MOTOR_POWER)));
 
                     lastRotation = turnAmountInDegrees;
 
-                    SendDriveForwardMessage(0.2, 0.5);
+                    SendDriveForwardMessage(rotation + 0.1, translation);
                 }
             }
 

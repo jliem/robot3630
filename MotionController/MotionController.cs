@@ -84,7 +84,7 @@ namespace Robotics.CoroBot.MotionController
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
 
-            timer.Interval = 500;
+            timer.Interval = 1000;
             timer.Enabled = true;
 
             WinFormsServicePort.Post(new Microsoft.Ccr.Adapters.WinForms.RunForm(StartForm));
