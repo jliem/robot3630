@@ -129,7 +129,7 @@ namespace Microsoft.Robotics.Services.Sample.BlobTracker
             _timer = new System.Timers.Timer();
             _timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
 
-            _timer.Interval = 3000;
+            _timer.Interval = 2000;
             _timer.Enabled = true;
 
         }
