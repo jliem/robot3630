@@ -1,0 +1,49 @@
+Overall algorithm:
+
+   1. Spin 360, find largest blob and drive to it.
+   2. Turn until we've seen two folders. Drive to the left one.
+   3. Turn until we've seen two folders. Drive to the right one.
+   4. Repeat 2-3 until we figure out where we are.
+   5. Continue zigzagging down the hallway to end of hall.
+   6. Turn right, drive forward for some distance until we're approx. in front of his door
+   7. Turn left, door target should now be within view.
+   8. Go to target.
+
+Tasks:
+
+Image Processing
+---
+
+    * Need to recognize the closest folder given any view
+    * Need to determine what color a folder is once close to it
+
+
+Motion Controller
+---
+
+    * Given a blob in view, drive to it
+    * Have some idea of coordinate system so we can move from end of hallway to front of his door
+    * Respond to the following signals: begin/end turn, begin/end drive, turn(x degrees), drive(x meters).
+    * Send signals when robot has finished responding to motion command.
+
+
+Localization logic
+---
+
+    * Track the points we've seen (from Image Processing service)
+    * For each new point, use substring on original map string to figure out whether we're facing the correct way. Return one of four cases:
+          o Facing forward
+          o Facing backward
+          o Need more data (more than one matching sequence detected in map)
+          o Bad data (no sequences detected, must go back and start over; i.e. robot misidentified one or more colors)*
+    * *For last case, ideally it should be able to identify which parts are the most likely to be bad, and guess again at the color
+
+Project3 Service
+---
+
+    * Joins Image Processing, Motion Controller and Logic
+    * Tells MotionController to drive while asking ImageProcessing for current blobs
+    * Feeds targets to MotionController
+    * Keeps track of points found (through Logic service)
+
+
