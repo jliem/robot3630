@@ -34,7 +34,7 @@ namespace Robotics.CoroBot.MotionController
     /// Implementation class for MotionController
     /// </summary>
     [DisplayName("MotionController")]
-    [Description("CoroBot Simple Motion Controller")]
+    [Description("CoroBot Simple Motion Controller - Project 3")]
     [Contract(Contract.Identifier)]
     public class MotionControllerService : DsspServiceBase
     {
@@ -105,7 +105,7 @@ namespace Robotics.CoroBot.MotionController
         {
             int encoderValue = 0;
 
-            String robotIP = "128.61.22.166";
+            String robotIP = "128.61.23.239";
 
             WebClient client = new WebClient();
             String url = @"http://" + robotIP + @":50000/corobotmotorencoders";

@@ -6,13 +6,13 @@
       <dssp:PartnerList>
         <dssp:Partner>
           <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
-          <dssp:Service>dssp.tcp://128.61.22.166:50001/corobotdrive</dssp:Service>
+          <dssp:Service>dssp.tcp://128.61.23.239:50001/corobotdrive</dssp:Service>
           <dssp:PartnerList />
           <dssp:Name>motioncontroller:drive</dssp:Name>
         </dssp:Partner>
         <dssp:Partner>
           <dssp:Contract>http://www.coroware.com/2007/06/corobotmotorencoders.html</dssp:Contract>
-          <dssp:Service>dssp.tcp://128.61.22.166:50001/corobotmotorencoders</dssp:Service>
+          <dssp:Service>dssp.tcp://128.61.23.239:50001/corobotmotorencoders</dssp:Service>
           <dssp:PartnerList />
           <dssp:Name>motioncontroller:encoder</dssp:Name>
         </dssp:Partner>
