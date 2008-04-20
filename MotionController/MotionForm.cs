@@ -14,7 +14,10 @@ namespace Robotics.CoroBot.MotionController
 
         private double motorPower;
 
-        private double calibrate = 2;
+        private double calibrate = 1;
+
+        private DateTime startTime;
+        private DateTime endTime;
 
         public MotionForm(MotionControllerOperations port, double motorPower)
         {
@@ -67,12 +70,14 @@ namespace Robotics.CoroBot.MotionController
         {
             if (btnDriveCalibrate.Text == "Begin Drive")
             {
+                startTime = DateTime.Now;
                 _port.Post(new BeginCalibrateDrive(new BeginCalibrateDriveRequest()));
                 btnDriveCalibrate.Text = "End Drive";
             }
             else if (btnDriveCalibrate.Text == "End Drive")
             {
                 _port.Post(new Stop());
+                endTime = DateTime.Now;
                 btnDriveCalibrate.Enabled = false;
                 btnDriveSubmit.Enabled = true;
                 txtDistCalibrate.Enabled = true;
@@ -83,7 +88,10 @@ namespace Robotics.CoroBot.MotionController
         {
             if(txtDistCalibrate.Text.Length > 0)
             {
-                _port.Post(new SetDriveCalibration(new SetDriveCalibrationRequest(double.Parse(txtDistCalibrate.Text))));
+                _port.Post(new SetDriveCalibration(
+                    new SetDriveCalibrationRequest(
+                        double.Parse(txtDistCalibrate.Text),
+                        (endTime-startTime))));
                 btnDriveCalibrate.Enabled = true;
                 btnDriveCalibrate.Text = "Begin Drive";
                 btnDriveSubmit.Enabled = false;
