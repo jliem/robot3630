@@ -25,6 +25,7 @@ using ds = Microsoft.Dss.Services.Directory;
 using System.Net;
 using System.IO;
 using System.Timers;
+using System.Windows.Forms;
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -45,6 +46,7 @@ namespace Robotics.CoroBot.MotionController
         private int oldEncoderValue;
         private const double MOTOR_POWER = 0.6;
 
+        private System.Timers.Timer motorTimer;
         
         /// <summary>
         /// _main Port
@@ -79,13 +81,17 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
-            SetEncoderInterval(200);
+            SetEncoderInterval(50);
 
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            System.Timers.Timer encoderTimer = new System.Timers.Timer();
+            encoderTimer.Elapsed += new ElapsedEventHandler(EncoderOnTimedEvent);
 
-            timer.Interval = 1000;
-            timer.Enabled = true;
+            encoderTimer.Interval = 1000;
+            encoderTimer.Enabled = true;
+
+            motorTimer = new System.Timers.Timer();
+            motorTimer.Elapsed += new ElapsedEventHandler(MotorOnTimedEvent);
+            motorTimer.Enabled = false;
 
             WinFormsServicePort.Post(new Microsoft.Ccr.Adapters.WinForms.RunForm(StartForm));
         }
@@ -95,8 +101,13 @@ namespace Robotics.CoroBot.MotionController
             return new MotionForm(_mainPort, _state.Power);
         }
 
+        private void MotorOnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            SendStopMessage();
+            _state.DrivingState = DrivingStates.Stopped;
+        }
 
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        private void EncoderOnTimedEvent(object source, ElapsedEventArgs e)
         {
             this.EncoderHandler(null);
         }
@@ -105,7 +116,7 @@ namespace Robotics.CoroBot.MotionController
         {
             int encoderValue = 0;
 
-            String robotIP = "128.61.23.239";
+            String robotIP = "128.61.18.148";
 
             WebClient client = new WebClient();
             String url = @"http://" + robotIP + @":50000/corobotmotorencoders";
@@ -162,7 +173,7 @@ namespace Robotics.CoroBot.MotionController
             ));
 
             cbencoder.SetIntervalMessage newInterval = new cbencoder.SetIntervalMessage();
-            newInterval.NewInterval = 250;
+            newInterval.NewInterval = m;
             newInterval.InSequenceNumber = 0;
             Activate(Arbiter.Choice(_encoderPort.SetInterval(newInterval),
                 delegate(DefaultSubmitResponseType success) { LogInfo("Sucessfully set encoder interval."); },
@@ -237,64 +248,105 @@ namespace Robotics.CoroBot.MotionController
 
         private void EncoderHandler(cbencoder.Replace notification)
         {
-            //int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
+            int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
 
-            int encoder = Math.Abs(GetFakeEncoderValue() - oldEncoderValue);
+            //int encoder = Math.Abs(GetFakeEncoderValue() - oldEncoderValue);
+
+            //Console.WriteLine("Left distance is " + notification.Body.LeftDistance);
+            //Console.WriteLine("Left change is " + notification.Body.LeftChange);
+            //Console.WriteLine("Right distance is " + notification.Body.RightDistance);
+            //Console.WriteLine("Encoder countdown is " + _state.EncoderCountdown);
+            //Console.WriteLine("Encoder calibration is " + _state.EncoderCalibration);
+
+            oldEncoderValue = notification.Body.LeftValue;
 
             _state.EncoderCountdown -= encoder;
             _state.EncoderCalibration += encoder;
+
             switch (_state.DrivingState)
             {
                 case DrivingStates.Stopped:
                     SendStopMessage();
                     break;
                 case DrivingStates.MovingForward:
+
+                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+
                     if (_state.EncoderCountdown <= 0)
                     {
+                        Console.WriteLine("Finished moving forward, encoder calibration is "
+                            + _state.EncoderCalibration);
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
                     }
                     else
                     {
+                        Console.WriteLine("Moving forward, encoder countdown is " + _state.EncoderCountdown);
                         SendDriveForwardMessage();
                     }
+
                     break;
                 case DrivingStates.MovingBackward:
+
+                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+
                     if (_state.EncoderCountdown <= 0)
                     {
+                        Console.WriteLine("Finished moving backward, encoder calibration is "
+                            + _state.EncoderCalibration);
+
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
                     }
                     else
                     {
+                        Console.WriteLine("Moving backward, encoder countdown is " + _state.EncoderCountdown);
+
                         SendDriveBackwardMessage();
                     }
                     break;
                 case DrivingStates.CalibratingDrive:
                     SendDriveForwardMessage();
+
                     break;
                 case DrivingStates.CalibratingTurn:
                     SendTurnRightMessage();
                     break;
                 case DrivingStates.TurningLeft:
+
+                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+
                     if (_state.EncoderCountdown <= 0)
                     {
+                        Console.WriteLine("Finished turning left, encoder calibration is "
+                            + _state.EncoderCalibration);
+
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
                     }
                     else
                     {
+                        Console.WriteLine("Turning left, encoder countdown is " + _state.EncoderCountdown);
+
                         SendTurnLeftMessage();
                     }
                     break;
                 case DrivingStates.TurningRight:
+
+                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+
                     if (_state.EncoderCountdown <= 0)
                     {
-                        _state.DrivingState = DrivingStates.TurningRight;
+                        Console.WriteLine("Finished turning right, encoder calibration is "
+                            + _state.EncoderCalibration);
+
+                        _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
                     }
                     else
                     {
+                        Console.WriteLine("Turning right, encoder countdown is " + _state.EncoderCountdown);
+
                         SendTurnRightMessage();
                     }
                     break;
@@ -306,8 +358,12 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> DriveHandler(Drive drive)
         {
+            _state.EncoderCalibration = 0;
             _state.EncoderCountdown = _state.DistanceCalibration * Math.Abs(drive.Body.Distance);
-            
+
+            Console.WriteLine("Distance calibration is " + _state.DistanceCalibration);
+            Console.WriteLine("Encoder countdown set to " + _state.EncoderCountdown);
+
             if (drive.Body.Distance > 0)
             {
                 _state.DrivingState = DrivingStates.MovingForward;
@@ -327,7 +383,10 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> TurnHandler(Turn turn)
         {
+            _state.EncoderCalibration = 0;
             _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
+
+            Console.WriteLine("Encoder countdown set to " + _state.EncoderCountdown);
 
             if (turn.Body.Radians > 0)
             {
@@ -365,6 +424,7 @@ namespace Robotics.CoroBot.MotionController
         {
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingTurn;
+
             yield break;
         }
 
@@ -372,13 +432,27 @@ namespace Robotics.CoroBot.MotionController
         public IEnumerator<ITask> SetDriveCalibrationHandler(SetDriveCalibration calibrate)
         {
             _state.DistanceCalibration = _state.EncoderCalibration / calibrate.Body.Distance;
+            
+            TimeSpan duration = calibrate.Body.CalibrateTimespan;
+
+            Console.WriteLine("Finished drive calibration: encoderCalib was " + _state.EncoderCalibration +
+                " and distance was " + calibrate.Body.Distance + ", so distanceCalib set to " + _state.DistanceCalibration);
+
+            //MessageBox.Show("Time was " + duration.TotalMilliseconds + " ms");
+            Console.WriteLine("Time was " + duration.TotalMilliseconds + " ms");
             yield break;
         }
 
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> SetTurnCalibrationHandler(SetTurnCalibration calibrate)
         {
+
             _state.TurningCalibration = _state.EncoderCalibration / calibrate.Body.Radians;
+
+            Console.WriteLine("Finished turn calibration: encoderCalib was " + _state.EncoderCalibration +
+    " and turn was " + (calibrate.Body.Radians * 180 / 3.14) + ", so turn set to " + _state.TurningCalibration);
+
+
             yield break;
         }
         

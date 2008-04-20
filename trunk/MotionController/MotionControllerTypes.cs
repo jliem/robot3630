@@ -224,11 +224,15 @@ namespace Robotics.CoroBot.MotionController
         private double _distance;
         public double Distance { get { return _distance; } set { _distance = value; } }
 
+        private TimeSpan _timespan;
+        public TimeSpan CalibrateTimespan { get { return _timespan; } set { _timespan = value; } }
+
         public SetDriveCalibrationRequest() { }
 
-        public SetDriveCalibrationRequest(double distance)
+        public SetDriveCalibrationRequest(double distance, TimeSpan timespan)
         {
             Distance = distance;
+            CalibrateTimespan = timespan;
         }
     }
 
