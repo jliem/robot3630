@@ -14,8 +14,6 @@ namespace Robotics.CoroBot.MotionController
 
         private double motorPower;
 
-        private double calibrate = 1;
-
         private DateTime startTime;
         private DateTime endTime;
 
@@ -31,7 +29,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDistControl.Text.Length > 0)
             {
-                _port.Post(new Drive(new DriveRequest(double.Parse(txtDistControl.Text)/calibrate, motorPower)));
+                _port.Post(new Drive(new DriveRequest(double.Parse(txtDistControl.Text), motorPower)));
             }
         }
 
@@ -39,7 +37,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDistControl.Text.Length > 0)
             {
-                _port.Post(new Drive(new DriveRequest(-1 * double.Parse(txtDistControl.Text)/calibrate, motorPower)));
+                _port.Post(new Drive(new DriveRequest(-1 * double.Parse(txtDistControl.Text), motorPower)));
             }
         }
 
@@ -47,7 +45,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDegreeControl.Text.Length > 0)
             {
-                double radians = double.Parse(txtDegreeControl.Text)/calibrate * Math.PI / 180;
+                double radians = double.Parse(txtDegreeControl.Text) * Math.PI / 180;
                 _port.Post(new Turn(new TurnRequest(radians, motorPower)));
             }
         }
@@ -56,7 +54,7 @@ namespace Robotics.CoroBot.MotionController
         {
             if (txtDegreeControl.Text.Length > 0)
             {
-                double radians = -1 * double.Parse(txtDegreeControl.Text)/calibrate * Math.PI / 180;
+                double radians = -1 * double.Parse(txtDegreeControl.Text) * Math.PI / 180;
                 _port.Post(new Turn(new TurnRequest(radians, motorPower)));
             }
         }
