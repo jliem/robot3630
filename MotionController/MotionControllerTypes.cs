@@ -80,6 +80,7 @@ namespace Robotics.CoroBot.MotionController
         Turn,
         BeginCalibrateDrive,
         BeginCalibrateTurn,
+        BeginWaypointTest,
         SetDriveCalibration,
         SetTurnCalibration,
         Stop>
@@ -124,6 +125,17 @@ namespace Robotics.CoroBot.MotionController
         public BeginCalibrateTurn() { }
 
         public BeginCalibrateTurn(BeginCalibrateTurnRequest body)
+            : base(body)
+        {
+
+        }
+    }
+
+    public class BeginWaypointTest : Update<BeginWaypointTestRequest, PortSet<DefaultUpdateResponseType, Fault>>
+    {
+        public BeginWaypointTest() { }
+
+        public BeginWaypointTest(BeginWaypointTestRequest body)
             : base(body)
         {
 
@@ -216,6 +228,12 @@ namespace Robotics.CoroBot.MotionController
     public class BeginCalibrateTurnRequest
     {
         public BeginCalibrateTurnRequest() { }
+    }
+
+    [DataContract]
+    public class BeginWaypointTestRequest
+    {
+        public BeginWaypointTestRequest() { }
     }
 
     [DataContract]

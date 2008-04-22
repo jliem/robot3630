@@ -48,6 +48,7 @@ namespace Robotics.CoroBot.MotionController
             this.label4 = new System.Windows.Forms.Label();
             this.btnTurnCalibrate = new System.Windows.Forms.Button();
             this.btnDriveCalibrate = new System.Windows.Forms.Button();
+            this.btnWaypointTest = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -72,7 +73,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(155, 79);
+            this.btnStop.Location = new System.Drawing.Point(156, 79);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 8;
@@ -245,11 +246,22 @@ namespace Robotics.CoroBot.MotionController
             this.btnDriveCalibrate.UseVisualStyleBackColor = true;
             this.btnDriveCalibrate.Click += new System.EventHandler(this.btnDriveCalibrate_Click);
             // 
+            // btnWaypointTest
+            // 
+            this.btnWaypointTest.Location = new System.Drawing.Point(18, 229);
+            this.btnWaypointTest.Name = "btnWaypointTest";
+            this.btnWaypointTest.Size = new System.Drawing.Size(183, 23);
+            this.btnWaypointTest.TabIndex = 2;
+            this.btnWaypointTest.Text = "Begin Waypoint Test";
+            this.btnWaypointTest.UseVisualStyleBackColor = true;
+            this.btnWaypointTest.Click += new System.EventHandler(this.btnWaypointTest_Click);
+            // 
             // MotionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(303, 225);
+            this.ClientSize = new System.Drawing.Size(317, 319);
+            this.Controls.Add(this.btnWaypointTest);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -287,5 +299,6 @@ namespace Robotics.CoroBot.MotionController
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnTurnCalibrate;
         private System.Windows.Forms.Button btnDriveCalibrate;
+        private System.Windows.Forms.Button btnWaypointTest;
     }
 }
