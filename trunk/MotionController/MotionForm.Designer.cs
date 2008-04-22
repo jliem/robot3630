@@ -49,6 +49,11 @@ namespace Robotics.CoroBot.MotionController
             this.btnTurnCalibrate = new System.Windows.Forms.Button();
             this.btnDriveCalibrate = new System.Windows.Forms.Button();
             this.btnWaypointTest = new System.Windows.Forms.Button();
+            this.btnManualCalibrate = new System.Windows.Forms.Button();
+            this.txtTurnEncoder = new System.Windows.Forms.TextBox();
+            this.txtDistanceEncoder = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -256,12 +261,61 @@ namespace Robotics.CoroBot.MotionController
             this.btnWaypointTest.UseVisualStyleBackColor = true;
             this.btnWaypointTest.Click += new System.EventHandler(this.btnWaypointTest_Click);
             // 
+            // btnManualCalibrate
+            // 
+            this.btnManualCalibrate.Location = new System.Drawing.Point(168, 273);
+            this.btnManualCalibrate.Name = "btnManualCalibrate";
+            this.btnManualCalibrate.Size = new System.Drawing.Size(183, 23);
+            this.btnManualCalibrate.TabIndex = 3;
+            this.btnManualCalibrate.Text = "Manual calibration";
+            this.btnManualCalibrate.UseVisualStyleBackColor = true;
+            this.btnManualCalibrate.Click += new System.EventHandler(this.btnManualCalibrate_Click);
+            // 
+            // txtTurnEncoder
+            // 
+            this.txtTurnEncoder.Location = new System.Drawing.Point(117, 299);
+            this.txtTurnEncoder.Name = "txtTurnEncoder";
+            this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
+            this.txtTurnEncoder.TabIndex = 18;
+            this.txtTurnEncoder.Text = "2200";
+            // 
+            // txtDistanceEncoder
+            // 
+            this.txtDistanceEncoder.Location = new System.Drawing.Point(116, 269);
+            this.txtDistanceEncoder.Name = "txtDistanceEncoder";
+            this.txtDistanceEncoder.Size = new System.Drawing.Size(44, 20);
+            this.txtDistanceEncoder.TabIndex = 17;
+            this.txtDistanceEncoder.Text = "2114";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(17, 302);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.TabIndex = 16;
+            this.label5.Text = "360 deg. encoder:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 273);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(69, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "1 m encoder:";
+            // 
             // MotionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(317, 319);
+            this.ClientSize = new System.Drawing.Size(419, 427);
+            this.Controls.Add(this.txtTurnEncoder);
+            this.Controls.Add(this.txtDistanceEncoder);
+            this.Controls.Add(this.btnManualCalibrate);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.btnWaypointTest);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -275,6 +329,7 @@ namespace Robotics.CoroBot.MotionController
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -300,5 +355,10 @@ namespace Robotics.CoroBot.MotionController
         private System.Windows.Forms.Button btnTurnCalibrate;
         private System.Windows.Forms.Button btnDriveCalibrate;
         private System.Windows.Forms.Button btnWaypointTest;
+        private System.Windows.Forms.Button btnManualCalibrate;
+        private System.Windows.Forms.TextBox txtTurnEncoder;
+        private System.Windows.Forms.TextBox txtDistanceEncoder;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
