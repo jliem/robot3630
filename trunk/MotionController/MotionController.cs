@@ -47,6 +47,12 @@ namespace Robotics.CoroBot.MotionController
         private const double DRIVE_POWER = 0.6;
         private const double ROTATE_POWER = 0.2;
 
+        private LinkedList<Vector2> waypoints;
+        private Vector2 prevWaypoint;
+        private double prevHeading;
+        private double amountToTurn;
+        private double amountToDrive;
+
         private System.Timers.Timer motorTimer;
         
         /// <summary>
@@ -93,6 +99,10 @@ namespace Robotics.CoroBot.MotionController
             motorTimer = new System.Timers.Timer();
             motorTimer.Elapsed += new ElapsedEventHandler(MotorOnTimedEvent);
             motorTimer.Enabled = false;
+
+            prevWaypoint = new Vector2(0, 0);
+
+            InitializeWaypoints(new string[] { "0,1", "1,2", "0,3", "-1,2", "0,0" });
 
             WinFormsServicePort.Post(new Microsoft.Ccr.Adapters.WinForms.RunForm(StartForm));
         }
@@ -162,6 +172,51 @@ namespace Robotics.CoroBot.MotionController
 
             return encoderValue;
 
+        }
+
+        private void InitializeWaypoints(string[] points)
+        {
+            waypoints = new LinkedList<Vector2>();
+            foreach (string point in points)
+            {
+                string[] split = point.Split(',');
+                double x = double.Parse(split[0]);
+                double y = double.Parse(split[1]);
+                waypoints.AddLast(new Vector2(x, y));
+            }
+
+        }
+
+        private void BeginNextWaypoint()
+        {
+            if (waypoints.Count == 0)
+            {
+                SendStopMessage();
+                return;
+            }
+
+            Vector2 driveVector = waypoints.First.Value.Subtract(prevWaypoint);
+            amountToDrive = driveVector.Norm;
+            amountToTurn = driveVector.Angle - prevHeading;
+            if (amountToTurn < -Math.PI) amountToTurn += (2 * Math.PI);
+            if (amountToTurn > Math.PI) amountToTurn -= (2 * Math.PI);
+            //amountToTurn = GetWheelTurnDistance(amountToTurn);
+
+            if (amountToTurn > 0)
+            {
+                //SendTurnLeftMessage();
+                _mainPort.Post(new Turn(new TurnRequest(amountToTurn, ROTATE_POWER)));
+            }
+            else if (amountToTurn < 0)
+            {
+                //SendTurnRightMessage();
+                _mainPort.Post(new Turn(new TurnRequest(amountToTurn, ROTATE_POWER)));
+            }
+            else
+            {
+                //SendDriveForwardMessage();
+                _mainPort.Post(new Drive(new DriveRequest(amountToDrive, DRIVE_POWER)));
+            }
         }
 
         private void SetEncoderInterval(int m)
@@ -446,6 +501,15 @@ namespace Robotics.CoroBot.MotionController
         }
 
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> BeginWaypointTestHandler(BeginWaypointTest calibrate)
+        {
+            Console.WriteLine("Beginning waypoint test");
+            BeginNextWaypoint();
+
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> SetDriveCalibrationHandler(SetDriveCalibration calibrate)
         {
             _state.DistanceCalibration = _state.EncoderCalibration / calibrate.Body.Distance;
@@ -484,5 +548,38 @@ namespace Robotics.CoroBot.MotionController
             get.ResponsePort.Post(_state);
             yield break;
         }
+
+
+        private class Vector2
+        {
+            private double x, y;
+            public double X { get { return x; } set { x = value; } }
+            public double Y { get { return y; } set { y = value; } }
+            public double Norm { get { return Math.Sqrt(x * x + y * y); } }
+            public double Angle { get { return Math.Atan2(y, x); } }
+
+            public Vector2 Clone()
+            {
+                return new Vector2(x, y);
+            }
+
+            public Vector2 Add(Vector2 v)
+            {
+                return new Vector2(x + v.X, y + v.Y);
+            }
+
+            public Vector2 Subtract(Vector2 v)
+            {
+                return new Vector2(x - v.X, y - v.Y);
+            }
+
+            public Vector2(double x, double y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
     }
+
+
 }

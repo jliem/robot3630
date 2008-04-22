@@ -125,5 +125,12 @@ namespace Robotics.CoroBot.MotionController
                 txtDegreeCalibrate.Enabled = false;
             }
         }
+
+        private void btnWaypointTest_Click(object sender, EventArgs e)
+        {
+            btnWaypointTest.Enabled = false;
+            _port.Post(new BeginWaypointTest(new BeginWaypointTestRequest()));
+            
+        }
     }
 }
