@@ -83,6 +83,7 @@ namespace Robotics.CoroBot.MotionController
         BeginWaypointTest,
         SetDriveCalibration,
         SetTurnCalibration,
+        SetManualCalibration,
         Stop>
     {
     }
@@ -147,6 +148,17 @@ namespace Robotics.CoroBot.MotionController
         public SetDriveCalibration() { }
 
         public SetDriveCalibration(SetDriveCalibrationRequest body)
+            : base(body)
+        {
+
+        }
+    }
+
+    public class SetManualCalibration : Update<SetManualCalibrationRequest, PortSet<DefaultUpdateResponseType, Fault>>
+    {
+        public SetManualCalibration() { }
+
+        public SetManualCalibration(SetManualCalibrationRequest body)
             : base(body)
         {
 
@@ -251,6 +263,24 @@ namespace Robotics.CoroBot.MotionController
         {
             Distance = distance;
             CalibrateTimespan = timespan;
+        }
+    }
+
+    [DataContract]
+    public class SetManualCalibrationRequest
+    {
+        private double _distanceEncoder;
+        public double DistanceEncoder { get { return _distanceEncoder; } set { _distanceEncoder = value; } }
+
+        private double _turnEncoder;
+        public double TurnEncoder { get { return _turnEncoder; } set { _turnEncoder = value; } }
+
+        public SetManualCalibrationRequest() { }
+
+        public SetManualCalibrationRequest(double distanceEncoder, double turnEncoder)
+        {
+            DistanceEncoder = distanceEncoder;
+            TurnEncoder = turnEncoder;
         }
     }
 

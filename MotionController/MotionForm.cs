@@ -132,5 +132,12 @@ namespace Robotics.CoroBot.MotionController
             _port.Post(new BeginWaypointTest(new BeginWaypointTestRequest()));
             
         }
+
+        private void btnManualCalibrate_Click(object sender, EventArgs e)
+        {
+            _port.Post(new SetManualCalibration(new SetManualCalibrationRequest(double.Parse(txtDistanceEncoder.Text),
+                double.Parse(txtTurnEncoder.Text))));
+            MessageBox.Show("Manual calibration done");
+        }
     }
 }

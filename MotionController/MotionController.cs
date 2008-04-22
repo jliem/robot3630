@@ -47,6 +47,7 @@ namespace Robotics.CoroBot.MotionController
         private const double DRIVE_POWER = 0.6;
         private const double ROTATE_POWER = 0.2;
 
+        private bool followingWaypoints = false;
         private LinkedList<Vector2> waypoints;
         private Vector2 prevWaypoint;
         private double prevHeading;
@@ -289,6 +290,20 @@ namespace Robotics.CoroBot.MotionController
             ));
         }
 
+        private void CheckReachedWaypoint()
+        {
+
+            if (followingWaypoints && waypoints.Count > 0)
+            {
+                BeginNextWaypoint();
+                prevHeading = waypoints.First.Value.Subtract(prevWaypoint).Angle;
+                prevWaypoint = waypoints.First.Value;
+
+                Console.WriteLine("Arrived at " + prevWaypoint.X + ", " + prevWaypoint.Y);
+                waypoints.RemoveFirst();
+            }
+        }
+
         private void SendStopMessage()
         {
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
@@ -338,6 +353,8 @@ namespace Robotics.CoroBot.MotionController
                             + _state.EncoderCalibration);
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
+
+                        CheckReachedWaypoint();
                     }
                     else
                     {
@@ -357,6 +374,9 @@ namespace Robotics.CoroBot.MotionController
 
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
+
+                        CheckReachedWaypoint();
+
                     }
                     else
                     {
@@ -383,6 +403,9 @@ namespace Robotics.CoroBot.MotionController
 
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
+
+                        CheckReachedWaypoint();
+
                     }
                     else
                     {
@@ -402,6 +425,9 @@ namespace Robotics.CoroBot.MotionController
 
                         _state.DrivingState = DrivingStates.Stopped;
                         SendStopMessage();
+
+                        CheckReachedWaypoint();
+
                     }
                     else
                     {
@@ -513,7 +539,7 @@ namespace Robotics.CoroBot.MotionController
         public IEnumerator<ITask> SetDriveCalibrationHandler(SetDriveCalibration calibrate)
         {
             _state.DistanceCalibration = _state.EncoderCalibration / calibrate.Body.Distance;
-            
+
             TimeSpan duration = calibrate.Body.CalibrateTimespan;
 
             Console.WriteLine("Finished drive calibration: encoderCalib was " + _state.EncoderCalibration +
@@ -521,6 +547,21 @@ namespace Robotics.CoroBot.MotionController
 
             //MessageBox.Show("Time was " + duration.TotalMilliseconds + " ms");
             Console.WriteLine("Time was " + duration.TotalMilliseconds + " ms");
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> SetManualCalibrationHandler(SetManualCalibration calibrate)
+        {
+            // 1 meter
+            _state.DistanceCalibration = calibrate.Body.DistanceEncoder;
+
+            // 360 degrees
+            _state.TurningCalibration = calibrate.Body.TurnEncoder / (2 * Math.PI);
+
+            Console.WriteLine("Manual calibration: one meter set to " + _state.DistanceCalibration
+               + ", 360 degrees set to " + _state.TurningCalibration);
+
             yield break;
         }
 
