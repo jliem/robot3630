@@ -44,7 +44,8 @@ namespace Robotics.CoroBot.MotionController
         /// </summary>
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
-        private const double MOTOR_POWER = 0.6;
+        private const double DRIVE_POWER = 0.6;
+        private const double ROTATE_POWER = 0.2;
 
         private System.Timers.Timer motorTimer;
         
@@ -74,7 +75,7 @@ namespace Robotics.CoroBot.MotionController
         {
 			base.Start();
 
-            _state.Power = MOTOR_POWER;
+            _state.Power = 0;
 
             // Subscribe to Encoder service
             cbencoder.CoroBotMotorEncodersOperations encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
@@ -248,7 +249,11 @@ namespace Robotics.CoroBot.MotionController
 
         private void EncoderHandler(cbencoder.Replace notification)
         {
-            int encoder = Math.Abs(notification.Body.LeftValue - oldEncoderValue);
+            int encoderValue = notification.Body.LeftValue;
+
+            //int encoderValue = this.GetFakeEncoderValue();
+
+            int encoderChange = Math.Abs(encoderValue - oldEncoderValue);
 
             //int encoder = Math.Abs(GetFakeEncoderValue() - oldEncoderValue);
 
@@ -260,8 +265,8 @@ namespace Robotics.CoroBot.MotionController
 
             oldEncoderValue = notification.Body.LeftValue;
 
-            _state.EncoderCountdown -= encoder;
-            _state.EncoderCalibration += encoder;
+            _state.EncoderCountdown -= encoderChange;
+            _state.EncoderCalibration += encoderChange;
 
             switch (_state.DrivingState)
             {
@@ -281,7 +286,7 @@ namespace Robotics.CoroBot.MotionController
                     }
                     else
                     {
-                        Console.WriteLine("Moving forward, encoder countdown is " + _state.EncoderCountdown);
+                        //Console.WriteLine("Moving forward, encoder countdown is " + _state.EncoderCountdown);
                         SendDriveForwardMessage();
                     }
 
@@ -300,7 +305,7 @@ namespace Robotics.CoroBot.MotionController
                     }
                     else
                     {
-                        Console.WriteLine("Moving backward, encoder countdown is " + _state.EncoderCountdown);
+                        //Console.WriteLine("Moving backward, encoder countdown is " + _state.EncoderCountdown);
 
                         SendDriveBackwardMessage();
                     }
@@ -326,7 +331,7 @@ namespace Robotics.CoroBot.MotionController
                     }
                     else
                     {
-                        Console.WriteLine("Turning left, encoder countdown is " + _state.EncoderCountdown);
+                        //Console.WriteLine("Turning left, encoder countdown is " + _state.EncoderCountdown);
 
                         SendTurnLeftMessage();
                     }
@@ -345,7 +350,7 @@ namespace Robotics.CoroBot.MotionController
                     }
                     else
                     {
-                        Console.WriteLine("Turning right, encoder countdown is " + _state.EncoderCountdown);
+                        //Console.WriteLine("Turning right, encoder countdown is " + _state.EncoderCountdown);
 
                         SendTurnRightMessage();
                     }
@@ -358,6 +363,15 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> DriveHandler(Drive drive)
         {
+
+            if (drive.Body.Power != 0)
+            {
+                _state.Power = drive.Body.Power;
+            }
+
+            // Override argument
+            _state.Power = DRIVE_POWER;
+
             _state.EncoderCalibration = 0;
             _state.EncoderCountdown = _state.DistanceCalibration * Math.Abs(drive.Body.Distance);
 
@@ -373,16 +387,21 @@ namespace Robotics.CoroBot.MotionController
                 _state.DrivingState = DrivingStates.MovingBackward;
             }
 
-            if (drive.Body.Power != 0)
-            {
-                _state.Power = drive.Body.Power;
-            }
             yield break;
         }
 
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> TurnHandler(Turn turn)
         {
+            
+            if (turn.Body.Power != 0)
+            {
+                _state.Power = turn.Body.Power;
+            }
+
+            // Override argument
+            _state.Power = ROTATE_POWER;
+
             _state.EncoderCalibration = 0;
             _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
 
@@ -397,10 +416,6 @@ namespace Robotics.CoroBot.MotionController
                 _state.DrivingState = DrivingStates.TurningRight;
             }
 
-            if (turn.Body.Power != 0)
-            {
-                _state.Power = turn.Body.Power;
-            }
             yield break;
         }
 
@@ -414,6 +429,7 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> BeginCalibrateDriveHandler(BeginCalibrateDrive calibrate)
         {
+            _state.Power = DRIVE_POWER;
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingDrive;
             yield break;
@@ -422,6 +438,7 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> BeginCalibrateTurnHandler(BeginCalibrateTurn calibrate)
         {
+            _state.Power = ROTATE_POWER;
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingTurn;
 
