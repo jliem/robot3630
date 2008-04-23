@@ -99,7 +99,7 @@ namespace Robotics.CoroBot.MotionController
 
         private void btnTurnCalibrate_Click(object sender, EventArgs e)
         {
-            if (btnTurnCalibrate.Text == "Begin Turn")
+            if (btnTurnCalibrate.Text == "Begin Right")
             {
                 _port.Post(new BeginCalibrateTurn(new BeginCalibrateTurnRequest()));
                 btnTurnCalibrate.Text = "End Turn";
@@ -113,6 +113,22 @@ namespace Robotics.CoroBot.MotionController
             }
         }
 
+        private void btnCalibrateLeft_Click(object sender, EventArgs e)
+        {
+            if (btnCalibrateLeft.Text == "Begin Left")
+            {
+                _port.Post(new BeginCalibrateLeft(new BeginCalibrateLeftRequest()));
+                btnCalibrateLeft.Text = "End Turn";
+            }
+            else if (btnCalibrateLeft.Text == "End Turn")
+            {
+                _port.Post(new Stop());
+                btnCalibrateLeft.Enabled = false;
+                btnLeftSubmit.Enabled = true;
+                txtLeftCalibrate.Enabled = true;
+            }
+        }
+
         private void btnTurnSubmit_Click(object sender, EventArgs e)
         {
             if (txtDegreeCalibrate.Text.Length > 0)
@@ -120,10 +136,23 @@ namespace Robotics.CoroBot.MotionController
                 double radians = double.Parse(txtDegreeCalibrate.Text) * Math.PI / 180;
                 _port.Post(new SetTurnCalibration(new SetTurnCalibrationRequest(radians)));
                 btnTurnCalibrate.Enabled = true;
-                btnTurnCalibrate.Text = "Begin Turn";
+                btnTurnCalibrate.Text = "Begin Right";
                 btnTurnSubmit.Enabled = false;
                 txtDegreeCalibrate.Enabled = false;
             }
+        }
+        private void btnLeftSubmit_Click(object sender, EventArgs e)
+        {
+            if (txtLeftCalibrate.Text.Length > 0)
+            {
+                double radians = double.Parse(txtLeftCalibrate.Text) * Math.PI / 180;
+                _port.Post(new SetLeftCalibration(new SetLeftCalibrationRequest(radians)));
+                btnCalibrateLeft.Enabled = true;
+                btnCalibrateLeft.Text = "Begin Left";
+                btnLeftSubmit.Enabled = false;
+                txtLeftCalibrate.Enabled = false;
+            }
+
         }
 
         private void btnWaypointTest_Click(object sender, EventArgs e)

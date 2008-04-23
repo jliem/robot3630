@@ -40,6 +40,10 @@ namespace Robotics.CoroBot.MotionController
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnLeftSubmit = new System.Windows.Forms.Button();
+            this.txtLeftCalibrate = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.btnCalibrateLeft = new System.Windows.Forms.Button();
             this.btnTurnSubmit = new System.Windows.Forms.Button();
             this.btnDriveSubmit = new System.Windows.Forms.Button();
             this.txtDegreeCalibrate = new System.Windows.Forms.TextBox();
@@ -58,15 +62,17 @@ namespace Robotics.CoroBot.MotionController
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.txtCurrY = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.txtCurrHeading = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
+            this.btnGo = new System.Windows.Forms.Button();
+            this.btnSetAsCurrent = new System.Windows.Forms.Button();
             this.txtDestY = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.txtDestX = new System.Windows.Forms.TextBox();
-            this.btnSetAsCurrent = new System.Windows.Forms.Button();
-            this.btnGo = new System.Windows.Forms.Button();
+            this.txtCurrHeading = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtCurrY = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -174,6 +180,10 @@ namespace Robotics.CoroBot.MotionController
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnLeftSubmit);
+            this.groupBox2.Controls.Add(this.txtLeftCalibrate);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.btnCalibrateLeft);
             this.groupBox2.Controls.Add(this.btnTurnSubmit);
             this.groupBox2.Controls.Add(this.btnDriveSubmit);
             this.groupBox2.Controls.Add(this.txtDegreeCalibrate);
@@ -184,10 +194,48 @@ namespace Robotics.CoroBot.MotionController
             this.groupBox2.Controls.Add(this.btnDriveCalibrate);
             this.groupBox2.Location = new System.Drawing.Point(12, 130);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(278, 83);
+            this.groupBox2.Size = new System.Drawing.Size(278, 111);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Calibration";
+            // 
+            // btnLeftSubmit
+            // 
+            this.btnLeftSubmit.Enabled = false;
+            this.btnLeftSubmit.Location = new System.Drawing.Point(191, 77);
+            this.btnLeftSubmit.Name = "btnLeftSubmit";
+            this.btnLeftSubmit.Size = new System.Drawing.Size(75, 23);
+            this.btnLeftSubmit.TabIndex = 18;
+            this.btnLeftSubmit.Text = "Submit Left";
+            this.btnLeftSubmit.UseVisualStyleBackColor = true;
+            this.btnLeftSubmit.Click += new System.EventHandler(this.btnLeftSubmit_Click);
+            // 
+            // txtLeftCalibrate
+            // 
+            this.txtLeftCalibrate.Enabled = false;
+            this.txtLeftCalibrate.Location = new System.Drawing.Point(142, 79);
+            this.txtLeftCalibrate.Name = "txtLeftCalibrate";
+            this.txtLeftCalibrate.Size = new System.Drawing.Size(44, 20);
+            this.txtLeftCalibrate.TabIndex = 17;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(87, 82);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(47, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "Degrees";
+            // 
+            // btnCalibrateLeft
+            // 
+            this.btnCalibrateLeft.Location = new System.Drawing.Point(6, 77);
+            this.btnCalibrateLeft.Name = "btnCalibrateLeft";
+            this.btnCalibrateLeft.Size = new System.Drawing.Size(75, 23);
+            this.btnCalibrateLeft.TabIndex = 15;
+            this.btnCalibrateLeft.Text = "Begin Left";
+            this.btnCalibrateLeft.UseVisualStyleBackColor = true;
+            this.btnCalibrateLeft.Click += new System.EventHandler(this.btnCalibrateLeft_Click);
             // 
             // btnTurnSubmit
             // 
@@ -196,7 +244,7 @@ namespace Robotics.CoroBot.MotionController
             this.btnTurnSubmit.Name = "btnTurnSubmit";
             this.btnTurnSubmit.Size = new System.Drawing.Size(75, 23);
             this.btnTurnSubmit.TabIndex = 14;
-            this.btnTurnSubmit.Text = "Submit Turn";
+            this.btnTurnSubmit.Text = "Submit Right";
             this.btnTurnSubmit.UseVisualStyleBackColor = true;
             this.btnTurnSubmit.Click += new System.EventHandler(this.btnTurnSubmit_Click);
             // 
@@ -251,7 +299,7 @@ namespace Robotics.CoroBot.MotionController
             this.btnTurnCalibrate.Name = "btnTurnCalibrate";
             this.btnTurnCalibrate.Size = new System.Drawing.Size(75, 23);
             this.btnTurnCalibrate.TabIndex = 8;
-            this.btnTurnCalibrate.Text = "Begin Turn";
+            this.btnTurnCalibrate.Text = "Begin Right";
             this.btnTurnCalibrate.UseVisualStyleBackColor = true;
             this.btnTurnCalibrate.Click += new System.EventHandler(this.btnTurnCalibrate_Click);
             // 
@@ -267,7 +315,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             // btnWaypointTest
             // 
-            this.btnWaypointTest.Location = new System.Drawing.Point(18, 229);
+            this.btnWaypointTest.Location = new System.Drawing.Point(478, 190);
             this.btnWaypointTest.Name = "btnWaypointTest";
             this.btnWaypointTest.Size = new System.Drawing.Size(183, 23);
             this.btnWaypointTest.TabIndex = 2;
@@ -277,7 +325,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             // btnManualCalibrate
             // 
-            this.btnManualCalibrate.Location = new System.Drawing.Point(168, 273);
+            this.btnManualCalibrate.Location = new System.Drawing.Point(480, 158);
             this.btnManualCalibrate.Name = "btnManualCalibrate";
             this.btnManualCalibrate.Size = new System.Drawing.Size(183, 23);
             this.btnManualCalibrate.TabIndex = 3;
@@ -287,7 +335,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             // txtTurnEncoder
             // 
-            this.txtTurnEncoder.Location = new System.Drawing.Point(117, 299);
+            this.txtTurnEncoder.Location = new System.Drawing.Point(429, 184);
             this.txtTurnEncoder.Name = "txtTurnEncoder";
             this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtTurnEncoder.TabIndex = 18;
@@ -295,7 +343,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             // txtDistanceEncoder
             // 
-            this.txtDistanceEncoder.Location = new System.Drawing.Point(116, 269);
+            this.txtDistanceEncoder.Location = new System.Drawing.Point(428, 154);
             this.txtDistanceEncoder.Name = "txtDistanceEncoder";
             this.txtDistanceEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtDistanceEncoder.TabIndex = 17;
@@ -304,16 +352,16 @@ namespace Robotics.CoroBot.MotionController
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 302);
+            this.label5.Location = new System.Drawing.Point(329, 187);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.Size = new System.Drawing.Size(53, 13);
             this.label5.TabIndex = 16;
-            this.label5.Text = "360 deg. encoder:";
+            this.label5.Text = "360 Right";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 273);
+            this.label6.Location = new System.Drawing.Point(329, 158);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(69, 13);
             this.label6.TabIndex = 15;
@@ -365,37 +413,25 @@ namespace Robotics.CoroBot.MotionController
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Coordinate Control";
             // 
-            // txtCurrY
+            // btnGo
             // 
-            this.txtCurrY.Location = new System.Drawing.Point(101, 34);
-            this.txtCurrY.Name = "txtCurrY";
-            this.txtCurrY.Size = new System.Drawing.Size(44, 20);
-            this.txtCurrY.TabIndex = 13;
+            this.btnGo.Location = new System.Drawing.Point(51, 89);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(75, 23);
+            this.btnGo.TabIndex = 20;
+            this.btnGo.Text = "Go";
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
             // 
-            // label9
+            // btnSetAsCurrent
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(111, 18);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(14, 13);
-            this.label9.TabIndex = 12;
-            this.label9.Text = "Y";
-            // 
-            // txtCurrHeading
-            // 
-            this.txtCurrHeading.Location = new System.Drawing.Point(151, 34);
-            this.txtCurrHeading.Name = "txtCurrHeading";
-            this.txtCurrHeading.Size = new System.Drawing.Size(44, 20);
-            this.txtCurrHeading.TabIndex = 15;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(148, 18);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(47, 13);
-            this.label10.TabIndex = 14;
-            this.label10.Text = "Heading";
+            this.btnSetAsCurrent.Location = new System.Drawing.Point(184, 58);
+            this.btnSetAsCurrent.Name = "btnSetAsCurrent";
+            this.btnSetAsCurrent.Size = new System.Drawing.Size(98, 23);
+            this.btnSetAsCurrent.TabIndex = 20;
+            this.btnSetAsCurrent.Text = "Set as Current";
+            this.btnSetAsCurrent.UseVisualStyleBackColor = true;
+            this.btnSetAsCurrent.Click += new System.EventHandler(this.btnSetAsCurrent_Click);
             // 
             // txtDestY
             // 
@@ -420,31 +456,62 @@ namespace Robotics.CoroBot.MotionController
             this.txtDestX.Size = new System.Drawing.Size(44, 20);
             this.txtDestX.TabIndex = 17;
             // 
-            // btnSetAsCurrent
+            // txtCurrHeading
             // 
-            this.btnSetAsCurrent.Location = new System.Drawing.Point(184, 58);
-            this.btnSetAsCurrent.Name = "btnSetAsCurrent";
-            this.btnSetAsCurrent.Size = new System.Drawing.Size(98, 23);
-            this.btnSetAsCurrent.TabIndex = 20;
-            this.btnSetAsCurrent.Text = "Set as Current";
-            this.btnSetAsCurrent.UseVisualStyleBackColor = true;
-            this.btnSetAsCurrent.Click += new System.EventHandler(this.btnSetAsCurrent_Click);
+            this.txtCurrHeading.Location = new System.Drawing.Point(151, 34);
+            this.txtCurrHeading.Name = "txtCurrHeading";
+            this.txtCurrHeading.Size = new System.Drawing.Size(44, 20);
+            this.txtCurrHeading.TabIndex = 15;
             // 
-            // btnGo
+            // label10
             // 
-            this.btnGo.Location = new System.Drawing.Point(51, 89);
-            this.btnGo.Name = "btnGo";
-            this.btnGo.Size = new System.Drawing.Size(75, 23);
-            this.btnGo.TabIndex = 20;
-            this.btnGo.Text = "Go";
-            this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(148, 18);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "Heading";
+            // 
+            // txtCurrY
+            // 
+            this.txtCurrY.Location = new System.Drawing.Point(101, 34);
+            this.txtCurrY.Name = "txtCurrY";
+            this.txtCurrY.Size = new System.Drawing.Size(44, 20);
+            this.txtCurrY.TabIndex = 13;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(111, 18);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "Y";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(429, 212);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(44, 20);
+            this.textBox1.TabIndex = 21;
+            this.textBox1.Text = "0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(329, 215);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(46, 13);
+            this.label12.TabIndex = 20;
+            this.label12.Text = "360 Left";
             // 
             // MotionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(730, 333);
+            this.ClientSize = new System.Drawing.Size(730, 281);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label12);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.txtTurnEncoder);
             this.Controls.Add(this.txtDistanceEncoder);
@@ -512,5 +579,11 @@ namespace Robotics.CoroBot.MotionController
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtDestX;
         private System.Windows.Forms.Button btnGo;
+        private System.Windows.Forms.Button btnLeftSubmit;
+        private System.Windows.Forms.TextBox txtLeftCalibrate;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button btnCalibrateLeft;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label12;
     }
 }
