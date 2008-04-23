@@ -114,6 +114,7 @@
     <Compile Include="MotionForm.Designer.cs">
       <DependentUpon>MotionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Vector2.cs" />
     <AppDesigner Include="Properties" />
   </ItemGroup>
   <ItemGroup>

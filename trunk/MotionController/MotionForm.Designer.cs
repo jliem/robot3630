@@ -54,8 +54,22 @@ namespace Robotics.CoroBot.MotionController
             this.txtDistanceEncoder = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.txtCurrX = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txtCurrY = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtCurrHeading = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtDestY = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtDestX = new System.Windows.Forms.TextBox();
+            this.btnSetAsCurrent = new System.Windows.Forms.Button();
+            this.btnGo = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -305,11 +319,133 @@ namespace Robotics.CoroBot.MotionController
             this.label6.TabIndex = 15;
             this.label6.Text = "1 m encoder:";
             // 
+            // txtCurrX
+            // 
+            this.txtCurrX.Location = new System.Drawing.Point(51, 34);
+            this.txtCurrX.Name = "txtCurrX";
+            this.txtCurrX.Size = new System.Drawing.Size(44, 20);
+            this.txtCurrX.TabIndex = 11;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 37);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 13);
+            this.label7.TabIndex = 10;
+            this.label7.Text = "Current:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(61, 18);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "X";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnGo);
+            this.groupBox3.Controls.Add(this.btnSetAsCurrent);
+            this.groupBox3.Controls.Add(this.txtDestY);
+            this.groupBox3.Controls.Add(this.label11);
+            this.groupBox3.Controls.Add(this.txtDestX);
+            this.groupBox3.Controls.Add(this.txtCurrHeading);
+            this.groupBox3.Controls.Add(this.label10);
+            this.groupBox3.Controls.Add(this.txtCurrY);
+            this.groupBox3.Controls.Add(this.label7);
+            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.txtCurrX);
+            this.groupBox3.Controls.Add(this.label8);
+            this.groupBox3.Location = new System.Drawing.Point(327, 12);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(288, 121);
+            this.groupBox3.TabIndex = 19;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Coordinate Control";
+            // 
+            // txtCurrY
+            // 
+            this.txtCurrY.Location = new System.Drawing.Point(101, 34);
+            this.txtCurrY.Name = "txtCurrY";
+            this.txtCurrY.Size = new System.Drawing.Size(44, 20);
+            this.txtCurrY.TabIndex = 13;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(111, 18);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(14, 13);
+            this.label9.TabIndex = 12;
+            this.label9.Text = "Y";
+            // 
+            // txtCurrHeading
+            // 
+            this.txtCurrHeading.Location = new System.Drawing.Point(151, 34);
+            this.txtCurrHeading.Name = "txtCurrHeading";
+            this.txtCurrHeading.Size = new System.Drawing.Size(44, 20);
+            this.txtCurrHeading.TabIndex = 15;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(148, 18);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "Heading";
+            // 
+            // txtDestY
+            // 
+            this.txtDestY.Location = new System.Drawing.Point(101, 60);
+            this.txtDestY.Name = "txtDestY";
+            this.txtDestY.Size = new System.Drawing.Size(44, 20);
+            this.txtDestY.TabIndex = 18;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 63);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(32, 13);
+            this.label11.TabIndex = 16;
+            this.label11.Text = "Dest:";
+            // 
+            // txtDestX
+            // 
+            this.txtDestX.Location = new System.Drawing.Point(51, 60);
+            this.txtDestX.Name = "txtDestX";
+            this.txtDestX.Size = new System.Drawing.Size(44, 20);
+            this.txtDestX.TabIndex = 17;
+            // 
+            // btnSetAsCurrent
+            // 
+            this.btnSetAsCurrent.Location = new System.Drawing.Point(184, 58);
+            this.btnSetAsCurrent.Name = "btnSetAsCurrent";
+            this.btnSetAsCurrent.Size = new System.Drawing.Size(98, 23);
+            this.btnSetAsCurrent.TabIndex = 20;
+            this.btnSetAsCurrent.Text = "Set as Current";
+            this.btnSetAsCurrent.UseVisualStyleBackColor = true;
+            this.btnSetAsCurrent.Click += new System.EventHandler(this.btnSetAsCurrent_Click);
+            // 
+            // btnGo
+            // 
+            this.btnGo.Location = new System.Drawing.Point(51, 89);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(75, 23);
+            this.btnGo.TabIndex = 20;
+            this.btnGo.Text = "Go";
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            // 
             // MotionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(419, 427);
+            this.ClientSize = new System.Drawing.Size(730, 333);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.txtTurnEncoder);
             this.Controls.Add(this.txtDistanceEncoder);
             this.Controls.Add(this.btnManualCalibrate);
@@ -324,10 +460,13 @@ namespace Robotics.CoroBot.MotionController
             this.Name = "MotionForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Motion Controller";
+            this.Load += new System.EventHandler(this.MotionForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -360,5 +499,18 @@ namespace Robotics.CoroBot.MotionController
         private System.Windows.Forms.TextBox txtDistanceEncoder;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtCurrX;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox txtCurrHeading;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox txtCurrY;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btnSetAsCurrent;
+        private System.Windows.Forms.TextBox txtDestY;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox txtDestX;
+        private System.Windows.Forms.Button btnGo;
     }
 }
