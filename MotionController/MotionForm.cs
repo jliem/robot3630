@@ -129,7 +129,7 @@ namespace Robotics.CoroBot.MotionController
         private void btnWaypointTest_Click(object sender, EventArgs e)
         {
             btnWaypointTest.Enabled = false;
-            _port.Post(new BeginWaypointTest(new BeginWaypointTestRequest()));
+            _port.Post(new BeginWaypoint(new BeginWaypointRequest()));
             
         }
 
@@ -138,6 +138,28 @@ namespace Robotics.CoroBot.MotionController
             _port.Post(new SetManualCalibration(new SetManualCalibrationRequest(double.Parse(txtDistanceEncoder.Text),
                 double.Parse(txtTurnEncoder.Text))));
             MessageBox.Show("Manual calibration done");
+        }
+
+        private void MotionForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSetAsCurrent_Click(object sender, EventArgs e)
+        {
+            txtCurrX.Text = txtDestX.Text;
+            txtCurrY.Text = txtDestY.Text;
+        }
+
+        private void btnGo_Click(object sender, EventArgs e)
+        {
+            Vector2 prevWaypoint = new Vector2(double.Parse(txtCurrX.Text), double.Parse(txtCurrY.Text));
+            double prevHeading = double.Parse(txtCurrHeading.Text) * Math.PI / 180;
+
+            Vector2 point = new Vector2(double.Parse(txtDestX.Text), double.Parse(txtDestY.Text));
+
+            _port.Post(new BeginWaypoint(new BeginWaypointRequest(prevWaypoint, prevHeading,
+                point)));
         }
     }
 }

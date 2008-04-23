@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using W3C.Soap;
 using motioncontroller = Robotics.CoroBot.MotionController;
 
-
 namespace Robotics.CoroBot.MotionController
 {
     
@@ -80,7 +79,7 @@ namespace Robotics.CoroBot.MotionController
         Turn,
         BeginCalibrateDrive,
         BeginCalibrateTurn,
-        BeginWaypointTest,
+        BeginWaypoint,
         SetDriveCalibration,
         SetTurnCalibration,
         SetManualCalibration,
@@ -132,11 +131,11 @@ namespace Robotics.CoroBot.MotionController
         }
     }
 
-    public class BeginWaypointTest : Update<BeginWaypointTestRequest, PortSet<DefaultUpdateResponseType, Fault>>
+    public class BeginWaypoint : Update<BeginWaypointRequest, PortSet<DefaultUpdateResponseType, Fault>>
     {
-        public BeginWaypointTest() { }
+        public BeginWaypoint() { }
 
-        public BeginWaypointTest(BeginWaypointTestRequest body)
+        public BeginWaypoint(BeginWaypointRequest body)
             : base(body)
         {
 
@@ -243,10 +242,33 @@ namespace Robotics.CoroBot.MotionController
     }
 
     [DataContract]
-    public class BeginWaypointTestRequest
+    public class BeginWaypointRequest
     {
-        public BeginWaypointTestRequest() { }
+        private LinkedList<Vector2> _waypoints;
+        public LinkedList<Vector2> Waypoints { get { return _waypoints; } set { _waypoints = value; } }
+
+        private Vector2 _prevWaypoint;
+        public Vector2 PrevWaypoint { get { return _prevWaypoint; } set { _prevWaypoint = value; } }
+
+        private double _prevHeading;
+        public double PrevHeading { get { return _prevHeading; } set { _prevHeading= value; } }
+
+        public BeginWaypointRequest() { }
+
+        public BeginWaypointRequest(Vector2 prevWaypoint, double prevHeading, Vector2 point)
+            : this(prevWaypoint, prevHeading, new LinkedList<Vector2>())
+        {
+            Waypoints.AddLast(point);
+        }
+
+        public BeginWaypointRequest(Vector2 prevWaypoint, double prevHeading, LinkedList<Vector2> waypoints)
+        {
+            PrevWaypoint = prevWaypoint;
+            PrevHeading = prevHeading;
+            Waypoints = waypoints;
+        }
     }
+
 
     [DataContract]
     public class SetDriveCalibrationRequest

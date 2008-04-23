@@ -47,7 +47,11 @@ namespace Robotics.CoroBot.MotionController
         private const double DRIVE_POWER = 0.6;
         private const double ROTATE_POWER = 0.2;
 
+        private const bool USE_FAKE_ENCODER = false;
+
         private bool followingWaypoints = false;
+        private bool pendingDrive = false;
+
         private LinkedList<Vector2> waypoints;
         private Vector2 prevWaypoint;
         private double prevHeading;
@@ -95,7 +99,7 @@ namespace Robotics.CoroBot.MotionController
             encoderTimer.Elapsed += new ElapsedEventHandler(EncoderOnTimedEvent);
 
             encoderTimer.Interval = 1000;
-            encoderTimer.Enabled = true;
+            encoderTimer.Enabled = USE_FAKE_ENCODER;
 
             motorTimer = new System.Timers.Timer();
             motorTimer.Elapsed += new ElapsedEventHandler(MotorOnTimedEvent);
@@ -196,6 +200,8 @@ namespace Robotics.CoroBot.MotionController
                 return;
             }
 
+            followingWaypoints = true;
+
             Vector2 driveVector = waypoints.First.Value.Subtract(prevWaypoint);
             amountToDrive = driveVector.Norm;
             amountToTurn = driveVector.Angle - prevHeading;
@@ -203,20 +209,24 @@ namespace Robotics.CoroBot.MotionController
             if (amountToTurn > Math.PI) amountToTurn -= (2 * Math.PI);
             //amountToTurn = GetWheelTurnDistance(amountToTurn);
 
-            if (amountToTurn > 0)
+            Console.WriteLine("Robot is at " + prevWaypoint.ToString() + ", facing " + ToDegrees(prevHeading));
+            Console.WriteLine("Robot needs to turn " + ToDegrees(amountToTurn));
+
+            // Reduce by 10 percent
+            amountToTurn *= .9;
+
+            if (amountToTurn != 0)
             {
                 //SendTurnLeftMessage();
                 _mainPort.Post(new Turn(new TurnRequest(amountToTurn, ROTATE_POWER)));
-            }
-            else if (amountToTurn < 0)
-            {
-                //SendTurnRightMessage();
-                _mainPort.Post(new Turn(new TurnRequest(amountToTurn, ROTATE_POWER)));
+
+                amountToTurn = 0;
             }
             else
             {
                 //SendDriveForwardMessage();
                 _mainPort.Post(new Drive(new DriveRequest(amountToDrive, DRIVE_POWER)));
+                amountToDrive = 0;
             }
         }
 
@@ -295,12 +305,24 @@ namespace Robotics.CoroBot.MotionController
 
             if (followingWaypoints && waypoints.Count > 0)
             {
-                BeginNextWaypoint();
-                prevHeading = waypoints.First.Value.Subtract(prevWaypoint).Angle;
-                prevWaypoint = waypoints.First.Value;
 
-                Console.WriteLine("Arrived at " + prevWaypoint.X + ", " + prevWaypoint.Y);
-                waypoints.RemoveFirst();
+                if (amountToDrive > 0)
+                {
+                    pendingDrive = true;
+                }
+                else
+                {
+                    pendingDrive = false;
+                    // The last waypoint was complete, remove it and see if there are any more
+                    prevHeading = waypoints.First.Value.Subtract(prevWaypoint).Angle;
+                    prevWaypoint = waypoints.First.Value;
+
+                    Console.WriteLine("Arrived at " + prevWaypoint.X + ", " + prevWaypoint.Y);
+                    waypoints.RemoveFirst();
+
+
+                    BeginNextWaypoint();
+                }
             }
         }
 
@@ -319,9 +341,17 @@ namespace Robotics.CoroBot.MotionController
 
         private void EncoderHandler(cbencoder.Replace notification)
         {
-            int encoderValue = notification.Body.LeftValue;
+            int encoderValue = 0;
 
-            //int encoderValue = this.GetFakeEncoderValue();
+            if (USE_FAKE_ENCODER)
+            {
+                encoderValue = this.GetFakeEncoderValue();
+            }
+            else 
+            {
+                encoderValue = notification.Body.LeftValue;
+            }
+
 
             int encoderChange = Math.Abs(encoderValue - oldEncoderValue);
 
@@ -333,7 +363,7 @@ namespace Robotics.CoroBot.MotionController
             //Console.WriteLine("Encoder countdown is " + _state.EncoderCountdown);
             //Console.WriteLine("Encoder calibration is " + _state.EncoderCalibration);
 
-            oldEncoderValue = notification.Body.LeftValue;
+            oldEncoderValue = encoderValue;
 
             _state.EncoderCountdown -= encoderChange;
             _state.EncoderCalibration += encoderChange;
@@ -342,6 +372,22 @@ namespace Robotics.CoroBot.MotionController
             {
                 case DrivingStates.Stopped:
                     SendStopMessage();
+
+
+                    if (amountToDrive > 0)
+                    {
+                        if (pendingDrive)
+                        {
+                            // We finished turning, now need to drive straight to destination
+                            _mainPort.Post(new Drive(new DriveRequest(amountToDrive, DRIVE_POWER)));
+                            amountToDrive = 0;
+                        }
+                        else
+                        {
+                            pendingDrive = false;
+                        }
+                    }
+
                     break;
                 case DrivingStates.MovingForward:
 
@@ -527,9 +573,14 @@ namespace Robotics.CoroBot.MotionController
         }
 
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
-        public IEnumerator<ITask> BeginWaypointTestHandler(BeginWaypointTest calibrate)
+        public IEnumerator<ITask> BeginWaypointHandler(BeginWaypoint calibrate)
         {
-            Console.WriteLine("Beginning waypoint test");
+            Console.WriteLine("Beginning waypoint navigation");
+            prevWaypoint = calibrate.Body.PrevWaypoint;
+            prevHeading = calibrate.Body.PrevHeading;
+
+            waypoints = calibrate.Body.Waypoints;
+
             BeginNextWaypoint();
 
             yield break;
@@ -590,35 +641,9 @@ namespace Robotics.CoroBot.MotionController
             yield break;
         }
 
-
-        private class Vector2
+        public double ToDegrees(double radians)
         {
-            private double x, y;
-            public double X { get { return x; } set { x = value; } }
-            public double Y { get { return y; } set { y = value; } }
-            public double Norm { get { return Math.Sqrt(x * x + y * y); } }
-            public double Angle { get { return Math.Atan2(y, x); } }
-
-            public Vector2 Clone()
-            {
-                return new Vector2(x, y);
-            }
-
-            public Vector2 Add(Vector2 v)
-            {
-                return new Vector2(x + v.X, y + v.Y);
-            }
-
-            public Vector2 Subtract(Vector2 v)
-            {
-                return new Vector2(x - v.X, y - v.Y);
-            }
-
-            public Vector2(double x, double y)
-            {
-                this.x = x;
-                this.y = y;
-            }
+            return radians / Math.PI * 180;
         }
     }
 
