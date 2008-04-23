@@ -1,0 +1,1 @@
+bin\dsshost /p:50000 /t:50001 /m:"bin/MotionController.manifest.xml"
