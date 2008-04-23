@@ -71,7 +71,7 @@ namespace Robotics.CoroBot.MotionController
             this.label10 = new System.Windows.Forms.Label();
             this.txtCurrY = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtLeftEncoder = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -339,7 +339,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtTurnEncoder.Name = "txtTurnEncoder";
             this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtTurnEncoder.TabIndex = 18;
-            this.txtTurnEncoder.Text = "2200";
+            this.txtTurnEncoder.Text = "3825";
             // 
             // txtDistanceEncoder
             // 
@@ -488,13 +488,13 @@ namespace Robotics.CoroBot.MotionController
             this.label9.TabIndex = 12;
             this.label9.Text = "Y";
             // 
-            // textBox1
+            // txtLeftEncoder
             // 
-            this.textBox1.Location = new System.Drawing.Point(429, 212);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(44, 20);
-            this.textBox1.TabIndex = 21;
-            this.textBox1.Text = "0";
+            this.txtLeftEncoder.Location = new System.Drawing.Point(429, 212);
+            this.txtLeftEncoder.Name = "txtLeftEncoder";
+            this.txtLeftEncoder.Size = new System.Drawing.Size(44, 20);
+            this.txtLeftEncoder.TabIndex = 21;
+            this.txtLeftEncoder.Text = "10258";
             // 
             // label12
             // 
@@ -510,7 +510,7 @@ namespace Robotics.CoroBot.MotionController
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(730, 281);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtLeftEncoder);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.txtTurnEncoder);
@@ -583,7 +583,7 @@ namespace Robotics.CoroBot.MotionController
         private System.Windows.Forms.TextBox txtLeftCalibrate;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button btnCalibrateLeft;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtLeftEncoder;
         private System.Windows.Forms.Label label12;
     }
 }

@@ -331,12 +331,16 @@ namespace Robotics.CoroBot.MotionController
         private double _turnEncoder;
         public double TurnEncoder { get { return _turnEncoder; } set { _turnEncoder = value; } }
 
+        private double _turnLeftEncoder;
+        public double TurnLeftEncoder { get { return _turnLeftEncoder; } set { _turnLeftEncoder = value; } }
+
         public SetManualCalibrationRequest() { }
 
-        public SetManualCalibrationRequest(double distanceEncoder, double turnEncoder)
+        public SetManualCalibrationRequest(double distanceEncoder, double turnEncoder, double turnLeftEncoder)
         {
             DistanceEncoder = distanceEncoder;
             TurnEncoder = turnEncoder;
+            TurnLeftEncoder = turnLeftEncoder;
         }
     }
 
