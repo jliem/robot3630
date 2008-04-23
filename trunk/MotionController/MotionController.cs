@@ -45,9 +45,9 @@ namespace Robotics.CoroBot.MotionController
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
         private const double DRIVE_POWER = 0.6;
-        private const double ROTATE_POWER = 0.2;
+        private const double ROTATE_POWER = 0.5;
 
-        private const bool USE_FAKE_ENCODER = false;
+        private const bool USE_FAKE_ENCODER = true;
 
         private bool followingWaypoints = false;
         private bool pendingDrive = false;
@@ -132,7 +132,7 @@ namespace Robotics.CoroBot.MotionController
         {
             int encoderValue = 0;
 
-            String robotIP = "128.61.18.148";
+            String robotIP = "128.61.16.208";
 
             WebClient client = new WebClient();
             String url = @"http://" + robotIP + @":50000/corobotmotorencoders";
@@ -146,8 +146,8 @@ namespace Robotics.CoroBot.MotionController
 
                     //<LeftValue>0</LeftValue>
 
-                    String startText = @"<LeftValue>";
-                    String endText = @"</LeftValue>";
+                    String startText = @"<RightValue>";
+                    String endText = @"</RightValue>";
 
                     int start = line.IndexOf(startText);
 
@@ -362,6 +362,7 @@ namespace Robotics.CoroBot.MotionController
             //Console.WriteLine("Right distance is " + notification.Body.RightDistance);
             //Console.WriteLine("Encoder countdown is " + _state.EncoderCountdown);
             //Console.WriteLine("Encoder calibration is " + _state.EncoderCalibration);
+            //Console.WriteLine("Encoder: " + encoderValue);
 
             oldEncoderValue = encoderValue;
 
@@ -437,6 +438,9 @@ namespace Robotics.CoroBot.MotionController
                     break;
                 case DrivingStates.CalibratingTurn:
                     SendTurnRightMessage();
+                    break;
+                case DrivingStates.CalibratingLeftTurn:
+                    SendTurnLeftMessage();
                     break;
                 case DrivingStates.TurningLeft:
 
@@ -530,16 +534,18 @@ namespace Robotics.CoroBot.MotionController
             _state.Power = ROTATE_POWER;
 
             _state.EncoderCalibration = 0;
-            _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
+            
 
             Console.WriteLine("Encoder countdown set to " + _state.EncoderCountdown);
 
             if (turn.Body.Radians > 0)
             {
+                _state.EncoderCountdown = _state.TurningLeftCalibration * Math.Abs(turn.Body.Radians);
                 _state.DrivingState = DrivingStates.TurningLeft;
             }
             else
             {
+                _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
                 _state.DrivingState = DrivingStates.TurningRight;
             }
 
@@ -569,6 +575,15 @@ namespace Robotics.CoroBot.MotionController
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingTurn;
 
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> BeginCalibrateLeftHandler(BeginCalibrateLeft calibrate)
+        {
+            _state.Power = ROTATE_POWER;
+            _state.EncoderCalibration = 0;
+            _state.DrivingState = DrivingStates.CalibratingLeftTurn;
             yield break;
         }
 
@@ -626,6 +641,16 @@ namespace Robotics.CoroBot.MotionController
     " and turn was " + (calibrate.Body.Radians * 180 / 3.14) + ", so turn set to " + _state.TurningCalibration);
 
 
+            yield break;
+        }
+
+        [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
+        public IEnumerator<ITask> SetLeftCalibrationHandler(SetLeftCalibration calibrate)
+        {
+            _state.TurningLeftCalibration = _state.EncoderCalibration / calibrate.Body.Radians;
+
+            Console.WriteLine("Finished turn left calibration: encoderCalib was " + _state.EncoderCalibration +
+    " and turn was " + (calibrate.Body.Radians * 180 / 3.14) + ", so left turn set to " + _state.TurningLeftCalibration);
             yield break;
         }
         

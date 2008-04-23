@@ -33,7 +33,7 @@ namespace Robotics.CoroBot.MotionController
     }
 
     [DataContract]
-    public enum DrivingStates { Stopped, MovingForward, MovingBackward, CalibratingDrive, CalibratingTurn, TurningLeft, TurningRight }
+    public enum DrivingStates { Stopped, MovingForward, MovingBackward, CalibratingDrive, CalibratingTurn, CalibratingLeftTurn, TurningLeft, TurningRight }
     
     /// <summary>
     /// The MotionController State
@@ -43,6 +43,7 @@ namespace Robotics.CoroBot.MotionController
     {
         private double _distanceCalibration;
         private double _turningCalibration;
+        private double _turningLeftCalibration;
         private DrivingStates _drivingState;
         private double _encoderCountdown;
         private double _encoderCalibration;
@@ -53,6 +54,9 @@ namespace Robotics.CoroBot.MotionController
 
         [DataMember]
         public double TurningCalibration { get { return _turningCalibration; } set { _turningCalibration = value; } }
+
+        [DataMember]
+        public double TurningLeftCalibration { get { return _turningLeftCalibration; } set { _turningLeftCalibration = value; } }
 
         [DataMember]
         public DrivingStates DrivingState { get { return _drivingState; } set { _drivingState = value; } }
@@ -79,9 +83,11 @@ namespace Robotics.CoroBot.MotionController
         Turn,
         BeginCalibrateDrive,
         BeginCalibrateTurn,
+        BeginCalibrateLeft,
         BeginWaypoint,
         SetDriveCalibration,
         SetTurnCalibration,
+        SetLeftCalibration,
         SetManualCalibration,
         Stop>
     {
@@ -131,6 +137,17 @@ namespace Robotics.CoroBot.MotionController
         }
     }
 
+    public class BeginCalibrateLeft : Update<BeginCalibrateLeftRequest, PortSet<DefaultUpdateResponseType, Fault>>
+    {
+        public BeginCalibrateLeft() { }
+
+        public BeginCalibrateLeft(BeginCalibrateLeftRequest body)
+            : base(body)
+        {
+
+        }
+    }
+
     public class BeginWaypoint : Update<BeginWaypointRequest, PortSet<DefaultUpdateResponseType, Fault>>
     {
         public BeginWaypoint() { }
@@ -169,6 +186,17 @@ namespace Robotics.CoroBot.MotionController
         public SetTurnCalibration() { }
 
         public SetTurnCalibration(SetTurnCalibrationRequest body)
+            : base(body)
+        {
+
+        }
+    }
+
+    public class SetLeftCalibration : Update<SetLeftCalibrationRequest, PortSet<DefaultUpdateResponseType, Fault>>
+    {
+        public SetLeftCalibration() { }
+
+        public SetLeftCalibration(SetLeftCalibrationRequest body)
             : base(body)
         {
 
@@ -239,6 +267,12 @@ namespace Robotics.CoroBot.MotionController
     public class BeginCalibrateTurnRequest
     {
         public BeginCalibrateTurnRequest() { }
+    }
+
+    [DataContract]
+    public class BeginCalibrateLeftRequest
+    {
+        public BeginCalibrateLeftRequest() { }
     }
 
     [DataContract]
@@ -315,6 +349,20 @@ namespace Robotics.CoroBot.MotionController
         public SetTurnCalibrationRequest() { }
 
         public SetTurnCalibrationRequest(double radians)
+        {
+            Radians = radians;
+        }
+    }
+
+    [DataContract]
+    public class SetLeftCalibrationRequest
+    {
+        private double _radians;
+        public double Radians { get { return _radians; } set { _radians = value; } }
+
+        public SetLeftCalibrationRequest() { }
+
+        public SetLeftCalibrationRequest(double radians)
         {
             Radians = radians;
         }
