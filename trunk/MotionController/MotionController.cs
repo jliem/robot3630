@@ -625,8 +625,10 @@ namespace Robotics.CoroBot.MotionController
             // 360 degrees
             _state.TurningCalibration = calibrate.Body.TurnEncoder / (2 * Math.PI);
 
+            _state.TurningLeftCalibration = calibrate.Body.TurnLeftEncoder / (2 * Math.PI);
+
             Console.WriteLine("Manual calibration: one meter set to " + _state.DistanceCalibration
-               + ", 360 degrees set to " + _state.TurningCalibration);
+               + "\n360 degrees Right set to " + _state.TurningCalibration + "\n360 degrees Left set to " + _state.TurningLeftCalibration);
 
             yield break;
         }

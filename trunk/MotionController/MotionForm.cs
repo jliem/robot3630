@@ -165,7 +165,7 @@ namespace Robotics.CoroBot.MotionController
         private void btnManualCalibrate_Click(object sender, EventArgs e)
         {
             _port.Post(new SetManualCalibration(new SetManualCalibrationRequest(double.Parse(txtDistanceEncoder.Text),
-                double.Parse(txtTurnEncoder.Text))));
+                double.Parse(txtTurnEncoder.Text), double.Parse(txtLeftEncoder.Text))));
             MessageBox.Show("Manual calibration done");
         }
 
