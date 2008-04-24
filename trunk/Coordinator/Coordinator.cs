@@ -42,6 +42,7 @@ namespace Robotics.CoroBot.Coordinator
 
         public States state = States.Idle;
         public bool ready = false;
+        public float driveForwardDistance = .5F;
         public image.ImageProcessorResult imageResult = null;
         CoordinatorForm form = null;
         List<FoundFolder> visitedFolders = new List<FoundFolder>();
@@ -91,9 +92,10 @@ namespace Robotics.CoroBot.Coordinator
         private void Begin()
         {
             state = States.Lost;
-            TurnToLargestFolder();
+            FoundFolder largestFolder = TurnToLargestFolder();
+            visitedFolders.Add(largestFolder);
             CenterToFolder();
-            DriveToFolder()
+            DriveToFolder();
         }
 
         public void GetImage()
@@ -160,9 +162,29 @@ namespace Robotics.CoroBot.Coordinator
             return completed;
         }
 
-        public bool CenterToFolder()
+        public void DriveToFolder(){
+            int driveCount = 0;
+            while (true)
+            {
+                //If Drive returns false then stop driving forward
+                if (!DriveForward(driveForwardDistance))
+                {
+                    break;
+                }
+                driveCount++;
+                //If you move several times then increase travel distance..
+                //..Before centering again
+                if (driveCount >= 3)
+                {
+                    driveForwardDistance = 1;
+                }
+                CenterToFolder();
+            }
+        }
+
+        public image.Folder CenterToFolder()
         {
-            //Return true if  robot is +- OffsetThreshold degrees 
+            //Return the Folder if  robot is +- OffsetThreshold degrees 
             //from the center of the folder
             int OffsetThreshold = 3;
             GetImage();
@@ -181,7 +203,7 @@ namespace Robotics.CoroBot.Coordinator
                 //If Done
                 if (Math.Abs(bestOffset) <= OffsetThreshold)
                 {
-                    return true;
+                    return bestFolder;
                 }
                 //Otherwise Turn and try again
                 if (bestOffset < 0)
@@ -198,18 +220,16 @@ namespace Robotics.CoroBot.Coordinator
             //I didn't find any folders
             else
             {
-                return false;
+                return null;
             }
         }
 
         public void DriveToPoint(Point start, Point end)
         {
 
-
-
         }
 
-        private void TurnToLargestFolder()
+        private FoundFolder TurnToLargestFolder()
         {
             List<FoundFolder> folders = new List<FoundFolder>();
             int numTurns = 9;
@@ -246,7 +266,9 @@ namespace Robotics.CoroBot.Coordinator
                     }
                 }
                 TurnLeft(360 - largestFolder.Heading);
+                return largestFolder;
             }
+            return null;
         }
 
         public int GetHeadingOffset(int X)
