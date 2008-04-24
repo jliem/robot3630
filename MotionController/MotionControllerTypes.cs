@@ -18,14 +18,14 @@ using motioncontroller = Robotics.CoroBot.MotionController;
 
 namespace Robotics.CoroBot.MotionController
 {
-    
-    
+
+
     /// <summary>
     /// MotionController Contract class
     /// </summary>
     public sealed class Contract
     {
-        
+
         /// <summary>
         /// The Dss Service contract
         /// </summary>
@@ -34,7 +34,7 @@ namespace Robotics.CoroBot.MotionController
 
     [DataContract]
     public enum DrivingStates { Stopped, MovingForward, MovingBackward, CalibratingDrive, CalibratingTurn, CalibratingLeftTurn, TurningLeft, TurningRight }
-    
+
     /// <summary>
     /// The MotionController State
     /// </summary>
@@ -70,7 +70,7 @@ namespace Robotics.CoroBot.MotionController
         [DataMember]
         public double Power { get { return _power; } set { _power = value; } }
     }
-    
+
     /// <summary>
     /// MotionController Main Operations Port
     /// </summary>
@@ -205,7 +205,8 @@ namespace Robotics.CoroBot.MotionController
 
     public class Stop : Update<StopRequest, PortSet<DefaultUpdateResponseType, Fault>>
     {
-        public Stop() : base(new StopRequest())
+        public Stop()
+            : base(new StopRequest())
         {
 
         }
@@ -215,11 +216,9 @@ namespace Robotics.CoroBot.MotionController
     public class DriveRequest
     {
         private double _distance;
-        [DataMember]
         public double Distance { get { return _distance; } set { _distance = value; } }
 
         private double _power;
-        [DataMember]
         public double Power { get { return _power; } set { _power = value; } }
 
         public DriveRequest() { }
@@ -240,11 +239,9 @@ namespace Robotics.CoroBot.MotionController
     public class TurnRequest
     {
         private double _radians;
-        [DataMember]
         public double Radians { get { return _radians; } set { _radians = value; } }
 
         private double _power;
-        [DataMember]
         public double Power { get { return _power; } set { _power = value; } }
 
         public TurnRequest() { }
@@ -283,16 +280,13 @@ namespace Robotics.CoroBot.MotionController
     public class BeginWaypointRequest
     {
         private LinkedList<Vector2> _waypoints;
-        [DataMember]
         public LinkedList<Vector2> Waypoints { get { return _waypoints; } set { _waypoints = value; } }
 
         private Vector2 _prevWaypoint;
-        [DataMember]
         public Vector2 PrevWaypoint { get { return _prevWaypoint; } set { _prevWaypoint = value; } }
 
         private double _prevHeading;
-        [DataMember]
-        public double PrevHeading { get { return _prevHeading; } set { _prevHeading= value; } }
+        public double PrevHeading { get { return _prevHeading; } set { _prevHeading = value; } }
 
         public BeginWaypointRequest() { }
 
@@ -315,11 +309,9 @@ namespace Robotics.CoroBot.MotionController
     public class SetDriveCalibrationRequest
     {
         private double _distance;
-        [DataMember]
         public double Distance { get { return _distance; } set { _distance = value; } }
 
         private TimeSpan _timespan;
-        [DataMember]
         public TimeSpan CalibrateTimespan { get { return _timespan; } set { _timespan = value; } }
 
         public SetDriveCalibrationRequest() { }
@@ -335,15 +327,12 @@ namespace Robotics.CoroBot.MotionController
     public class SetManualCalibrationRequest
     {
         private double _distanceEncoder;
-        [DataMember]
         public double DistanceEncoder { get { return _distanceEncoder; } set { _distanceEncoder = value; } }
 
         private double _turnEncoder;
-        [DataMember]
         public double TurnEncoder { get { return _turnEncoder; } set { _turnEncoder = value; } }
 
         private double _turnLeftEncoder;
-        [DataMember]
         public double TurnLeftEncoder { get { return _turnLeftEncoder; } set { _turnLeftEncoder = value; } }
 
         public SetManualCalibrationRequest() { }
@@ -360,7 +349,6 @@ namespace Robotics.CoroBot.MotionController
     public class SetTurnCalibrationRequest
     {
         private double _radians;
-        [DataMember]
         public double Radians { get { return _radians; } set { _radians = value; } }
 
         public SetTurnCalibrationRequest() { }
@@ -375,7 +363,6 @@ namespace Robotics.CoroBot.MotionController
     public class SetLeftCalibrationRequest
     {
         private double _radians;
-        [DataMember]
         public double Radians { get { return _radians; } set { _radians = value; } }
 
         public SetLeftCalibrationRequest() { }
@@ -397,26 +384,28 @@ namespace Robotics.CoroBot.MotionController
     /// </summary>
     public class Get : Get<GetRequestType, PortSet<MotionControllerState, Fault>>
     {
-        
+
         /// <summary>
         /// MotionController Get Operation
         /// </summary>
         public Get()
         {
         }
-        
+
         /// <summary>
         /// MotionController Get Operation
         /// </summary>
-        public Get(Microsoft.Dss.ServiceModel.Dssp.GetRequestType body) : 
+        public Get(Microsoft.Dss.ServiceModel.Dssp.GetRequestType body)
+            :
                 base(body)
         {
         }
-        
+
         /// <summary>
         /// MotionController Get Operation
         /// </summary>
-        public Get(Microsoft.Dss.ServiceModel.Dssp.GetRequestType body, Microsoft.Ccr.Core.PortSet<MotionControllerState,W3C.Soap.Fault> responsePort) : 
+        public Get(Microsoft.Dss.ServiceModel.Dssp.GetRequestType body, Microsoft.Ccr.Core.PortSet<MotionControllerState, W3C.Soap.Fault> responsePort)
+            :
                 base(body, responsePort)
         {
         }
