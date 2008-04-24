@@ -177,25 +177,55 @@ namespace Robotics.CoroBot.Coordinator
             return completed;
         }
 
-        public void StartWaypoints(Coordinate previous, Coordinate current)
+        public void StartWaypoints(Coordinate current)
         {
-            PointF dest = null;
+            LinkedList<PointF> list = new LinkedList<PointF>();
+
+            PointF dest;
+            Console.WriteLine("Currently at (" + current.X + ", " + current.Y + ")");
+
+            bool inCorridorOne = false;
 
             // From the current, determine if we're in corridor 1 or 2
             if (current.X >= 20.2)
             {
                 // Corridor 1
+                Console.WriteLine("Currently in corridor 1");
                 dest = new PointF(21, (float)current.Y);
+                list.AddLast(dest);
+                list.AddLast(new PointF(21f, 3.5f));
 
+                inCorridorOne = true;
             }
             else
             {
-                dest = new PointF((float)current.X, 3);
+                Console.WriteLine("Currently in corridor 2");
+                dest = new PointF((float)current.X, 3.5f);
+                list.AddLast(dest);
+                list.AddLast(new PointF(7.49f, 3.5f));
             }
 
+            
+            // Done building, drive
+            PointF prev = new PointF((float)current.X, (float)current.Y);
+            double heading = current.Heading;
+
+            foreach (PointF p in list) {
+                Console.WriteLine("Moving from (" + prev.X + ", " + prev.Y + ") to ("
+                    + p.X + ", " + p.Y + ")");
+                DriveToPoint(prev, heading, p);
+                
+                heading = Math.Atan2(p.Y - prev.Y, p.X - prev.X);
+                heading = heading * 180 / Math.PI;
+
+                prev = p;
+            }
+
+            Console.WriteLine("All waypoints finished");
         }
 
-        public void DriveToFolder(){
+        public void DriveToFolder()
+        {
             int driveCount = 0;
             while (true)
             {
@@ -265,10 +295,27 @@ namespace Robotics.CoroBot.Coordinator
             }
         }
 
-        public void DriveToPoint(Point start, Point end)
+        public bool DriveToPoint(PointF start, double currHeading, PointF end)
         {
+            ready = false;
+            bool completed = true;
+            motion.BeginWaypointRequest waypointReq = new motion.BeginWaypointRequest();
+            waypointReq.PrevHeading = currHeading;
+            waypointReq.PrevWaypoint = start;
+            
 
+            Activate(Arbiter.Choice(_drivePort.BeginWaypoint(waypointReq),
+                delegate(DefaultUpdateResponseType result) { ready = true; },
+                delegate(Fault f) { completed = false; ready = true; }
+            ));
+            while (!ready)
+            {
+                Console.WriteLine("Sleeping");
+                Thread.Sleep(1000);
+            }
+            return completed;
         }
+
         private FoundFolder TurnToSecondLargestFolder()
         {
             List<FoundFolder> folders = new List<FoundFolder>();
