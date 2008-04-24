@@ -20,6 +20,7 @@ using System.Xml;
 using W3C.Soap;
 using project3 = Robotics.Project3;
 
+using motioncontroller = Robotics.CoroBot.MotionController;
 
 namespace Robotics.Project3
 {
@@ -44,6 +45,11 @@ namespace Robotics.Project3
         /// </summary>
         [ServicePort("/project3", AllowMultipleInstances=false)]
         private Project3Operations _mainPort = new Project3Operations();
+
+        // Partner with motion controller
+        //[Partner("MotionController", Contract = motioncontroller.Contract.Identifier,
+        //        CreationPolicy = PartnerCreationPolicy.UseExistingOrCreate)]
+        //motioncontroller.MotionControllerOperations _motionPort = new motioncontroller.MotionControllerOperations();
         
         /// <summary>
         /// Default Service Constructor
