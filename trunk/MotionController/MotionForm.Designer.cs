@@ -339,7 +339,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtTurnEncoder.Name = "txtTurnEncoder";
             this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtTurnEncoder.TabIndex = 18;
-            this.txtTurnEncoder.Text = "360";
+            this.txtTurnEncoder.Text = "640";
             // 
             // txtDistanceEncoder
             // 
@@ -347,7 +347,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtDistanceEncoder.Name = "txtDistanceEncoder";
             this.txtDistanceEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtDistanceEncoder.TabIndex = 17;
-            this.txtDistanceEncoder.Text = "240";
+            this.txtDistanceEncoder.Text = "190";
             // 
             // label5
             // 
@@ -495,7 +495,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtLeftEncoder.Name = "txtLeftEncoder";
             this.txtLeftEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtLeftEncoder.TabIndex = 21;
-            this.txtLeftEncoder.Text = "399";
+            this.txtLeftEncoder.Text = "630";
             // 
             // label12
             // 
