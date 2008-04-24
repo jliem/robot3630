@@ -3,15 +3,15 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D920362F-E689-4A01-BD95-7C83EBD85855}</ProjectGuid>
+    <ProjectGuid>{DCCAC746-1FA8-4F4D-9901-987D77FA98F7}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>Project3.Y2008.M04</AssemblyName>
-    <RootNamespace>Robotics.Project3</RootNamespace>
+    <AssemblyName>Coordinator.Y2008.M04</AssemblyName>
+    <RootNamespace>Robotics.CS3630</RootNamespace>
     <AssemblyOriginatorKeyFile>C:\Microsoft Robotics Studio (1.5)\samples\mrisamples.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
@@ -67,11 +67,19 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ccr.Adapters.WinForms, Version=1.5.507.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="DssRuntime">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MotionController.Y2008.M02.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d185a51f257aaa63, processorArchitecture=MSIL" />
+    <Reference Include="ImageProcessor.Y2008.M04.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=984c41a8958597ff, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MotionController.Y2008.M02.Proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=984c41a8958597ff, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="mscorlib">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -88,6 +96,9 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Xml">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -95,12 +106,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Project3.cs" />
-    <Compile Include="Project3Types.cs" />
+    <Compile Include="Coordinator.cs" />
+    <Compile Include="CoordinatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CoordinatorForm.Designer.cs">
+      <DependentUpon>CoordinatorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CoordinatorTypes.cs" />
     <AppDesigner Include="Properties" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Project3.manifest.xml" />
+    <Content Include="Coordinator.manifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CoordinatorForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CoordinatorForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
