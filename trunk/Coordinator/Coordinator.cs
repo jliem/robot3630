@@ -27,8 +27,8 @@ using Microsoft.Ccr.Adapters.WinForms;
 
 namespace Robotics.CoroBot.Coordinator
 {
-    
-    
+
+
     /// <summary>
     /// Implementation class for Coordinator
     /// </summary>
@@ -43,16 +43,16 @@ namespace Robotics.CoroBot.Coordinator
         public bool ready = false;
         public image.ImageProcessorResult imageResult = null;
         CoordinatorForm form = null;
-        
+
         /// <summary>
         /// _state
         /// </summary>
         private CoordinatorState _state = new CoordinatorState();
-        
+
         /// <summary>
         /// _main Port
         /// </summary>
-        [ServicePort("/coordinator", AllowMultipleInstances=false)]
+        [ServicePort("/coordinator", AllowMultipleInstances = false)]
         private CoordinatorOperations _mainPort = new CoordinatorOperations();
 
         [Partner("Image", Contract = image.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting, Optional = false)]
@@ -60,22 +60,23 @@ namespace Robotics.CoroBot.Coordinator
 
         [Partner("Motion", Contract = motion.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting, Optional = false)]
         private motion.MotionControllerOperations _drivePort = new motion.MotionControllerOperations();
-        
+
         /// <summary>
         /// Default Service Constructor
         /// </summary>
-        public CoordinatorService(DsspServiceCreationPort creationPort) : 
+        public CoordinatorService(DsspServiceCreationPort creationPort)
+            :
                 base(creationPort)
         {
         }
-        
+
         /// <summary>
         /// Service Start
         /// </summary>
         protected override void Start()
         {
-			base.Start();
-			// Add service specific initialization here.
+            base.Start();
+            // Add service specific initialization here.
             WinFormsServicePort.Post(new RunForm(CreateForm));
         }
 
@@ -85,7 +86,7 @@ namespace Robotics.CoroBot.Coordinator
             return form;
         }
 
-        private IEnumerator<ITask> Begin()
+        private void Begin()
         {
             state = States.Lost;
             TurnToLargestFolder();
@@ -93,61 +94,73 @@ namespace Robotics.CoroBot.Coordinator
 
         public void GetImage()
         {
-            Spawi
             ready = false;
+            Activate(Arbiter.Choice(_imagePort.Get(new GetRequestType()),
+                delegate(image.ImageProcessorResult result)
+                {
+                    ready = true;
+                    imageResult = result;
+                },
+                delegate(Fault f) { LogError(f); }
+            ));
             while (!ready)
             {
-                Activate(Arbiter.Choice(_imagePort.Get(),
-                    delegate(image.ImageProcessorResult result)
-                    {
-                        ready = true;
-                        imageResult = result;
-                    },
-                    delegate(Fault f) { LogError(f); }
-                ));
-                
+                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
             }
         }
 
         public void TurnRight(int degrees)
         {
             ready = false;
+            motion.TurnRequest req = new motion.TurnRequest();
+            req.Radians = -degrees * Math.PI / 180;
+            Activate(Arbiter.Choice(_drivePort.Turn(req),
+                delegate(DefaultUpdateResponseType result) { ready = true; },
+                delegate(Fault f) { LogError(f); }
+            ));
             while (!ready)
             {
-                motion.TurnRequest req = new motion.TurnRequest();
-                req.Radians = -degrees * Math.PI / 180;
-                Activate(Arbiter.Choice(_drivePort.Turn(req),
-                    delegate(DefaultUpdateResponseType result) { ready = true; },
-                    delegate(Fault f) { }
-                ));
+                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
             }
         }
 
         public void TurnLeft(int degrees)
         {
             ready = false;
+            bool sent = false;
             while (!ready)
             {
-                motion.TurnRequest req = new motion.TurnRequest();
-                req.Radians = degrees * Math.PI / 180;
-                Activate(Arbiter.Choice(_drivePort.Turn(req),
-                    delegate(DefaultUpdateResponseType result) { ready = true; },
-                    delegate(Fault f) { }
-                ));
+                if (!sent)
+                {
+                    motion.TurnRequest req = new motion.TurnRequest();
+                    req.Radians = degrees * Math.PI / 180;
+                    Activate(Arbiter.Choice(_drivePort.Turn(req),
+                        delegate(DefaultUpdateResponseType result) { ready = true; },
+                        delegate(Fault f) { }
+                    ));
+                    sent = true;
+                }
+                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
             }
         }
 
         public void DriveForward(float meters)
         {
             ready = false;
+            bool sent = false;
             while (!ready)
             {
-                motion.DriveRequest req = new motion.DriveRequest();
-                req.Distance = meters;
-                Activate(Arbiter.Choice(_drivePort.Drive(req),
-                    delegate(DefaultUpdateResponseType result) { ready = true; },
-                    delegate(Fault f) { }
-                ));
+                if (!sent)
+                {
+                    motion.DriveRequest req = new motion.DriveRequest();
+                    req.Distance = meters;
+                    Activate(Arbiter.Choice(_drivePort.Drive(req),
+                        delegate(DefaultUpdateResponseType result) { ready = true; },
+                        delegate(Fault f) { }
+                    ));
+                    sent = true;
+                }
+                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
             }
         }
 
@@ -156,7 +169,7 @@ namespace Robotics.CoroBot.Coordinator
 
         }
 
-        private IEnumerator<ITask> TurnToLargestFolder()
+        private void TurnToLargestFolder()
         {
             List<FoundFolder> folders = new List<FoundFolder>();
             int numTurns = 9;
@@ -164,7 +177,9 @@ namespace Robotics.CoroBot.Coordinator
             int lastFolderHeading = -1000;
             for (int i = 0; i < numTurns; i++)
             {
+                LogInfo("Sending Image request.");
                 GetImage();
+                LogInfo("Received Image.");
                 foreach (image.Folder f in imageResult.Folders)
                 {
                     FoundFolder ff = new FoundFolder();
@@ -212,7 +227,10 @@ namespace Robotics.CoroBot.Coordinator
         [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
         public virtual IEnumerator<ITask> GetHandler(Get get)
         {
-            Begin();
+            //Begin();
+            LogInfo("Begin Image");
+            GetImage();
+            LogInfo("End Image");
             get.ResponsePort.Post(_state);
             yield break;
         }
