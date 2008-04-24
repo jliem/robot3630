@@ -408,6 +408,7 @@ namespace Robotics.CoroBot.Coordinator
             public double X;
             public double Y;
             public string Color;
+            public double Heading;
 
             public Coordinate(double x, double y, char c)
             {
@@ -526,6 +527,11 @@ namespace Robotics.CoroBot.Coordinator
             backZigZag1.Reverse();
             backZigZag2.Reverse();
 
+            FillHeadings(frontZigZag1);
+            FillHeadings(frontZigZag2);
+            FillHeadings(backZigZag1);
+            FillHeadings(backZigZag2);
+
 
 
             List<int> res1 = match(frontZigZag1, v);
@@ -557,6 +563,17 @@ namespace Robotics.CoroBot.Coordinator
             }
             return result;
 
+        }
+
+        public void FillHeadings(List<Coordinate> list)
+        {
+            for (int i = 1; i < list.Count; i++)
+            {
+                Coordinate c1 = list[i];
+                Coordinate c0 = list[i - 1];
+                c1.Heading = Math.Atan2(c1.Y - c0.Y, c1.X - c0.X);
+                c1.Heading = c1.Heading * 180 / Math.PI;
+            }
         }
 
         public List<int> match(List<Coordinate> list, List<char> visited)
