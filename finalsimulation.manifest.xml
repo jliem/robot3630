@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Manifest xmlns:motioncontroller="http://schemas.tempuri.org/2008/02/motioncontroller.html" xmlns:finaldemosimulator="http://schemas.tempuri.org/2008/04/finaldemosimulator.html" xmlns:coordinator="http://schemas.tempuri.org/2008/04/coordinator.html" xmlns:this="urn:uuid:fab135da-895c-49f3-8588-9740b45eb811" xmlns:corobotui="http://www.coroware.com/2007/05/corobotui.html" xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html" xmlns:imageprocessor="http://schemas.tempuri.org/2008/04/imageprocessor.html" xmlns="http://schemas.microsoft.com/xw/2004/10/manifest.html">
+  <CreateServiceList>
+    <ServiceRecordType>
+      <dssp:Contract>http://schemas.tempuri.org/2008/04/finaldemosimulator.html</dssp:Contract>
+      <dssp:PartnerList />
+      <Name>this:FinalDemoSimulator</Name>
+    </ServiceRecordType>
+    <ServiceRecordType>
+      <dssp:Contract>http://www.coroware.com/2007/05/corobotui.html</dssp:Contract>
+      <dssp:PartnerList />
+      <Name>this:CoroBotUI</Name>
+    </ServiceRecordType>
+    <ServiceRecordType>
+      <dssp:Contract>http://schemas.tempuri.org/2008/04/imageprocessor.html</dssp:Contract>
+      <dssp:PartnerList />
+      <Name>this:ImageProcessor</Name>
+    </ServiceRecordType>
+    <ServiceRecordType>
+      <dssp:Contract>http://schemas.tempuri.org/2008/02/motioncontroller.html</dssp:Contract>
+      <dssp:PartnerList />
+      <Name>this:MotionController</Name>
+    </ServiceRecordType>
+    <ServiceRecordType>
+      <dssp:Contract>http://schemas.tempuri.org/2008/04/coordinator.html</dssp:Contract>
+      <dssp:PartnerList />
+      <Name>this:Coordinator</Name>
+    </ServiceRecordType>
+  </CreateServiceList>
+</Manifest>
