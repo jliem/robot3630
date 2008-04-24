@@ -2,6 +2,10 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coordinator", "Coordinator.csproj", "{DCCAC746-1FA8-4F4D-9901-987D77FA98F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotionController", "..\MotionController\MotionController.csproj", "{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessor", "..\ImageProcessor\ImageProcessor.csproj", "{ED8E600E-BEE6-464B-AF0D-005E043D65DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,6 +16,14 @@ Global
 		{DCCAC746-1FA8-4F4D-9901-987D77FA98F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCCAC746-1FA8-4F4D-9901-987D77FA98F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCCAC746-1FA8-4F4D-9901-987D77FA98F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{612A6ADF-FBBD-4E5A-8E82-12C1F84F227A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED8E600E-BEE6-464B-AF0D-005E043D65DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8E600E-BEE6-464B-AF0D-005E043D65DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8E600E-BEE6-464B-AF0D-005E043D65DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8E600E-BEE6-464B-AF0D-005E043D65DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

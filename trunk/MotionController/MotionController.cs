@@ -573,6 +573,36 @@ namespace Robotics.CoroBot.MotionController
             }
         }
 
+        private void SendIRStopMessage()
+        {
+
+            cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
+            newState.InSequenceNumber = 0;
+            newState.DriveEnable = false;
+            newState.Rotation = 0;
+            newState.Translation = 0;
+            Activate(Arbiter.Choice(_drivePort.Replace(newState),
+                delegate(DefaultReplaceResponseType success)
+                {
+                    StopEncoderTimer();
+
+                    // Dispatch finished signals
+                    if (myDrive != null)
+                    {
+                        myDrive.ResponsePort.Post(new Fault());
+                        myDrive = null;
+                    }
+
+                    if (myTurn != null)
+                    {
+                        myTurn.ResponsePort.Post(new Fault());
+                        myTurn = null;
+                    }
+                },
+                delegate(Fault f) { LogError(f); }
+            ));
+        }
+
         private void SendStopMessage()
         {
 
@@ -708,7 +738,7 @@ namespace Robotics.CoroBot.MotionController
                             //_drivePort.Post(new Drive(new DriveRequest(-1 * DISTANCE_TO_REVERSE, drivePower)));
 
                             _state.DrivingState = DrivingStates.Stopped;
-                            SendStopMessage();
+                            SendIRStopMessage();
                         }
                         else
                         {
