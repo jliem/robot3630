@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 
-//#define REAL_ROBOT
+#define SIMULATOR
 
 
 using Microsoft.Ccr.Core;
@@ -71,7 +71,7 @@ namespace Robotics.CoroBot.MotionController
 
 
         // DO NOT CHANGE THIS, IT WILL BE SET LATER
-        private bool usingRealRobot = false;
+        private bool usingRealRobot = true;
 
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Robotics.CoroBot.MotionController
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
 
-#if REAL_ROBOT
+#if SIMULATOR
         [Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();  
 #endif
@@ -143,8 +143,8 @@ namespace Robotics.CoroBot.MotionController
                 base(creationPort)
         {
 
-#if REAL_ROBOT
-            usingRealRobot = true;
+#if SIMULATOR
+            usingRealRobot = false;
 #endif
 
             if (usingRealRobot)
@@ -166,7 +166,7 @@ namespace Robotics.CoroBot.MotionController
         }
 
 
-#if REAL_ROBOT
+#if SIMULATOR
         private void IrOnTimedEvent(object source, ElapsedEventArgs e)
         {
             // Poll the IR sensor
@@ -191,7 +191,7 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
-#if REAL_ROBOT
+#if SIMULATOR
             cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
             _irPort.Subscribe(irPort);
             Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
@@ -611,6 +611,7 @@ namespace Robotics.CoroBot.MotionController
             newState.DriveEnable = false;
             newState.Rotation = 0;
             newState.Translation = 0;
+            
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success)
                 {
@@ -630,7 +631,7 @@ namespace Robotics.CoroBot.MotionController
                         myTurn = null;
                     }
                 },
-                delegate(Fault f) { LogError(f); }
+                delegate(Fault f) { LogError(f); Console.WriteLine("Error when sending stop");  }
             ));
         }
 
@@ -719,7 +720,7 @@ namespace Robotics.CoroBot.MotionController
                         Console.WriteLine("Moving forward, encoder is " + encoderValue);
 
                         // Check whether we're close to an obstacle
-                        double irDistance = 0;
+                        double irDistance = 10000;
 
                         if (usingRealRobot)
                         {

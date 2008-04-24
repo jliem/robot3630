@@ -46,6 +46,7 @@ namespace Robotics.CoroBot.Coordinator
         public image.ImageProcessorResult imageResult = null;
         CoordinatorForm form = null;
         List<FoundFolder> visitedFolders = new List<FoundFolder>();
+        List<Coordinate> possibleLocations;
 
         /// <summary>
         /// _state
@@ -92,19 +93,24 @@ namespace Robotics.CoroBot.Coordinator
         private void Begin()
         {
             state = States.Lost;
-            FoundFolder largestFolder = TurnToLargestFolder();
+            FoundFolder largestFolder = FindLargestFolder();
+
+            Console.WriteLine("Result of turning is " + TurnToFolder(largestFolder));
+
             //!!We have not checked for null
             visitedFolders.Add(largestFolder);
             CenterToFolder();
-<<<<<<< .mine
-=======
             DriveToFolder();
             //Drive back so we can do another 360
+            Console.WriteLine("Going backward");
             DriveForward(-.5F);
             FoundFolder secondLargest = TurnToSecondLargestFolder();
             //!!We have not checked for null
             visitedFolders.Add(secondLargest);
+            possibleLocations = Localize();
         }
+
+
 
         public void GetImage()
         {
@@ -161,10 +167,11 @@ namespace Robotics.CoroBot.Coordinator
             req.Distance = meters;
             Activate(Arbiter.Choice(_drivePort.Drive(req),
                 delegate(DefaultUpdateResponseType result) { ready = true; },
-                delegate(Fault f) { completed = false; }
+                delegate(Fault f) { completed = false; ready = true;  }
             ));
             while (!ready)
             {
+                Console.WriteLine("Sleeping");
                 Thread.Sleep(1000);
             }
             return completed;
@@ -174,9 +181,11 @@ namespace Robotics.CoroBot.Coordinator
             int driveCount = 0;
             while (true)
             {
+                Console.WriteLine("Driving to folder");
                 //If Drive returns false then stop driving forward
                 if (!DriveForward(driveForwardDistance))
                 {
+                    Console.WriteLine("Stopping b/c drive forward returned false");
                     break;
                 }
                 driveCount++;
@@ -184,8 +193,10 @@ namespace Robotics.CoroBot.Coordinator
                 //..Before centering again
                 if (driveCount >= 3)
                 {
+                    Console.WriteLine("Increasing travel distance");
                     driveForwardDistance = 1;
                 }
+                Console.WriteLine("Centering folder in drive");
                 CenterToFolder();
             }
         }
@@ -194,6 +205,7 @@ namespace Robotics.CoroBot.Coordinator
         {
             //Return the Folder if  robot is +- OffsetThreshold degrees 
             //from the center of the folder
+            Console.WriteLine("Centering to folder");
             int OffsetThreshold = 3;
             GetImage();
             if (imageResult.Folders.Count > 0)
@@ -211,16 +223,19 @@ namespace Robotics.CoroBot.Coordinator
                 //If Done
                 if (Math.Abs(bestOffset) <= OffsetThreshold)
                 {
+                    Console.WriteLine("Centered");
                     return bestFolder;
                 }
                 //Otherwise Turn and try again
                 if (bestOffset < 0)
                 {
+                    Console.WriteLine("Turning right");
                     TurnRight(Math.Abs(bestOffset));
                     return CenterToFolder();
                 }
                 else
                 {
+                    Console.WriteLine("Turning left");
                     TurnLeft(Math.Abs(bestOffset));
                     return CenterToFolder();
                 }
@@ -280,7 +295,43 @@ namespace Robotics.CoroBot.Coordinator
             return null;
         }
 
-        private FoundFolder TurnToLargestFolder()
+        private bool TurnToFolder(FoundFolder target)
+        {
+            int numTurns = 9;
+            int degPerTurn = 360 / numTurns;
+            int lastFolderHeading = -1000;
+            for (int i = 0; i < numTurns; i++)
+            {
+                LogInfo("Sending Image request.");
+                GetImage();
+                LogInfo("Received Image.");
+                foreach (image.Folder f in imageResult.Folders)
+                {
+                    Console.WriteLine("Looking for target folder: " + target.Color + ", " + target.Size);
+
+
+                    if (f.Color == target.Color) {
+                        Console.WriteLine("Target size is " + target.Size + ", looking at size of " + f.Area);
+
+                        if (Math.Abs(f.Area - target.Size) <= 1000)
+                        {
+                            // We've found the right target
+                            return true;
+                        }
+
+                    }
+                    
+                }
+                Console.WriteLine("Looking for target, turning right " + degPerTurn);
+                TurnRight(degPerTurn);
+                
+            }
+
+            Console.WriteLine("Target not found");
+            return false;
+        }
+
+        private FoundFolder FindLargestFolder()
         {
             List<FoundFolder> folders = new List<FoundFolder>();
             int numTurns = 9;
@@ -293,14 +344,17 @@ namespace Robotics.CoroBot.Coordinator
                 LogInfo("Received Image.");
                 foreach (image.Folder f in imageResult.Folders)
                 {
+                    Console.WriteLine("Checking for folders");
                     FoundFolder ff = new FoundFolder();
                     ff.Color = f.Color;
                     ff.Heading = i * degPerTurn + GetHeadingOffset((int)f.X);
                     ff.Size = f.Area;
-                    if (Math.Abs(ff.Heading - lastFolderHeading) < 15)
-                    {
-                        folders.Add(ff);
-                    }
+                    //if (Math.Abs(ff.Heading - lastFolderHeading) < 15)
+                    //{
+                    //    folders.Add(ff);
+                    //}
+
+                    folders.Add(ff);
                 }
                 LogInfo("Send Turn RIght.");
                 TurnRight(degPerTurn);
@@ -316,9 +370,13 @@ namespace Robotics.CoroBot.Coordinator
                         largestFolder = f;
                     }
                 }
-                TurnLeft(360 - largestFolder.Heading);
+                Console.WriteLine("Turning to largest folder, heading is " + largestFolder.Heading);
+                //TurnLeft(360 - largestFolder.Heading);
                 return largestFolder;
+                
             }
+
+            Console.WriteLine("No largest folder found");
             return null;
         }
 
