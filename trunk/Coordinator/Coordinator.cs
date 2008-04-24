@@ -44,6 +44,7 @@ namespace Robotics.CoroBot.Coordinator
         public bool ready = false;
         public image.ImageProcessorResult imageResult = null;
         CoordinatorForm form = null;
+        List<FoundFolder> visitedFolders = new List<FoundFolder>();
 
         /// <summary>
         /// _state
@@ -91,6 +92,8 @@ namespace Robotics.CoroBot.Coordinator
         {
             state = States.Lost;
             TurnToLargestFolder();
+            CenterToFolder();
+            DriveToFolder()
         }
 
         public void GetImage()
@@ -140,19 +143,21 @@ namespace Robotics.CoroBot.Coordinator
             }
         }
 
-        public void DriveForward(float meters)
+        public bool DriveForward(float meters)
         {
             ready = false;
+            bool completed = true;
             motion.DriveRequest req = new motion.DriveRequest();
             req.Distance = meters;
             Activate(Arbiter.Choice(_drivePort.Drive(req),
                 delegate(DefaultUpdateResponseType result) { ready = true; },
-                delegate(Fault f) { LogError(f); }
+                delegate(Fault f) { completed = false; }
             ));
             while (!ready)
             {
                 Thread.Sleep(1000);
             }
+            return completed;
         }
 
         public bool CenterToFolder()
