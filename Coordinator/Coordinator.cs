@@ -96,6 +96,8 @@ namespace Robotics.CoroBot.Coordinator
             //!!We have not checked for null
             visitedFolders.Add(largestFolder);
             CenterToFolder();
+<<<<<<< .mine
+=======
             DriveToFolder();
             //Drive back so we can do another 360
             DriveForward(-.5F);
@@ -331,6 +333,209 @@ namespace Robotics.CoroBot.Coordinator
             public int Heading;
             public int Size;
         }
+
+        public class Coordinate
+        {
+            public double X;
+            public double Y;
+            public string Color;
+
+            public Coordinate(double x, double y, char c)
+            {
+                X = x;
+                Y = y;
+                if (c == 'R') Color = "Red";
+                if (c == 'G') Color = "Green";
+                if (c == 'Y') Color = "Yellow";
+            }
+        }
+
+        public void buildZigZag(List<Coordinate> frontZigZag1, List<Coordinate> frontZigZag2)
+        {
+            Coordinate s1 = new Coordinate(20.2, 21.56, 'R');
+            frontZigZag1.Add(s1);
+
+            Coordinate s2 = new Coordinate(22.4, 21.66, 'Y');
+            frontZigZag1.Add(s2);
+
+
+            Coordinate s3 = new Coordinate(20.2, 19.45, 'G');
+            frontZigZag1.Add(s3);
+
+            Coordinate s4 = new Coordinate(22.4, 17.4, 'Y');
+            frontZigZag1.Add(s4);
+
+            Coordinate s5 = new Coordinate(20.2, 16.63, 'R');
+            frontZigZag1.Add(s5);
+
+            Coordinate s6 = new Coordinate(22.4, 14.65, 'G');
+            frontZigZag1.Add(s6);
+
+            Coordinate s7 = new Coordinate(20.2, 12.47, 'Y');
+            frontZigZag1.Add(s7);
+
+            Coordinate s8 = new Coordinate(21.8, 10.2, 'R');
+            frontZigZag1.Add(s8);
+
+            Coordinate s9 = new Coordinate(20.2, 9.67, 'R');
+            frontZigZag1.Add(s9);
+
+            Coordinate s10 = new Coordinate(22.4, 7.1, 'Y');
+            frontZigZag1.Add(s10);
+
+            Coordinate s11 = new Coordinate(20.2, 6.72, 'G');
+            frontZigZag1.Add(s11);
+
+            Coordinate s12 = new Coordinate(22.4, 4.3, 'R');
+            frontZigZag1.Add(s12);
+
+            Coordinate s13 = new Coordinate(20.2, 4.4, 'Y');
+            frontZigZag1.Add(s13);
+
+            //second list starting
+
+            Coordinate s14 = new Coordinate(18.97, 2, 'G');
+            frontZigZag2.Add(s14);
+
+            Coordinate s15 = new Coordinate(16.49, 4.25, 'G');
+            frontZigZag2.Add(s15);
+
+            Coordinate s16 = new Coordinate(15.96, 2, 'R');
+            frontZigZag2.Add(s16);
+
+            Coordinate s17 = new Coordinate(13.4, 4.25, 'R');
+            frontZigZag2.Add(s17);
+
+            Coordinate s18 = new Coordinate(13.02, 2, 'Y');
+            frontZigZag2.Add(s18);
+
+            Coordinate s19 = new Coordinate(10.54, 4.25, 'Y');
+            frontZigZag2.Add(s19);
+
+            Coordinate s20 = new Coordinate(9.91, 2, 'G');
+            frontZigZag2.Add(s20);
+
+
+            Coordinate s21 = new Coordinate(7.49, 4.25, 'R');
+            frontZigZag2.Add(s21);
+
+
+            Coordinate s22 = new Coordinate(6.42, 2, 'G');
+            frontZigZag2.Add(s22);
+
+
+            Coordinate s23 = new Coordinate(5.42, 4.25, 'G');
+            frontZigZag2.Add(s23);
+        }
+
+
+
+        public List<Coordinate> Localize()
+        {
+            List<char> v = new List<char>();
+            foreach (FoundFolder f in visitedFolders)
+            {
+                if (f.Color == "Red") v.Add('R');
+                if (f.Color == "Green") v.Add('G');
+                if (f.Color == "Yellow") v.Add('Y');
+            }
+
+            List<Coordinate> result = new List<Coordinate>();
+
+            //build the two main zig zag sequences
+            List<Coordinate> frontZigZag1 = new List<Coordinate>();
+            List<Coordinate> frontZigZag2 = new List<Coordinate>();
+            List<Coordinate> backZigZag1 = new List<Coordinate>();
+            List<Coordinate> backZigZag2 = new List<Coordinate>();
+
+
+            buildZigZag(frontZigZag1, frontZigZag2);
+
+            backZigZag1.AddRange(frontZigZag1);
+            backZigZag2.AddRange(frontZigZag2);
+
+            backZigZag1.Reverse();
+            backZigZag2.Reverse();
+
+
+
+            List<int> res1 = match(frontZigZag1, v);
+
+            for (int x = 0; x < res1.Count; x++)
+            {
+                result.Add(frontZigZag1[res1[x]]);
+            }
+
+            res1 = match(frontZigZag2, v);
+
+            for (int x = 0; x < res1.Count; x++)
+            {
+                result.Add(frontZigZag2[res1[x]]);
+            }
+
+            res1 = match(backZigZag1, v);
+
+            for (int x = 0; x < res1.Count; x++)
+            {
+                result.Add(backZigZag1[res1[x]]);
+            }
+
+            res1 = match(backZigZag2, v);
+
+            for (int x = 0; x < res1.Count; x++)
+            {
+                result.Add(backZigZag2[res1[x]]);
+            }
+            return result;
+
+        }
+
+        public List<int> match(List<Coordinate> list, List<char> visited)
+        {
+            List<int> result = new List<int>();
+
+
+            int listSize = list.Count;
+            int visitedSize = visited.Count;
+
+
+            String listS = "";
+
+            for (int x = 0; x < listSize; x++)
+            {
+                listS += list[x].Color;
+            }
+
+
+            String listV = "";
+
+            for (int x = 0; x < visitedSize; x++)
+            {
+                listV += visited[x];
+            }
+
+            //keep polling for other match conditions
+            int ctr = 0;
+
+            while (listS.Contains(listV))
+            {
+
+                Console.WriteLine(listS);
+                Console.WriteLine(ctr);
+
+                result.Add(ctr + listV.Length - 1 + listS.IndexOf(listV));
+
+                ctr += listS.Substring(0, listV.Length + listS.IndexOf(listV)).Length;
+
+                listS = listS.Substring(listV.Length + listS.IndexOf(listV));
+
+            }
+
+
+
+            return result;
+        }
+
 
         /// <summary>
         /// Get Handler
