@@ -162,38 +162,38 @@ namespace Robotics.CoroBot.ImageProcessor
 
         private bool isFolder(int[] hsv)
         {
-            ////Green Profile
-            //if (hsv[0] >= 150 && hsv[0] <= 190
-            //    && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
-            //    && hsv[2] >= (int)(.2 * 255) && hsv[2] <= (int)(.60 * 255))
-            //{
-            //    return true;
-            //}
-            ////Red Profile
-            //if (hsv[0] >= 320 && hsv[0] <= 360
-            //    && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
-            //    && hsv[2] >= (int)(.40 * 255) && hsv[2] <= (int)(1 * 255))
-            //{
-            //    return true;
-            //}            
-            ////Red Cabinet
-            //if (hsv[0] >= 0 && hsv[0] <= 10
-            //    && hsv[1] >= (int)(.90 * 255) && hsv[1] <= (int)(1 * 255)
-            //    && hsv[2] >= (int)(.30 * 255) && hsv[2] <= (int)(.70 * 255))
-            //{
-            //    return true;
-            //}
-            ////Yellow Profile
-            //if (hsv[0] >= 50 && hsv[0] <= 75
-            //    && hsv[1] >= (int)(.30 * 255) && hsv[1] <= (int)(.70 * 255)
-            //    && hsv[2] >= (int)(.65 * 255) && hsv[2] <= 255)
-            //{
-            //    return true;
-            //}
-            if (hsv[1] >= 100 && hsv[2] >= 20)
+            //Green Profile
+            if (hsv[0] >= 130 && hsv[0] <= 170
+                && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.4 * 255) && hsv[2] <= (int)(.70 * 255))
             {
                 return true;
             }
+            //Red Profile
+            if (hsv[0] >= 320 && hsv[0] <= 360
+                && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.40 * 255) && hsv[2] <= (int)(1 * 255))
+            {
+                return true;
+            }
+            //Red Cabinet
+            if (hsv[0] >= 0 && hsv[0] <= 20
+                && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.30 * 255) && hsv[2] <= (int)(.75 * 255))
+            {
+                return true;
+            }
+            //Yellow Profile
+            if (hsv[0] >= 50 && hsv[0] <= 80
+                && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.30 * 255) && hsv[2] <= (int)(1 * 255))
+            {
+                return true;
+            }
+            //if (hsv[1] >= 100 && hsv[2] >= 20)
+            //{
+            //    return true;
+            //}
             return false;
         }
 
