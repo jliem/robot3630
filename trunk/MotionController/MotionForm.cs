@@ -157,16 +157,16 @@ namespace Robotics.CoroBot.MotionController
 
         private void btnWaypointTest_Click(object sender, EventArgs e)
         {
-            Vector2 prevWaypoint = new Vector2(double.Parse(txtCurrX.Text), double.Parse(txtCurrY.Text));
+            PointF prevWaypoint = new PointF(float.Parse(txtCurrX.Text), float.Parse(txtCurrY.Text));
             double prevHeading = double.Parse(txtCurrHeading.Text) * Math.PI / 180;
 
-            LinkedList<Vector2> list = new LinkedList<Vector2>();
+            LinkedList<PointF> list = new LinkedList<PointF>();
 
-            list.AddLast(new Vector2(0.5, 0));
-            list.AddLast(new Vector2(0.5, 0.5));
-            list.AddLast(new Vector2(-0.5, 0.5));
-            list.AddLast(new Vector2(-0.5, 0));
-            list.AddLast(new Vector2(0, 0));
+            list.AddLast(new PointF(0.5f, 0f));
+            list.AddLast(new PointF(0.5f, 0.5f));
+            list.AddLast(new PointF(-0.5f, 0.5f));
+            list.AddLast(new PointF(-0.5f, 0f));
+            list.AddLast(new PointF(0f, 0f));
 
             //list.AddLast(new Vector2(21, 15));
             //list.AddLast(new Vector2(21, 10));
@@ -201,10 +201,10 @@ namespace Robotics.CoroBot.MotionController
 
         private void btnGo_Click(object sender, EventArgs e)
         {
-            Vector2 prevWaypoint = new Vector2(double.Parse(txtCurrX.Text), double.Parse(txtCurrY.Text));
+            PointF prevWaypoint = new PointF(float.Parse(txtCurrX.Text), float.Parse(txtCurrY.Text));
             double prevHeading = double.Parse(txtCurrHeading.Text) * Math.PI / 180;
 
-            Vector2 point = new Vector2(double.Parse(txtDestX.Text), double.Parse(txtDestY.Text));
+            PointF point = new PointF(float.Parse(txtDestX.Text), float.Parse(txtDestY.Text));
 
             _port.Post(new BeginWaypoint(new BeginWaypointRequest(prevWaypoint, prevHeading,
                 point)));

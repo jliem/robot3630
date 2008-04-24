@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using W3C.Soap;
 using motioncontroller = Robotics.CoroBot.MotionController;
+using System.Drawing;
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -281,24 +282,26 @@ namespace Robotics.CoroBot.MotionController
     [DataContract]
     public class BeginWaypointRequest
     {
-        private LinkedList<Vector2> _waypoints;
-        public LinkedList<Vector2> Waypoints { get { return _waypoints; } set { _waypoints = value; } }
+        private LinkedList<PointF> _waypoints;
+        public LinkedList<PointF> Waypoints { get { return _waypoints; } set { _waypoints = value; } }
 
-        private Vector2 _prevWaypoint;
-        public Vector2 PrevWaypoint { get { return _prevWaypoint; } set { _prevWaypoint = value; } }
+        private PointF _prevWaypoint;
+        [DataMember]
+        public PointF PrevWaypoint { get { return _prevWaypoint; } set { _prevWaypoint = value; } }
 
         private double _prevHeading;
+        [DataMember]
         public double PrevHeading { get { return _prevHeading; } set { _prevHeading = value; } }
 
         public BeginWaypointRequest() { }
 
-        public BeginWaypointRequest(Vector2 prevWaypoint, double prevHeading, Vector2 point)
-            : this(prevWaypoint, prevHeading, new LinkedList<Vector2>())
+        public BeginWaypointRequest(PointF prevWaypoint, double prevHeading, PointF point)
+            : this(prevWaypoint, prevHeading, new LinkedList<PointF>())
         {
             Waypoints.AddLast(point);
         }
 
-        public BeginWaypointRequest(Vector2 prevWaypoint, double prevHeading, LinkedList<Vector2> waypoints)
+        public BeginWaypointRequest(PointF prevWaypoint, double prevHeading, LinkedList<PointF> waypoints)
         {
             PrevWaypoint = prevWaypoint;
             PrevHeading = prevHeading;

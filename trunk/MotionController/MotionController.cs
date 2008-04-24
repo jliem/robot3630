@@ -8,6 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+
+//#define REAL_ROBOT
+
+
 using Microsoft.Ccr.Core;
 using Microsoft.Dss.Core;
 using Microsoft.Dss.Core.Attributes;
@@ -27,6 +31,8 @@ using System.Net;
 using System.IO;
 using System.Timers;
 using System.Windows.Forms;
+using System.Drawing;
+
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -46,8 +52,9 @@ namespace Robotics.CoroBot.MotionController
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
 
-        private const bool REAL_ROBOT = false;
         String robotIP = "128.61.24.158";
+
+        private const bool USE_LEFT_ENCODERS = false;
 
         private const double SIM_DRIVE_POWER = 0.6;
         private const double SIM_ROTATE_RIGHT_POWER = 0.2;
@@ -62,7 +69,10 @@ namespace Robotics.CoroBot.MotionController
         /// </summary>
         private const int ENCODER_POLLING_INTERVAL = 45;
 
-        private const bool USE_LEFT_ENCODERS = false;
+
+        // DO NOT CHANGE THIS, IT WILL BE SET LATER
+        private bool usingRealRobot = false;
+
 
         /// <summary>
         /// Distance of an obstacle in front where we will stop moving.
@@ -116,9 +126,11 @@ namespace Robotics.CoroBot.MotionController
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
 
-        //[Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
-        //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
-        
+#if REAL_ROBOT
+        [Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();  
+#endif
+
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -126,7 +138,11 @@ namespace Robotics.CoroBot.MotionController
                 base(creationPort)
         {
 
-            if (REAL_ROBOT)
+#if REAL_ROBOT
+            usingRealRobot = true;
+#endif
+
+            if (usingRealRobot)
             {
                 drivePower = DRIVE_POWER;
                 rotateRightPower = ROTATE_RIGHT_POWER;
@@ -143,7 +159,19 @@ namespace Robotics.CoroBot.MotionController
                 Console.WriteLine("Using simulator");
             }
         }
-        
+
+
+#if REAL_ROBOT
+        private void IrOnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            // Poll the IR sensor
+            Activate(Arbiter.Choice(_irPort.Get(new GetRequestType()),
+                delegate(cbir.CoroBotIRState success) { lastIrDistance = success.LastFrontRange; },
+                delegate(Fault f) { LogError(f); }
+            ));
+        }
+#endif
+
         /// <summary>
         /// Service Start
         /// </summary>
@@ -158,9 +186,11 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
-            //cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
-            //_irPort.Subscribe(irPort);
-            //Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
+#if REAL_ROBOT
+            cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
+            _irPort.Subscribe(irPort);
+            Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
+#endif
 
             SetEncoderInterval(ENCODER_POLLING_INTERVAL);
 
@@ -168,7 +198,7 @@ namespace Robotics.CoroBot.MotionController
             encoderTimer.Elapsed += new ElapsedEventHandler(EncoderOnTimedEvent);
 
             encoderTimer.Interval = 50;
-            encoderTimer.Enabled = REAL_ROBOT;
+            encoderTimer.Enabled = usingRealRobot;
 
             motorTimer = new System.Timers.Timer();
             motorTimer.Elapsed += new ElapsedEventHandler(MotorOnTimedEvent);
@@ -190,15 +220,6 @@ namespace Robotics.CoroBot.MotionController
         {
             return new MotionForm(_mainPort, _state.Power);
         }
-
-        //private void IrOnTimedEvent(object source, ElapsedEventArgs e)
-        //{
-        //    // Poll the IR sensor
-        //    Activate(Arbiter.Choice(_irPort.Get(new GetRequestType()),
-        //        delegate(cbir.CoroBotIRState success) { lastIrDistance = success.LastFrontRange; },
-        //        delegate(Fault f) { LogError(f); }
-        //    ));
-        //}
 
         private void MotorOnTimedEvent(object source, ElapsedEventArgs e)
         {
@@ -573,7 +594,7 @@ namespace Robotics.CoroBot.MotionController
         {
             int encoderValue = 0;
 
-            if (REAL_ROBOT)
+            if (usingRealRobot)
             {
                 encoderValue = this.GetFakeEncoderValue();
             }
@@ -651,7 +672,7 @@ namespace Robotics.CoroBot.MotionController
                         // Check whether we're close to an obstacle
                         double irDistance = 0;
 
-                        if (REAL_ROBOT)
+                        if (usingRealRobot)
                         {
                             irDistance = this.GetFakeIRDistance();
                         }
@@ -664,7 +685,7 @@ namespace Robotics.CoroBot.MotionController
                         if (irDistance <= IR_CLOSE_DISTANCE)
                         {
                             // Robot is close to some obstacle, go backwards a bit
-                            Console.WriteLine("Robot is too close to an obstacle, backing up...");
+                            Console.WriteLine("IR distance is " + irDistance + ", Robot is too close to an obstacle, backing up...");
                             //_drivePort.Post(new Drive(new DriveRequest(-1 * DISTANCE_TO_REVERSE, drivePower)));
 
                             _state.DrivingState = DrivingStates.Stopped;
@@ -868,10 +889,18 @@ namespace Robotics.CoroBot.MotionController
             // Save the waypoint object so we can send a success message later
             beginWaypoint = calibrate;
 
-            prevWaypoint = calibrate.Body.PrevWaypoint;
+            prevWaypoint = new Vector2(calibrate.Body.PrevWaypoint);
             prevHeading = calibrate.Body.PrevHeading;
 
-            waypoints = calibrate.Body.Waypoints;
+            // Convert all Point objects to Vector2
+            waypoints = new LinkedList<Vector2>();
+
+            foreach (PointF p in calibrate.Body.Waypoints)
+            {
+                Vector2 v = new Vector2(p);
+                waypoints.AddLast(v);
+            }
+
 
             firstWaypoint = true;
 
