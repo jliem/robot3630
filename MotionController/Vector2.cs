@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 
 namespace Robotics.CoroBot.MotionController
 {
@@ -25,6 +26,12 @@ namespace Robotics.CoroBot.MotionController
         public Vector2 Subtract(Vector2 v)
         {
             return new Vector2(x - v.X, y - v.Y);
+        }
+
+        public Vector2(PointF pointf)
+            : this(pointf.X, pointf.Y)
+        {
+            
         }
 
         public Vector2(double x, double y)
