@@ -46,8 +46,8 @@ namespace Robotics.CoroBot.MotionController
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
 
-        private const bool REAL_ROBOT = false;
-        String robotIP = "128.61.16.208";
+        private const bool REAL_ROBOT = true;
+        String robotIP = "128.61.24.139";
 
         private const double SIM_DRIVE_POWER = 0.6;
         private const double SIM_ROTATE_POWER = 0.2;
@@ -81,6 +81,9 @@ namespace Robotics.CoroBot.MotionController
         
         private bool followingWaypoints = false;
         private bool pendingDrive = false;
+        private bool checkNextWaypointScheduled = false;
+        private bool firstWaypoint = false;
+        private double turnMultiplier = .9;
 
         private LinkedList<Vector2> waypoints;
         private Vector2 prevWaypoint;
@@ -318,6 +321,8 @@ namespace Robotics.CoroBot.MotionController
 
         private void BeginNextWaypoint()
         {
+            checkNextWaypointScheduled = false;
+
             if (waypoints.Count == 0)
             {
                 // Finished all waypoints
@@ -345,8 +350,29 @@ namespace Robotics.CoroBot.MotionController
             Console.WriteLine("Robot is at " + prevWaypoint.ToString() + ", facing " + ToDegrees(prevHeading));
             Console.WriteLine("Robot needs to turn " + ToDegrees(amountToTurn));
 
-            // Reduce by 10 percent
-            amountToTurn *= .9;
+            //if (firstWaypoint)
+            //{
+            //    // Reduce first one by 10 percent
+            //    amountToTurn *= .9;
+
+            //    firstWaypoint = false;
+            //}
+
+            amountToTurn *= turnMultiplier;
+
+            Console.WriteLine("Adjusted turn is " + ToDegrees(amountToTurn));
+
+            turnMultiplier += 0.1;
+
+            if (turnMultiplier > 1.1)
+            {
+                turnMultiplier = 1.15;
+            }
+
+            //if (waypoints.Count < 5)
+            //{
+            //    amountToTurn *= 2;
+            //}
 
             if (amountToTurn != 0)
             {
@@ -409,14 +435,15 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendDriveForwardMessage()
         {
+            Console.WriteLine("Sending forward with " + _state.Power);
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = 0;
             newState.Translation = _state.Power;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { },
-                delegate(Fault f) { LogError(f); }
+                delegate(DefaultReplaceResponseType success) { Console.WriteLine("forward - Success"); },
+                delegate(Fault f) { LogError(f); Console.WriteLine("Failure in SendDriveForwardMessage");  }
             ));
         }
 
@@ -453,8 +480,7 @@ namespace Robotics.CoroBot.MotionController
                     Console.WriteLine("Arrived at " + prevWaypoint.X + ", " + prevWaypoint.Y);
                     waypoints.RemoveFirst();
 
-
-                    BeginNextWaypoint();
+                    checkNextWaypointScheduled = true;
                 }
             }
         }
@@ -495,6 +521,8 @@ namespace Robotics.CoroBot.MotionController
                 }
             }
 
+            Console.WriteLine("Encoder is " + encoderValue);
+            Console.WriteLine("State is " + _state.DrivingState);
 
             int encoderChange = Math.Abs(encoderValue - oldEncoderValue);
 
@@ -532,6 +560,11 @@ namespace Robotics.CoroBot.MotionController
                         }
                     }
 
+                    if (checkNextWaypointScheduled)
+                    {
+                        BeginNextWaypoint();
+                    }
+
                     break;
                 case DrivingStates.MovingForward:
 
@@ -563,7 +596,7 @@ namespace Robotics.CoroBot.MotionController
                             irDistance = this.GetIRDistance();
                         }
 
-                        //Console.WriteLine("Distance is " + irDistance);
+                        Console.WriteLine("Distance is " + irDistance);
 
                         if (irDistance <= IR_CLOSE_DISTANCE)
                         {
@@ -769,6 +802,8 @@ namespace Robotics.CoroBot.MotionController
             prevHeading = calibrate.Body.PrevHeading;
 
             waypoints = calibrate.Body.Waypoints;
+
+            firstWaypoint = true;
 
             BeginNextWaypoint();
 
