@@ -45,6 +45,7 @@ namespace Robotics.CoroBot.ImageProcessor
         private ImageForm form = null;
         private ImageProcessorResult results;
         private int picNum = 0;
+        private Get get;
 
         
         /// <summary>
@@ -701,18 +702,26 @@ namespace Robotics.CoroBot.ImageProcessor
         }
         
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
-        public virtual IEnumerator<ITask> GetHandler(Get get)
+        public virtual IEnumerator<ITask> GetHandler(Get g)
         {
             results = null;
+            get = g;
             GetImage(); //From Corobot Camera
             //GetImageFromFile(); //From File
-            while (results == null)
-            {
-                Console.WriteLine("Image timer");
-                Activate(Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { }));
-            }
-            get.ResponsePort.Post(results);
+            Activate(Arbiter.Receive(false, TimeoutPort(1000), TimerHandler));
             yield break;
+        }
+
+        public void TimerHandler(DateTime t)
+        {
+            if (results == null)
+            {
+                Activate(Arbiter.Receive(false, TimeoutPort(1000), TimerHandler));
+            }
+            else
+            {
+                get.ResponsePort.Post(results);
+            }
         }
     }
 }

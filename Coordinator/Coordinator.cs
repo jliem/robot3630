@@ -14,6 +14,7 @@ using Microsoft.Dss.Core.Attributes;
 using Microsoft.Dss.ServiceModel.Dssp;
 using Microsoft.Dss.ServiceModel.DsspServiceBase;
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml;
@@ -105,7 +106,7 @@ namespace Robotics.CoroBot.Coordinator
             ));
             while (!ready)
             {
-                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+                Thread.Sleep(1000);
             }
         }
 
@@ -120,47 +121,37 @@ namespace Robotics.CoroBot.Coordinator
             ));
             while (!ready)
             {
-                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+                Thread.Sleep(1000);
             }
         }
 
         public void TurnLeft(int degrees)
         {
             ready = false;
-            bool sent = false;
+            motion.TurnRequest req = new motion.TurnRequest();
+            req.Radians = degrees * Math.PI / 180;
+            Activate(Arbiter.Choice(_drivePort.Turn(req),
+                delegate(DefaultUpdateResponseType result) { ready = true; },
+                delegate(Fault f) { LogError(f); }
+            ));
             while (!ready)
             {
-                if (!sent)
-                {
-                    motion.TurnRequest req = new motion.TurnRequest();
-                    req.Radians = degrees * Math.PI / 180;
-                    Activate(Arbiter.Choice(_drivePort.Turn(req),
-                        delegate(DefaultUpdateResponseType result) { ready = true; },
-                        delegate(Fault f) { }
-                    ));
-                    sent = true;
-                }
-                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+                Thread.Sleep(1000);
             }
         }
 
         public void DriveForward(float meters)
         {
             ready = false;
-            bool sent = false;
+            motion.DriveRequest req = new motion.DriveRequest();
+            req.Distance = meters;
+            Activate(Arbiter.Choice(_drivePort.Drive(req),
+                delegate(DefaultUpdateResponseType result) { ready = true; },
+                delegate(Fault f) { LogError(f); }
+            ));
             while (!ready)
             {
-                if (!sent)
-                {
-                    motion.DriveRequest req = new motion.DriveRequest();
-                    req.Distance = meters;
-                    Activate(Arbiter.Choice(_drivePort.Drive(req),
-                        delegate(DefaultUpdateResponseType result) { ready = true; },
-                        delegate(Fault f) { }
-                    ));
-                    sent = true;
-                }
-                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+                Thread.Sleep(1000);
             }
         }
 
