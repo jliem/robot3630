@@ -159,7 +159,7 @@ namespace Robotics.CoroBot.Coordinator
         {
             //Return true if  robot is +- OffsetThreshold degrees 
             //from the center of the folder
-            int OffsetThreshold = 3; 
+            int OffsetThreshold = 3;
             GetImage();
             if (imageResult.Folders.Count > 0)
             {
