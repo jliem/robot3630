@@ -308,25 +308,18 @@ namespace Robotics.CoroBot.Coordinator
                 foreach (image.Folder f in imageResult.Folders)
                 {
                     Console.WriteLine("Looking for target folder: " + target.Color + ", " + target.Size);
-
-
                     if (f.Color == target.Color) {
                         Console.WriteLine("Target size is " + target.Size + ", looking at size of " + f.Area);
-
                         if (Math.Abs(f.Area - target.Size) <= 1000)
                         {
                             // We've found the right target
                             return true;
                         }
-
-                    }
-                    
+                    }                    
                 }
                 Console.WriteLine("Looking for target, turning right " + degPerTurn);
                 TurnRight(degPerTurn);
-                
             }
-
             Console.WriteLine("Target not found");
             return false;
         }
