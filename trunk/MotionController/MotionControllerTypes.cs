@@ -216,6 +216,7 @@ namespace Robotics.CoroBot.MotionController
     public class DriveRequest
     {
         private double _distance;
+        [DataMember]
         public double Distance { get { return _distance; } set { _distance = value; } }
 
         private double _power;
@@ -239,6 +240,7 @@ namespace Robotics.CoroBot.MotionController
     public class TurnRequest
     {
         private double _radians;
+        [DataMember]
         public double Radians { get { return _radians; } set { _radians = value; } }
 
         private double _power;
