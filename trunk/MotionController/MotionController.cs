@@ -585,7 +585,7 @@ namespace Robotics.CoroBot.MotionController
                 delegate(DefaultReplaceResponseType success)
                 {
                     StopEncoderTimer();
-
+                    Console.WriteLine("Telling me to stop.");
                     // Dispatch finished signals
                     if (myDrive != null)
                     {
@@ -595,6 +595,7 @@ namespace Robotics.CoroBot.MotionController
 
                     if (myTurn != null)
                     {
+                        Console.WriteLine("Sending response.");
                         myTurn.ResponsePort.Post(new DefaultUpdateResponseType());
                         myTurn = null;
                     }

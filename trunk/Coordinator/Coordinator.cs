@@ -226,7 +226,9 @@ namespace Robotics.CoroBot.Coordinator
                         folders.Add(ff);
                     }
                 }
+                LogInfo("Send Turn RIght.");
                 TurnRight(degPerTurn);
+                LogInfo("Received TurnRight");
             }
             if (folders.Count > 0)
             {
@@ -262,10 +264,7 @@ namespace Robotics.CoroBot.Coordinator
         [ServiceHandler(ServiceHandlerBehavior.Concurrent)]
         public virtual IEnumerator<ITask> GetHandler(Get get)
         {
-            //Begin();
-            LogInfo("Begin Image");
-            GetImage();
-            LogInfo("End Image");
+            Begin();
             get.ResponsePort.Post(_state);
             yield break;
         }
