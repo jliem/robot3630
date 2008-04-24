@@ -315,9 +315,9 @@ namespace Robotics.CoroBot.MotionController
             // 
             // btnWaypointTest
             // 
-            this.btnWaypointTest.Location = new System.Drawing.Point(478, 190);
+            this.btnWaypointTest.Location = new System.Drawing.Point(132, 89);
             this.btnWaypointTest.Name = "btnWaypointTest";
-            this.btnWaypointTest.Size = new System.Drawing.Size(183, 23);
+            this.btnWaypointTest.Size = new System.Drawing.Size(150, 23);
             this.btnWaypointTest.TabIndex = 2;
             this.btnWaypointTest.Text = "Begin Waypoint Test";
             this.btnWaypointTest.UseVisualStyleBackColor = true;
@@ -339,7 +339,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtTurnEncoder.Name = "txtTurnEncoder";
             this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtTurnEncoder.TabIndex = 18;
-            this.txtTurnEncoder.Text = "3825";
+            this.txtTurnEncoder.Text = "2166";
             // 
             // txtDistanceEncoder
             // 
@@ -347,7 +347,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtDistanceEncoder.Name = "txtDistanceEncoder";
             this.txtDistanceEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtDistanceEncoder.TabIndex = 17;
-            this.txtDistanceEncoder.Text = "2114";
+            this.txtDistanceEncoder.Text = "2200";
             // 
             // label5
             // 
@@ -401,6 +401,7 @@ namespace Robotics.CoroBot.MotionController
             this.groupBox3.Controls.Add(this.txtDestX);
             this.groupBox3.Controls.Add(this.txtCurrHeading);
             this.groupBox3.Controls.Add(this.label10);
+            this.groupBox3.Controls.Add(this.btnWaypointTest);
             this.groupBox3.Controls.Add(this.txtCurrY);
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.label9);
@@ -494,7 +495,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtLeftEncoder.Name = "txtLeftEncoder";
             this.txtLeftEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtLeftEncoder.TabIndex = 21;
-            this.txtLeftEncoder.Text = "10258";
+            this.txtLeftEncoder.Text = "2173";
             // 
             // label12
             // 
@@ -517,7 +518,6 @@ namespace Robotics.CoroBot.MotionController
             this.Controls.Add(this.txtDistanceEncoder);
             this.Controls.Add(this.btnManualCalibrate);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.btnWaypointTest);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

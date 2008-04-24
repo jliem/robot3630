@@ -1,20 +1,26 @@
 <?xml version="1.0"?>
-<Manifest xmlns:motioncontroller="http://schemas.tempuri.org/2008/02/motioncontroller.html" xmlns:this="urn:uuid:4a095477-8a72-4752-89f8-bba78dd01a01" xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html" xmlns="http://schemas.microsoft.com/xw/2004/10/manifest.html">
+<Manifest xmlns:motioncontroller="http://schemas.tempuri.org/2008/02/motioncontroller.html" xmlns:this="urn:uuid:54402cde-6a53-4873-87a9-100aee3c97f4" xmlns:dssp="http://schemas.microsoft.com/xw/2004/10/dssp.html" xmlns="http://schemas.microsoft.com/xw/2004/10/manifest.html">
   <CreateServiceList>
     <ServiceRecordType>
       <dssp:Contract>http://schemas.tempuri.org/2008/02/motioncontroller.html</dssp:Contract>
       <dssp:PartnerList>
         <dssp:Partner>
           <dssp:Contract>http://www.coroware.com/2007/05/corobotdrive.html</dssp:Contract>
-          <dssp:Service>dssp.tcp://128.61.23.239:50001/corobotdrive</dssp:Service>
+          <dssp:Service>dssp.tcp://128.61.23.239:50001/</dssp:Service>
           <dssp:PartnerList />
           <dssp:Name>motioncontroller:drive</dssp:Name>
         </dssp:Partner>
         <dssp:Partner>
           <dssp:Contract>http://www.coroware.com/2007/06/corobotmotorencoders.html</dssp:Contract>
-          <dssp:Service>dssp.tcp://128.61.23.239:50001/corobotmotorencoders</dssp:Service>
+          <dssp:Service>dssp.tcp://128.61.23.239:50001/</dssp:Service>
           <dssp:PartnerList />
           <dssp:Name>motioncontroller:encoder</dssp:Name>
+        </dssp:Partner>
+        <dssp:Partner>
+          <dssp:Contract>http://www.coroware.com/2007/05/corobotir.html</dssp:Contract>
+          <dssp:Service>dssp.tcp://128.61.23.239:50001/</dssp:Service>
+          <dssp:PartnerList />
+          <dssp:Name>motioncontroller:corobotir</dssp:Name>
         </dssp:Partner>
       </dssp:PartnerList>
       <Name>this:MotionController</Name>

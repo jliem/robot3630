@@ -157,8 +157,22 @@ namespace Robotics.CoroBot.MotionController
 
         private void btnWaypointTest_Click(object sender, EventArgs e)
         {
-            btnWaypointTest.Enabled = false;
-            _port.Post(new BeginWaypoint(new BeginWaypointRequest()));
+            Vector2 prevWaypoint = new Vector2(double.Parse(txtCurrX.Text), double.Parse(txtCurrY.Text));
+            double prevHeading = double.Parse(txtCurrHeading.Text) * Math.PI / 180;
+
+            Vector2 point = new Vector2(double.Parse(txtDestX.Text), double.Parse(txtDestY.Text));
+            LinkedList<Vector2> list = new LinkedList<Vector2>();
+            list.AddLast(point);
+            list.AddLast(new Vector2(21, 15));
+            list.AddLast(new Vector2(21, 10));
+            list.AddLast(new Vector2(21, 5));
+            list.AddLast(new Vector2(21, 3));
+            list.AddLast(new Vector2(15, 3));
+            list.AddLast(new Vector2(10, 3));
+            //list.AddLast(new Vector2(3, 2));
+
+            _port.Post(new BeginWaypoint(new BeginWaypointRequest(prevWaypoint, prevHeading,
+                list)));
             
         }
 

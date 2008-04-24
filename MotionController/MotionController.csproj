@@ -72,6 +72,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="corobotir.y2007.m05.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL" />
     <Reference Include="corobotmotorencoders.y2007.m06.proxy, Version=0.0.0.0, Culture=neutral, PublicKeyToken=3373e951fdd1f3f0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
