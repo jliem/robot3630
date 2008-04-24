@@ -339,7 +339,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtTurnEncoder.Name = "txtTurnEncoder";
             this.txtTurnEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtTurnEncoder.TabIndex = 18;
-            this.txtTurnEncoder.Text = "2166";
+            this.txtTurnEncoder.Text = "360";
             // 
             // txtDistanceEncoder
             // 
@@ -347,7 +347,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtDistanceEncoder.Name = "txtDistanceEncoder";
             this.txtDistanceEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtDistanceEncoder.TabIndex = 17;
-            this.txtDistanceEncoder.Text = "2200";
+            this.txtDistanceEncoder.Text = "240";
             // 
             // label5
             // 
@@ -495,7 +495,7 @@ namespace Robotics.CoroBot.MotionController
             this.txtLeftEncoder.Name = "txtLeftEncoder";
             this.txtLeftEncoder.Size = new System.Drawing.Size(44, 20);
             this.txtLeftEncoder.TabIndex = 21;
-            this.txtLeftEncoder.Text = "2173";
+            this.txtLeftEncoder.Text = "399";
             // 
             // label12
             // 
@@ -510,7 +510,7 @@ namespace Robotics.CoroBot.MotionController
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(730, 281);
+            this.ClientSize = new System.Drawing.Size(678, 260);
             this.Controls.Add(this.txtLeftEncoder);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.groupBox3);
