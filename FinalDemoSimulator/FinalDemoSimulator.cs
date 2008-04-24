@@ -132,7 +132,7 @@ namespace Robotics.FinalDemoSimulator
         static int horizontal = 0;
         static int vertical = 1;
 
-        Vector2 initialRobotPosition = new Vector2(13.0f, 3.0f);
+        Vector2 initialRobotPosition = new Vector2(12.0f, 3.0f);
 
         float[,] map = {
             {0.00f, 0.00f, R, horizontal},
