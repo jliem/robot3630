@@ -864,7 +864,7 @@ namespace Robotics.CoroBot.MotionController
             }
 
             Console.WriteLine("Encoder countdown set to " + _state.EncoderCountdown);
-
+            turn.ResponsePort.Post(new DefaultUpdateResponseType());
             yield break;
         }
 
