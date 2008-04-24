@@ -177,6 +177,24 @@ namespace Robotics.CoroBot.Coordinator
             return completed;
         }
 
+        public void StartWaypoints(Coordinate previous, Coordinate current)
+        {
+            PointF dest = null;
+
+            // From the current, determine if we're in corridor 1 or 2
+            if (current.X >= 20.2)
+            {
+                // Corridor 1
+                dest = new PointF(21, (float)current.Y);
+
+            }
+            else
+            {
+                dest = new PointF((float)current.X, 3);
+            }
+
+        }
+
         public void DriveToFolder(){
             int driveCount = 0;
             while (true)
