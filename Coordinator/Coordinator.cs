@@ -155,8 +155,52 @@ namespace Robotics.CoroBot.Coordinator
             }
         }
 
+        public bool CenterToFolder()
+        {
+            //Return true if  robot is +- OffsetThreshold degrees 
+            //from the center of the folder
+            int OffsetThreshold = 3; 
+            GetImage();
+            if (imageResult.Folders.Count > 0)
+            {
+                image.Folder bestFolder = imageResult.Folders[0];
+                int bestOffset = GetHeadingOffset(imageResult.Folders[0].X);
+                foreach (image.Folder f in imageResult.Folders)
+                {
+                    if (Math.Abs(GetHeadingOffset(f.X)) < Math.Abs(bestOffset))
+                    {
+                        bestFolder = f;
+                        bestOffset = GetHeadingOffset(f.X);
+                    }
+                }
+                //If Done
+                if (Math.Abs(bestOffset) <= OffsetThreshold)
+                {
+                    return true;
+                }
+                //Otherwise Turn and try again
+                if (bestOffset < 0)
+                {
+                    TurnRight(Math.Abs(bestOffset));
+                    return CenterToFolder();
+                }
+                else
+                {
+                    TurnLeft(Math.Abs(bestOffset));
+                    return CenterToFolder();
+                }
+            }
+            //I didn't find any folders
+            else
+            {
+                return false;
+            }
+        }
+
         public void DriveToPoint(Point start, Point end)
         {
+
+
 
         }
 
@@ -200,7 +244,7 @@ namespace Robotics.CoroBot.Coordinator
 
         public int GetHeadingOffset(int X)
         {
-            return ((X - 320) * 20) / 320;
+            return -(((X - 320) * 20) / 320);
         }
 
         public class FoundFolder
