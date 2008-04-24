@@ -708,7 +708,8 @@ namespace Robotics.CoroBot.ImageProcessor
             //GetImageFromFile(); //From File
             while (results == null)
             {
-                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+                Console.WriteLine("Image timer");
+                Activate(Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { }));
             }
             get.ResponsePort.Post(results);
             yield break;

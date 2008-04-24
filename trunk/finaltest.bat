@@ -1,0 +1,1 @@
+bin\dsshost /p:50000 /t:50001 /m:"C:\Microsoft Robotics Studio (1.5)\samples\coroware\classpack\samplesimulation\finalsimulation.manifest.xml"
