@@ -109,11 +109,16 @@ namespace Robotics.CoroBot.MotionController
         private double amountToTurn;
         private double amountToDrive;
 
-        private BeginWaypoint beginWaypoint = null;
 
         private System.Timers.Timer motorTimer;
         private System.Timers.Timer fakeEncoderTimer;
         //private System.Timers.Timer irTimer;
+
+        // Response objects
+        private Drive myDrive = null;
+        private Turn myTurn = null;
+        private BeginWaypoint myBeginWaypoint = null;        
+
         
         /// <summary>
         /// _main Port
@@ -402,10 +407,10 @@ namespace Robotics.CoroBot.MotionController
                 // Finished all waypoints
                 Console.WriteLine("Finished all waypoints");
 
-                if (beginWaypoint != null)
+                if (myBeginWaypoint != null)
                 {
-                    beginWaypoint.ResponsePort.Post(new DefaultUpdateResponseType());
-                    beginWaypoint = null;
+                    myBeginWaypoint.ResponsePort.Post(new DefaultUpdateResponseType());
+                    myBeginWaypoint = null;
                 }
 
                 SendStopMessage();
@@ -580,6 +585,19 @@ namespace Robotics.CoroBot.MotionController
                 delegate(DefaultReplaceResponseType success)
                 {
                     StopEncoderTimer();
+
+                    // Dispatch finished signals
+                    if (myDrive != null)
+                    {
+                        myDrive.ResponsePort.Post(new DefaultUpdateResponseType());
+                        myDrive = null;
+                    }
+
+                    if (myTurn != null)
+                    {
+                        myTurn.ResponsePort.Post(new DefaultUpdateResponseType());
+                        myTurn = null;
+                    }
                 },
                 delegate(Fault f) { LogError(f); }
             ));
@@ -783,11 +801,13 @@ namespace Robotics.CoroBot.MotionController
         public IEnumerator<ITask> DriveHandler(Drive drive)
         {
 
+            myDrive = drive;
+
             if (drive.Body.Power != 0)
             {
                 _state.Power = drive.Body.Power;
             }
-
+    
             // Override argument
             _state.Power = drivePower;
 
@@ -812,7 +832,9 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> TurnHandler(Turn turn)
         {
-            
+
+            myTurn = turn;
+
             if (turn.Body.Power != 0)
             {
                 _state.Power = turn.Body.Power;
@@ -887,7 +909,7 @@ namespace Robotics.CoroBot.MotionController
             Console.WriteLine("Beginning waypoint navigation");
             
             // Save the waypoint object so we can send a success message later
-            beginWaypoint = calibrate;
+            myBeginWaypoint = calibrate;
 
             prevWaypoint = new Vector2(calibrate.Body.PrevWaypoint);
             prevHeading = calibrate.Body.PrevHeading;
