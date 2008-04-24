@@ -57,6 +57,7 @@ namespace Robotics.CoroBot.ImageProcessor
         }
 
         private List<Folder> folders;
+        [DataMember]
         public List<Folder> Folders { get { return folders; } set { folders = value; } }
     }
 
@@ -67,8 +68,11 @@ namespace Robotics.CoroBot.ImageProcessor
         private string color;
         private int area;
 
+        [DataMember]
         public float X { get { return x; } set { x = value; } }
+        [DataMember]
         public string Color { get { return color; } set { color = value; } }
+        [DataMember]
         public int Area { get { return area; } set { area = value; } }
     }
 

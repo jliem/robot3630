@@ -90,7 +90,7 @@ namespace Robotics.CoroBot.ImageProcessor
             int[, ,] data = HSVSlow(image, display);
             //int[,,] data = LowPassAndHSV(rawData, displayData);
             //List<Point> floorHeight = FindFloor(data, displayData);
-            ImageProcessorResult results = FindFolders(data, display, 240, 240);
+            results = FindFolders(data, display, 240, 240);
             //display.UnlockBits(displayData);
             string text = results.Folders.Count.ToString();
             foreach (Folder f in results.Folders)
@@ -703,8 +703,13 @@ namespace Robotics.CoroBot.ImageProcessor
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public virtual IEnumerator<ITask> GetHandler(Get get)
         {
+            results = null;
             GetImage(); //From Corobot Camera
             //GetImageFromFile(); //From File
+            while (results == null)
+            {
+                Arbiter.Receive(false, TimeoutPort(1000), delegate(DateTime t) { });
+            }
             get.ResponsePort.Post(results);
             yield break;
         }
