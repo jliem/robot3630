@@ -93,9 +93,15 @@ namespace Robotics.CoroBot.Coordinator
         {
             state = States.Lost;
             FoundFolder largestFolder = TurnToLargestFolder();
+            //!!We have not checked for null
             visitedFolders.Add(largestFolder);
             CenterToFolder();
             DriveToFolder();
+            //Drive back so we can do another 360
+            DriveForward(-.5F);
+            FoundFolder secondLargest = TurnToSecondLargestFolder();
+            //!!We have not checked for null
+            visitedFolders.Add(secondLargest);
         }
 
         public void GetImage()
@@ -227,6 +233,49 @@ namespace Robotics.CoroBot.Coordinator
         public void DriveToPoint(Point start, Point end)
         {
 
+        }
+        private FoundFolder TurnToSecondLargestFolder()
+        {
+            List<FoundFolder> folders = new List<FoundFolder>();
+            int numTurns = 9;
+            int degPerTurn = 360 / numTurns;
+            int lastFolderHeading = -1000;
+            for (int i = 0; i < numTurns; i++)
+            {
+                GetImage();
+                foreach (image.Folder f in imageResult.Folders)
+                {
+                    FoundFolder ff = new FoundFolder();
+                    ff.Color = f.Color;
+                    ff.Heading = i * degPerTurn + GetHeadingOffset((int)f.X);
+                    ff.Size = f.Area;
+                    if (Math.Abs(ff.Heading - lastFolderHeading) < 15)
+                    {
+                        folders.Add(ff);
+                    }
+                }
+                TurnRight(degPerTurn);
+            }
+            if (folders.Count > 0)
+            {
+                FoundFolder largestFolder = folders[0];
+                FoundFolder secondLargest = null;
+                if (folders.Count > 1)
+                {
+                    secondLargest = folders[0];
+                }
+                foreach (FoundFolder f in folders)
+                {
+                    if (f.Size > largestFolder.Size)
+                    {
+                        secondLargest = largestFolder;
+                        largestFolder = f;                        
+                    }
+                }
+                TurnLeft(360 - largestFolder.Heading);
+                return secondLargest;
+            }
+            return null;
         }
 
         private FoundFolder TurnToLargestFolder()
