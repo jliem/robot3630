@@ -44,6 +44,7 @@ namespace Robotics.CoroBot.ImageProcessor
         private ImageProcessorState _state = new ImageProcessorState();
         private ImageForm form = null;
         private ImageProcessorResult results;
+        private int picNum = 1;
 
         
         /// <summary>
@@ -100,6 +101,30 @@ namespace Robotics.CoroBot.ImageProcessor
             UpdateFormImage(display);
         }
 
+        private void GetImageFromFile()
+        {
+
+            String number = "" + picNum;
+            if (picNum < 10)
+            {
+                number = "0" + picNum;
+            }
+            String filename = "C:\\robotpics\\image" + number + ".bmp";
+            picNum++;
+            Bitmap image = new Bitmap(filename);
+            //UpdateFormImage(image);
+            Bitmap display = new Bitmap(image.Width, image.Height);
+            int[, ,] data = HSVSlow(image, display);
+            ImageProcessorResult results = FindFolders(data, display, 220, 234);
+            string text = results.Folders.Count.ToString();
+            foreach (Folder f in results.Folders)
+            {
+                text += "||X:" + f.X + ", Area: " + f.Area + ", Color: " + f.Color;
+            }
+            UpdateFormText(text);
+            UpdateFormImage(display);
+        }
+
         private List<Point> FindFloor(int[, ,] data, BitmapData display)
         {
             List<Point> points = new List<Point>();
@@ -133,20 +158,57 @@ namespace Robotics.CoroBot.ImageProcessor
             return points;
         }
 
+        private bool isFolder(int[] hsv)
+        {
+            //Green Profile
+            if (hsv[0] >= 150 && hsv[0] <= 190
+                && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.2 * 255) && hsv[2] <= (int)(.60 * 255))
+            {
+                return true;
+            }
+            //Red Profile
+            if (hsv[0] >= 320 && hsv[0] <= 360
+                && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.40 * 255) && hsv[2] <= (int)(1 * 255))
+            {
+                return true;
+            }
+            //Yellow Profile
+            if (hsv[0] >= 50 && hsv[0] <= 75
+                && hsv[1] >= (int)(.30 * 255) && hsv[1] <= (int)(.70 * 255)
+                && hsv[2] >= (int)(.65 * 255) && hsv[2] <= 255)
+            {
+                return true;
+            }
+            //if (hsv[1] >= 120 && hsv[2] >= 20)
+            //{
+            //    return true;
+            //}
+            return false;
+        }
+
         private ImageProcessorResult FindFolders(int[, ,] data, Bitmap display, int y0, int y1)
         {
             results = new ImageProcessorResult();
             List<int> potentialFolders = new List<int>();
-
             //find potential folder seed points
             for (int x = 0; x < data.GetLength(0); x++)
             {
                 int y = y0 + (x * (y1 - y0) / (data.GetLength(0)));
-                if (data[x,y,1] > 100)
+                //if (data[x,y,1] > 100)
+                int[] hsv = new int[3];
+                hsv[0] = data[x, y, 0];
+                hsv[1] = data[x, y, 1];
+                hsv[2] = data[x, y, 2];
+                if(isFolder(hsv))
                 {
                     int newX = x;
-                    while (data[newX, y, 1] > 100 && newX < data.GetLength(0))
+                    while (newX < data.GetLength(0) && isFolder(hsv))
                     {
+                        hsv[0] = data[newX, y, 0];
+                        hsv[1] = data[newX, y, 1];
+                        hsv[2] = data[newX, y, 2];
                         newX++;
                         y = y0 + (x * (y1 - y0) / (data.GetLength(0))); ;
                     }
@@ -159,7 +221,6 @@ namespace Robotics.CoroBot.ImageProcessor
                     x = newX;
                 }
             }
-            
             //expand each seed and gather data
             for (int i = 0; i < potentialFolders.Count; i += 2)
             {
@@ -215,7 +276,7 @@ namespace Robotics.CoroBot.ImageProcessor
                     if (cur.X > maxX) maxX = cur.X;
                     if (cur.Y < minY) minY = cur.Y;
                     if (cur.Y > maxY) maxY = cur.Y;
-                    AddAdjacentPoints(points, data, cur.X, cur.Y, x0, x1);
+                    AddAdjacentPoints(points, data, cur.X, cur.Y, x0, x1, avgH/count);
                 }
                 tops = Trim(tops);
                 bottoms = Trim(bottoms);
@@ -226,8 +287,8 @@ namespace Robotics.CoroBot.ImageProcessor
                 double topCorr = GetCorrelation(tops);
                 double bottomCorr = GetCorrelation(bottoms);
                 double height = GetAverage(bottoms) - GetAverage(tops);
-                LogInfo("TopCorr: " + topCorr + "  BottomCorr: " + bottomCorr + "  Height: " + height);
-                if (topCorr > .8 && bottomCorr > .8 && height > 15)
+                //LogInfo("TopCorr: " + topCorr + "  BottomCorr: " + bottomCorr + "  Height: " + height);
+                /*if (topCorr > .8 && bottomCorr > .8 && height > 15)
                 {
                     string color = TestAverageH(avgH/count);
                     if (color != "None")
@@ -236,6 +297,21 @@ namespace Robotics.CoroBot.ImageProcessor
                         f.Color = color;
                         f.Area = count;
                         f.X = avgX/count;
+                        results.Folders.Add(f);
+                    }
+                }*/
+                int difX = maxX - minX;
+                int difY = maxY - minY;
+                if (count > 525)
+                {
+                    float ratio = ((float)difY) / difX;
+                    if (ratio > .7 && ratio < 5)
+                    {
+                        string color = TestAverageH(avgH / count);
+                        Folder f = new Folder();
+                        f.Color = color;
+                        f.Area = count;
+                        f.X = avgX / count;
                         results.Folders.Add(f);
                     }
                 }
@@ -361,7 +437,7 @@ namespace Robotics.CoroBot.ImageProcessor
             return covXY / (stdevX * stdevY);
         }
 
-        private void AddAdjacentPoints(LinkedList<Point> points, int[, ,] data, int curX, int curY, int xMin, int xMax)
+        private void AddAdjacentPoints(LinkedList<Point> points, int[, ,] data, int curX, int curY, int xMin, int xMax, int avgH)
         {
             int curH = data[curX,curY,0];
             int curS = data[curX,curY,1];
@@ -369,20 +445,20 @@ namespace Robotics.CoroBot.ImageProcessor
 
             if (curX > xMin)
             {
-                if (TestSimilarity(curH, curS, curV, data[curX - 1, curY, 0], data[curX - 1, curY, 1], data[curX - 1, curY, 2]))
+                if (TestSimilarity(curH, curS, curV, data[curX - 1, curY, 0], data[curX - 1, curY, 1], data[curX - 1, curY, 2], avgH))
                 {
                     points.AddFirst(new LinkedListNode<Point>(new Point(curX - 1, curY)));
                 }
                 if (curY > 0)
                 {
-                    if (TestSimilarity(curH, curS, curV, data[curX - 1, curY - 1, 0], data[curX - 1, curY - 1, 1], data[curX - 1, curY - 1, 2]))
+                    if (TestSimilarity(curH, curS, curV, data[curX - 1, curY - 1, 0], data[curX - 1, curY - 1, 1], data[curX - 1, curY - 1, 2], avgH))
                     {
                         points.AddFirst(new LinkedListNode<Point>(new Point(curX - 1, curY - 1)));
                     }
                 }
                 if (curY < data.GetLength(1) - 1)
                 {
-                    if (TestSimilarity(curH, curS, curV, data[curX - 1, curY + 1, 0], data[curX - 1, curY + 1, 1], data[curX - 1, curY + 1, 2]))
+                    if (TestSimilarity(curH, curS, curV, data[curX - 1, curY + 1, 0], data[curX - 1, curY + 1, 1], data[curX - 1, curY + 1, 2], avgH))
                     {
                         points.AddFirst(new LinkedListNode<Point>(new Point(curX - 1, curY + 1)));
                     }
@@ -390,20 +466,20 @@ namespace Robotics.CoroBot.ImageProcessor
             }
             if (curX < xMax)
             {
-                if (TestSimilarity(curH, curS, curV, data[curX + 1, curY, 0], data[curX + 1, curY, 1], data[curX + 1, curY, 2]))
+                if (TestSimilarity(curH, curS, curV, data[curX + 1, curY, 0], data[curX + 1, curY, 1], data[curX + 1, curY, 2], avgH))
                 {
                     points.AddFirst(new LinkedListNode<Point>(new Point(curX + 1, curY)));
                 }
                 if (curY > 0)
                 {
-                    if (TestSimilarity(curH, curS, curV, data[curX + 1, curY - 1, 0], data[curX + 1, curY - 1, 1], data[curX + 1, curY - 1, 2]))
+                    if (TestSimilarity(curH, curS, curV, data[curX + 1, curY - 1, 0], data[curX + 1, curY - 1, 1], data[curX + 1, curY - 1, 2], avgH))
                     {
                         points.AddFirst(new LinkedListNode<Point>(new Point(curX + 1, curY - 1)));
                     }
                 }
                 if (curY < data.GetLength(1) - 1)
                 {
-                    if (TestSimilarity(curH, curS, curV, data[curX + 1, curY + 1, 0], data[curX + 1, curY + 1, 1], data[curX + 1, curY + 1, 2]))
+                    if (TestSimilarity(curH, curS, curV, data[curX + 1, curY + 1, 0], data[curX + 1, curY + 1, 1], data[curX + 1, curY + 1, 2], avgH))
                     {
                         points.AddFirst(new LinkedListNode<Point>(new Point(curX + 1, curY + 1)));
                     }
@@ -411,26 +487,27 @@ namespace Robotics.CoroBot.ImageProcessor
             }
             if (curY > 0)
             {
-                if (TestSimilarity(curH, curS, curV, data[curX, curY - 1, 0], data[curX, curY - 1, 1], data[curX, curY - 1, 2]))
+                if (TestSimilarity(curH, curS, curV, data[curX, curY - 1, 0], data[curX, curY - 1, 1], data[curX, curY - 1, 2], avgH))
                 {
                     points.AddFirst(new LinkedListNode<Point>(new Point(curX, curY - 1)));
                 }
             }
             if (curY < data.GetLength(1) - 1)
             {
-                if (TestSimilarity(curH, curS, curV, data[curX, curY + 1, 0], data[curX, curY + 1, 1], data[curX, curY + 1, 2]))
+                if (TestSimilarity(curH, curS, curV, data[curX, curY + 1, 0], data[curX, curY + 1, 1], data[curX, curY + 1, 2], avgH))
                 {
                     points.AddFirst(new LinkedListNode<Point>(new Point(curX, curY + 1)));
                 }
             }
         }
 
-        private bool TestSimilarity(int h0, int s0, int v0, int h1, int s1, int v1)
+        private bool TestSimilarity(int h0, int s0, int v0, int h1, int s1, int v1, int avgH)
         {
             bool result = true;
-            if (Math.Abs(h0 - h1) > 15) result = false;
-            if (Math.Abs(s0 - s1) > 15) result = false;
-            if (Math.Abs(v0 - v1) > 15) result = false;
+            if (Math.Abs(h0 - h1) > 5) result = false;
+            if (Math.Abs(h0 - avgH) > 5) result = false;
+            if (Math.Abs(s0 - s1) > 7) result = false;
+            if (Math.Abs(v0 - v1) > 7) result = false;
             return result;
         }
 
@@ -613,8 +690,8 @@ namespace Robotics.CoroBot.ImageProcessor
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public virtual IEnumerator<ITask> GetHandler(Get get)
         {
-            LogInfo("GetHandler()");
-            GetImage();
+            GetImage(); //From Corobot Camera
+            //GetImageFromFile(); //From File
             get.ResponsePort.Post(results);
             yield break;
         }
