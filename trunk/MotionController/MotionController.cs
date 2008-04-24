@@ -21,6 +21,7 @@ using W3C.Soap;
 using motioncontroller = Robotics.CoroBot.MotionController;
 using cbdrive = CoroWare.Robotics.Services.CoroBotDrive.Proxy;
 using cbencoder = CoroWare.Robotics.Services.CoroBotMotorEncoders.Proxy;
+using cbir = CoroWare.Robotics.Services.CoroBotIR.Proxy;
 using ds = Microsoft.Dss.Services.Directory;
 using System.Net;
 using System.IO;
@@ -54,9 +55,25 @@ namespace Robotics.CoroBot.MotionController
         private const double DRIVE_POWER = 0.6;
         private const double ROTATE_POWER = 0.5;
 
+        /// <summary>
+        /// Interval for the encoder timer.
+        /// </summary>
         private const int ENCODER_POLLING_INTERVAL = 10;
 
         private const bool USE_LEFT_ENCODERS = false;
+
+        /// <summary>
+        /// Distance of an obstacle in front where we will stop moving.
+        /// </summary>
+        private const double IR_CLOSE_DISTANCE = 0.3;
+
+        /// <summary>
+        /// When the robot is close to an obstacle going forward, how much should
+        /// we reverse?
+        /// </summary>
+        private const double DISTANCE_TO_REVERSE = 0.5;
+
+        private double lastIrDistance;
 
         // Will be reset in constructor if on sim
         private double drivePower = DRIVE_POWER;
@@ -74,6 +91,7 @@ namespace Robotics.CoroBot.MotionController
         private BeginWaypoint beginWaypoint = null;
 
         private System.Timers.Timer motorTimer;
+        //private System.Timers.Timer irTimer;
         
         /// <summary>
         /// _main Port
@@ -85,7 +103,10 @@ namespace Robotics.CoroBot.MotionController
         private cbdrive.CoroBotDriveOperations _drivePort = new cbdrive.CoroBotDriveOperations();
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
-        
+
+        [Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
+
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -123,6 +144,10 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
+            cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
+            _irPort.Subscribe(irPort);
+            Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
+
             SetEncoderInterval(ENCODER_POLLING_INTERVAL);
 
             System.Timers.Timer encoderTimer = new System.Timers.Timer();
@@ -147,6 +172,15 @@ namespace Robotics.CoroBot.MotionController
             return new MotionForm(_mainPort, _state.Power);
         }
 
+        //private void IrOnTimedEvent(object source, ElapsedEventArgs e)
+        //{
+        //    // Poll the IR sensor
+        //    Activate(Arbiter.Choice(_irPort.Get(new GetRequestType()),
+        //        delegate(cbir.CoroBotIRState success) { lastIrDistance = success.LastFrontRange; },
+        //        delegate(Fault f) { LogError(f); }
+        //    ));
+        //}
+
         private void MotorOnTimedEvent(object source, ElapsedEventArgs e)
         {
             SendStopMessage();
@@ -156,6 +190,62 @@ namespace Robotics.CoroBot.MotionController
         private void EncoderOnTimedEvent(object source, ElapsedEventArgs e)
         {
             this.EncoderHandler(null);
+        }
+
+        double GetIRDistance()
+        {
+            return lastIrDistance;
+        }
+
+        double GetFakeIRDistance()
+        {
+            double distance = 0;
+
+            WebClient client = new WebClient();
+            String url = @"http://" + robotIP + @":50000/corobotir";
+
+            //using (StreamReader reader = new StreamReader(file))
+            using (StreamReader reader = new StreamReader(client.OpenRead(new Uri(url))))
+            {
+                String line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // Looking for <LastFrontRange>25.4</LastFrontRange>
+                    // or <th>Front (Meters):</th><td>25.4</td>
+
+                    //String startText = @"<th>Front (Meters):</th><td>";
+                    //String endText = "</td>";
+
+                    String startText = @"<LastFrontRange>";
+                    String endText = "</LastFrontRange>";
+
+                    int start = line.IndexOf(startText);
+
+                    if (start >= 0)
+                    {
+                        int end = line.IndexOf(endText, start);
+
+                        if (end >= start)
+                        {
+                            try
+                            {
+                                String result = line.Substring(start + startText.Length,
+                                    end - start - startText.Length);
+
+                                distance = double.Parse(result);
+                            }
+                            catch (ArgumentOutOfRangeException aoore)
+                            {
+                                Console.WriteLine(aoore.Message + System.Environment.NewLine +
+                                    aoore.StackTrace);
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return distance;
         }
 
         private int GetFakeEncoderValue()
@@ -382,6 +472,11 @@ namespace Robotics.CoroBot.MotionController
             ));
         }
 
+        private void IrHandler(cbir.Replace notification)
+        {
+            lastIrDistance = notification.Body.LastFrontRange;
+        }
+
         private void EncoderHandler(cbencoder.Replace notification)
         {
             int encoderValue = 0;
@@ -440,7 +535,7 @@ namespace Robotics.CoroBot.MotionController
                     break;
                 case DrivingStates.MovingForward:
 
-                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+                    //Console.Write("LeftValue is " + oldEncoderValue + "; ");
 
                     if (_state.EncoderCountdown <= 0)
                     {
@@ -454,13 +549,41 @@ namespace Robotics.CoroBot.MotionController
                     else
                     {
                         //Console.WriteLine("Moving forward, encoder countdown is " + _state.EncoderCountdown);
-                        SendDriveForwardMessage();
+
+                        // Check whether we're close to an obstacle
+                        double irDistance = 0;
+
+                        if (REAL_ROBOT)
+                        {
+                            irDistance = this.GetFakeIRDistance();
+                        }
+                        else
+                        {
+
+                            irDistance = this.GetIRDistance();
+                        }
+
+                        //Console.WriteLine("Distance is " + irDistance);
+
+                        if (irDistance <= IR_CLOSE_DISTANCE)
+                        {
+                            // Robot is close to some obstacle, go backwards a bit
+                            Console.WriteLine("Robot is too close to an obstacle, backing up...");
+                            //_drivePort.Post(new Drive(new DriveRequest(-1 * DISTANCE_TO_REVERSE, drivePower)));
+
+                            _state.DrivingState = DrivingStates.Stopped;
+                            SendStopMessage();
+                        }
+                        else
+                        {
+                            SendDriveForwardMessage();
+                        }
                     }
 
                     break;
                 case DrivingStates.MovingBackward:
 
-                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+                    //Console.Write("LeftValue is " + oldEncoderValue + "; ");
 
                     if (_state.EncoderCountdown <= 0)
                     {
@@ -492,7 +615,7 @@ namespace Robotics.CoroBot.MotionController
                     break;
                 case DrivingStates.TurningLeft:
 
-                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+                    //Console.Write("LeftValue is " + oldEncoderValue + "; ");
 
                     if (_state.EncoderCountdown <= 0)
                     {
@@ -514,7 +637,7 @@ namespace Robotics.CoroBot.MotionController
                     break;
                 case DrivingStates.TurningRight:
 
-                    Console.Write("LeftValue is " + oldEncoderValue + "; ");
+                    //Console.Write("LeftValue is " + oldEncoderValue + "; ");
 
                     if (_state.EncoderCountdown <= 0)
                     {
