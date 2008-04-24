@@ -46,19 +46,21 @@ namespace Robotics.CoroBot.MotionController
         private MotionControllerState _state = new MotionControllerState();
         private int oldEncoderValue;
 
-        private const bool REAL_ROBOT = true;
-        String robotIP = "128.61.24.139";
+        private const bool REAL_ROBOT = false;
+        String robotIP = "128.61.24.158";
 
         private const double SIM_DRIVE_POWER = 0.6;
-        private const double SIM_ROTATE_POWER = 0.2;
+        private const double SIM_ROTATE_RIGHT_POWER = 0.2;
+        private const double SIM_ROTATE_LEFT_POWER = 0.2;
 
-        private const double DRIVE_POWER = 0.6;
-        private const double ROTATE_POWER = 0.5;
+        private const double DRIVE_POWER = 0.4;
+        private const double ROTATE_RIGHT_POWER = 0.5;
+        private const double ROTATE_LEFT_POWER = 0.5;
 
         /// <summary>
         /// Interval for the encoder timer.
         /// </summary>
-        private const int ENCODER_POLLING_INTERVAL = 10;
+        private const int ENCODER_POLLING_INTERVAL = 45;
 
         private const bool USE_LEFT_ENCODERS = false;
 
@@ -73,17 +75,23 @@ namespace Robotics.CoroBot.MotionController
         /// </summary>
         private const double DISTANCE_TO_REVERSE = 0.5;
 
+        private const int SUPER_FAKE_ENCODER_INTERVAL = 10;
+
         private double lastIrDistance;
 
         // Will be reset in constructor if on sim
         private double drivePower = DRIVE_POWER;
-        private double rotatePower = ROTATE_POWER;
+        private double rotateRightPower = ROTATE_RIGHT_POWER;
+        private double rotateLeftPower = ROTATE_LEFT_POWER;
+
         
         private bool followingWaypoints = false;
         private bool pendingDrive = false;
         private bool checkNextWaypointScheduled = false;
         private bool firstWaypoint = false;
         private double turnMultiplier = .9;
+
+        private int encoderCounter = 0;
 
         private LinkedList<Vector2> waypoints;
         private Vector2 prevWaypoint;
@@ -94,6 +102,7 @@ namespace Robotics.CoroBot.MotionController
         private BeginWaypoint beginWaypoint = null;
 
         private System.Timers.Timer motorTimer;
+        private System.Timers.Timer fakeEncoderTimer;
         //private System.Timers.Timer irTimer;
         
         /// <summary>
@@ -107,9 +116,9 @@ namespace Robotics.CoroBot.MotionController
         [Partner("encoder", Contract = cbencoder.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
         private cbencoder.CoroBotMotorEncodersOperations _encoderPort = new cbencoder.CoroBotMotorEncodersOperations();
 
-        [Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
-        cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
-
+        //[Partner("corobotir", Contract = cbir.Contract.Identifier, CreationPolicy = PartnerCreationPolicy.UseExisting)]
+        //cbir.CoroBotIROperations _irPort = new cbir.CoroBotIROperations();
+        
         /// <summary>
         /// Default Service Constructor
         /// </summary>
@@ -120,14 +129,16 @@ namespace Robotics.CoroBot.MotionController
             if (REAL_ROBOT)
             {
                 drivePower = DRIVE_POWER;
-                rotatePower = ROTATE_POWER;
+                rotateRightPower = ROTATE_RIGHT_POWER;
+                rotateLeftPower = ROTATE_LEFT_POWER;
 
                 Console.WriteLine("Using real robot parameters, IP is " + robotIP);
             }
             else
             {
                 drivePower = SIM_DRIVE_POWER;
-                rotatePower = SIM_ROTATE_POWER;
+                rotateRightPower = SIM_ROTATE_RIGHT_POWER;
+                rotateLeftPower = SIM_ROTATE_LEFT_POWER;
 
                 Console.WriteLine("Using simulator");
             }
@@ -147,21 +158,26 @@ namespace Robotics.CoroBot.MotionController
             _encoderPort.Subscribe(encoderPort);
             Activate(Arbiter.Receive<cbencoder.Replace>(true, encoderPort, EncoderHandler));
 
-            cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
-            _irPort.Subscribe(irPort);
-            Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
+            //cbir.CoroBotIROperations irPort = new cbir.CoroBotIROperations();
+            //_irPort.Subscribe(irPort);
+            //Activate(Arbiter.Receive<cbir.Replace>(true, irPort, IrHandler));
 
             SetEncoderInterval(ENCODER_POLLING_INTERVAL);
 
             System.Timers.Timer encoderTimer = new System.Timers.Timer();
             encoderTimer.Elapsed += new ElapsedEventHandler(EncoderOnTimedEvent);
 
-            encoderTimer.Interval = 500;
+            encoderTimer.Interval = 50;
             encoderTimer.Enabled = REAL_ROBOT;
 
             motorTimer = new System.Timers.Timer();
             motorTimer.Elapsed += new ElapsedEventHandler(MotorOnTimedEvent);
             motorTimer.Enabled = false;
+
+            fakeEncoderTimer = new System.Timers.Timer();
+            fakeEncoderTimer.Elapsed += new ElapsedEventHandler(FakeEncoderOnTimedEvent);
+            fakeEncoderTimer.Interval = SUPER_FAKE_ENCODER_INTERVAL;
+            fakeEncoderTimer.Enabled = false;
 
             prevWaypoint = new Vector2(0, 0);
 
@@ -190,6 +206,38 @@ namespace Robotics.CoroBot.MotionController
             _state.DrivingState = DrivingStates.Stopped;
         }
 
+        private void FakeEncoderOnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            switch (_state.DrivingState)
+            {
+                case DrivingStates.Stopped:
+                    break;
+                case DrivingStates.MovingForward:
+                    encoderCounter++;
+                    break;
+                case DrivingStates.MovingBackward:
+                    encoderCounter--;
+                    break;
+                case DrivingStates.CalibratingDrive:
+                    encoderCounter++;
+                    break;
+                case DrivingStates.CalibratingTurn:
+                    encoderCounter--;
+                    break;
+                case DrivingStates.CalibratingLeftTurn:
+                    encoderCounter++;
+                    break;
+                case DrivingStates.TurningLeft:
+                    encoderCounter++;
+                    break;
+                case DrivingStates.TurningRight:
+                    encoderCounter--;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void EncoderOnTimedEvent(object source, ElapsedEventArgs e)
         {
             this.EncoderHandler(null);
@@ -198,6 +246,11 @@ namespace Robotics.CoroBot.MotionController
         double GetIRDistance()
         {
             return lastIrDistance;
+        }
+
+        int GetSuperFakeEncoder()
+        {
+            return encoderCounter;
         }
 
         double GetFakeIRDistance()
@@ -358,16 +411,6 @@ namespace Robotics.CoroBot.MotionController
             //    firstWaypoint = false;
             //}
 
-            amountToTurn *= turnMultiplier;
-
-            Console.WriteLine("Adjusted turn is " + ToDegrees(amountToTurn));
-
-            turnMultiplier += 0.1;
-
-            if (turnMultiplier > 1.1)
-            {
-                turnMultiplier = 1.15;
-            }
 
             //if (waypoints.Count < 5)
             //{
@@ -377,7 +420,7 @@ namespace Robotics.CoroBot.MotionController
             if (amountToTurn != 0)
             {
                 //SendTurnLeftMessage();
-                _mainPort.Post(new Turn(new TurnRequest(amountToTurn, rotatePower)));
+                _mainPort.Post(new Turn(new TurnRequest(amountToTurn, rotateRightPower)));
 
                 amountToTurn = 0;
             }
@@ -407,55 +450,74 @@ namespace Robotics.CoroBot.MotionController
             ));
         }
 
+        private void StartEncoderTimer()
+        {
+            // Start encoder timer
+            fakeEncoderTimer.Interval = SUPER_FAKE_ENCODER_INTERVAL;
+            fakeEncoderTimer.Enabled = true;
+        }
+
+        private void StopEncoderTimer()
+        {
+            // Start encoder timer
+            fakeEncoderTimer.Interval = 0;
+            fakeEncoderTimer.Enabled = false;
+        }
+
         private void SendTurnLeftMessage()
         {
+
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = _state.Power;
             newState.Translation = 0;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { },
+                delegate(DefaultReplaceResponseType success) { StartEncoderTimer(); },
                 delegate(Fault f) { LogError(f); }
             ));
         }
 
         private void SendTurnRightMessage()
         {
+            
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = -_state.Power;
             newState.Translation = 0;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { },
+                delegate(DefaultReplaceResponseType success) { StartEncoderTimer(); },
                 delegate(Fault f) { LogError(f); }
             ));
         }
 
         private void SendDriveForwardMessage()
         {
-            Console.WriteLine("Sending forward with " + _state.Power);
+            
+
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = 0;
             newState.Translation = _state.Power;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { Console.WriteLine("forward - Success"); },
-                delegate(Fault f) { LogError(f); Console.WriteLine("Failure in SendDriveForwardMessage");  }
+                delegate(DefaultReplaceResponseType success) { StartEncoderTimer(); },
+                delegate(Fault f) { LogError(f); }
             ));
         }
 
         private void SendDriveBackwardMessage()
         {
+            
+
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = true;
             newState.Rotation = 0;
             newState.Translation = -_state.Power;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { },
+                delegate(DefaultReplaceResponseType success) { StartEncoderTimer(); },
                 delegate(Fault f) { LogError(f); }
             ));
         }
@@ -487,13 +549,17 @@ namespace Robotics.CoroBot.MotionController
 
         private void SendStopMessage()
         {
+
             cbdrive.CoroBotDriveState newState = new cbdrive.CoroBotDriveState();
             newState.InSequenceNumber = 0;
             newState.DriveEnable = false;
             newState.Rotation = 0;
             newState.Translation = 0;
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
-                delegate(DefaultReplaceResponseType success) { },
+                delegate(DefaultReplaceResponseType success)
+                {
+                    StopEncoderTimer();
+                },
                 delegate(Fault f) { LogError(f); }
             ));
         }
@@ -521,8 +587,7 @@ namespace Robotics.CoroBot.MotionController
                 }
             }
 
-            Console.WriteLine("Encoder is " + encoderValue);
-            Console.WriteLine("State is " + _state.DrivingState);
+            encoderValue = this.GetSuperFakeEncoder();
 
             int encoderChange = Math.Abs(encoderValue - oldEncoderValue);
 
@@ -581,7 +646,7 @@ namespace Robotics.CoroBot.MotionController
                     }
                     else
                     {
-                        //Console.WriteLine("Moving forward, encoder countdown is " + _state.EncoderCountdown);
+                        Console.WriteLine("Moving forward, encoder is " + encoderValue);
 
                         // Check whether we're close to an obstacle
                         double irDistance = 0;
@@ -595,8 +660,6 @@ namespace Robotics.CoroBot.MotionController
 
                             irDistance = this.GetIRDistance();
                         }
-
-                        Console.WriteLine("Distance is " + irDistance);
 
                         if (irDistance <= IR_CLOSE_DISTANCE)
                         {
@@ -735,7 +798,7 @@ namespace Robotics.CoroBot.MotionController
             }
 
             // Override argument
-            _state.Power = rotatePower;
+            _state.Power = rotateRightPower;
 
             _state.EncoderCalibration = 0;
 
@@ -743,11 +806,18 @@ namespace Robotics.CoroBot.MotionController
             {
                 _state.EncoderCountdown = _state.TurningLeftCalibration * Math.Abs(turn.Body.Radians);
                 _state.DrivingState = DrivingStates.TurningLeft;
+
+
+                // Use left power
+                _state.Power = rotateLeftPower;
             }
             else
             {
                 _state.EncoderCountdown = _state.TurningCalibration * Math.Abs(turn.Body.Radians);
                 _state.DrivingState = DrivingStates.TurningRight;
+
+                // Use right power
+                _state.Power = rotateRightPower;
             }
 
             Console.WriteLine("Encoder countdown set to " + _state.EncoderCountdown);
@@ -774,7 +844,7 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> BeginCalibrateTurnHandler(BeginCalibrateTurn calibrate)
         {
-            _state.Power = rotatePower;
+            _state.Power = rotateRightPower;
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingTurn;
 
@@ -784,7 +854,7 @@ namespace Robotics.CoroBot.MotionController
         [ServiceHandler(ServiceHandlerBehavior.Exclusive)]
         public IEnumerator<ITask> BeginCalibrateLeftHandler(BeginCalibrateLeft calibrate)
         {
-            _state.Power = rotatePower;
+            _state.Power = rotateLeftPower;
             _state.EncoderCalibration = 0;
             _state.DrivingState = DrivingStates.CalibratingLeftTurn;
             yield break;

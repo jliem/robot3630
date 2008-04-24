@@ -162,10 +162,10 @@ namespace Robotics.CoroBot.MotionController
 
             LinkedList<Vector2> list = new LinkedList<Vector2>();
 
-            list.AddLast(new Vector2(1, 0));
-            list.AddLast(new Vector2(1, 1));
-            list.AddLast(new Vector2(-1, 1));
-            list.AddLast(new Vector2(-1, 0));
+            list.AddLast(new Vector2(0.5, 0));
+            list.AddLast(new Vector2(0.5, 0.5));
+            list.AddLast(new Vector2(-0.5, 0.5));
+            list.AddLast(new Vector2(-0.5, 0));
             list.AddLast(new Vector2(0, 0));
 
             //list.AddLast(new Vector2(21, 15));
