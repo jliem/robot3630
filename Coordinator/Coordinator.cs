@@ -164,13 +164,13 @@ namespace Robotics.CoroBot.Coordinator
             if (imageResult.Folders.Count > 0)
             {
                 image.Folder bestFolder = imageResult.Folders[0];
-                int bestOffset = GetHeadingOffset(imageResult.Folders[0].X);
+                int bestOffset = GetHeadingOffset((int)imageResult.Folders[0].X);
                 foreach (image.Folder f in imageResult.Folders)
                 {
-                    if (Math.Abs(GetHeadingOffset(f.X)) < Math.Abs(bestOffset))
+                    if (Math.Abs(GetHeadingOffset((int)f.X)) < Math.Abs(bestOffset))
                     {
                         bestFolder = f;
-                        bestOffset = GetHeadingOffset(f.X);
+                        bestOffset = GetHeadingOffset((int)f.X);
                     }
                 }
                 //If Done
