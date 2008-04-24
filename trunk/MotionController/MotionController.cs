@@ -479,15 +479,18 @@ namespace Robotics.CoroBot.MotionController
         private void StartEncoderTimer()
         {
             // Start encoder timer
+            fakeEncoderTimer = new System.Timers.Timer();
+            fakeEncoderTimer.Elapsed += new ElapsedEventHandler(FakeEncoderOnTimedEvent);
             fakeEncoderTimer.Interval = SUPER_FAKE_ENCODER_INTERVAL;
             fakeEncoderTimer.Enabled = true;
         }
 
         private void StopEncoderTimer()
         {
-            // Start encoder timer
-            fakeEncoderTimer.Interval = 0;
+
+            // Stop encoder timer
             fakeEncoderTimer.Enabled = false;
+
         }
 
         private void SendTurnLeftMessage()
@@ -581,25 +584,31 @@ namespace Robotics.CoroBot.MotionController
             newState.DriveEnable = false;
             newState.Rotation = 0;
             newState.Translation = 0;
+
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success)
                 {
+
+                    
                     StopEncoderTimer();
+
 
                     // Dispatch finished signals
                     if (myDrive != null)
                     {
+                        Console.WriteLine("Posting IR drive Fault");
                         myDrive.ResponsePort.Post(new Fault());
                         myDrive = null;
                     }
 
                     if (myTurn != null)
                     {
+                        Console.WriteLine("Posting IR turn Fault");
                         myTurn.ResponsePort.Post(new Fault());
                         myTurn = null;
                     }
                 },
-                delegate(Fault f) { LogError(f); }
+                delegate(Fault f) { LogError(f); Console.WriteLine("Error in IR response"); }
             ));
         }
 
@@ -611,22 +620,24 @@ namespace Robotics.CoroBot.MotionController
             newState.DriveEnable = false;
             newState.Rotation = 0;
             newState.Translation = 0;
-            
+
             Activate(Arbiter.Choice(_drivePort.Replace(newState),
                 delegate(DefaultReplaceResponseType success)
                 {
-                    StopEncoderTimer();
-                    Console.WriteLine("Telling me to stop.");
+                    
+                   StopEncoderTimer();
+                   
                     // Dispatch finished signals
                     if (myDrive != null)
                     {
+                        Console.WriteLine("Sending drive response.");
                         myDrive.ResponsePort.Post(new DefaultUpdateResponseType());
                         myDrive = null;
                     }
 
                     if (myTurn != null)
                     {
-                        Console.WriteLine("Sending response.");
+                        Console.WriteLine("Sending turn response.");
                         myTurn.ResponsePort.Post(new DefaultUpdateResponseType());
                         myTurn = null;
                     }
@@ -738,8 +749,8 @@ namespace Robotics.CoroBot.MotionController
                             Console.WriteLine("IR distance is " + irDistance + ", Robot is too close to an obstacle, backing up...");
                             //_drivePort.Post(new Drive(new DriveRequest(-1 * DISTANCE_TO_REVERSE, drivePower)));
 
-                            _state.DrivingState = DrivingStates.Stopped;
                             SendIRStopMessage();
+                            _state.DrivingState = DrivingStates.Stopped;
                         }
                         else
                         {
