@@ -44,7 +44,7 @@ namespace Robotics.CoroBot.ImageProcessor
         private ImageProcessorState _state = new ImageProcessorState();
         private ImageForm form = null;
         private ImageProcessorResult results;
-        private int picNum = 1;
+        private int picNum = 0;
 
         
         /// <summary>
@@ -115,7 +115,8 @@ namespace Robotics.CoroBot.ImageProcessor
             //UpdateFormImage(image);
             Bitmap display = new Bitmap(image.Width, image.Height);
             int[, ,] data = HSVSlow(image, display);
-            ImageProcessorResult results = FindFolders(data, display, 220, 234);
+            ImageProcessorResult results = FindFolders(data, display, 340, 300);
+            //ImageProcessorResult results = FindFolders(data, display, 210, 210);
             string text = results.Folders.Count.ToString();
             foreach (Folder f in results.Folders)
             {
@@ -160,31 +161,38 @@ namespace Robotics.CoroBot.ImageProcessor
 
         private bool isFolder(int[] hsv)
         {
-            ////Green Profile
-            //if (hsv[0] >= 150 && hsv[0] <= 190
-            //    && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
-            //    && hsv[2] >= (int)(.2 * 255) && hsv[2] <= (int)(.60 * 255))
-            //{
-            //    return true;
-            //}
-            ////Red Profile
-            //if (hsv[0] >= 320 && hsv[0] <= 360
-            //    && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
-            //    && hsv[2] >= (int)(.40 * 255) && hsv[2] <= (int)(1 * 255))
-            //{
-            //    return true;
-            //}
-            ////Yellow Profile
-            //if (hsv[0] >= 50 && hsv[0] <= 75
-            //    && hsv[1] >= (int)(.30 * 255) && hsv[1] <= (int)(.70 * 255)
-            //    && hsv[2] >= (int)(.65 * 255) && hsv[2] <= 255)
-            //{
-            //    return true;
-            //}
-            if (hsv[1] >= 100 && hsv[2] >= 20)
+            //Green Profile
+            if (hsv[0] >= 150 && hsv[0] <= 190
+                && hsv[1] >= (int)(.75 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.2 * 255) && hsv[2] <= (int)(.60 * 255))
             {
                 return true;
             }
+            //Red Profile
+            if (hsv[0] >= 320 && hsv[0] <= 360
+                && hsv[1] >= (int)(.60 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.40 * 255) && hsv[2] <= (int)(1 * 255))
+            {
+                return true;
+            }            
+            //Red Cabinet
+            if (hsv[0] >= 0 && hsv[0] <= 10
+                && hsv[1] >= (int)(.90 * 255) && hsv[1] <= (int)(1 * 255)
+                && hsv[2] >= (int)(.30 * 255) && hsv[2] <= (int)(.70 * 255))
+            {
+                return true;
+            }
+            //Yellow Profile
+            if (hsv[0] >= 50 && hsv[0] <= 75
+                && hsv[1] >= (int)(.30 * 255) && hsv[1] <= (int)(.70 * 255)
+                && hsv[2] >= (int)(.65 * 255) && hsv[2] <= 255)
+            {
+                return true;
+            }
+            //if (hsv[1] >= 100 && hsv[2] >= 20)
+            //{
+            //    return true;
+            //}
             return false;
         }
 
@@ -329,7 +337,12 @@ namespace Robotics.CoroBot.ImageProcessor
             int difY = AngleDif(avgH, 63);
             LogInfo("avgH: " + avgH);
             LogInfo("Difs: " + difR + " " + difG + " " + difY);
-            if (AngleDif(avgH, 358) < bestDif)
+            if (avgH < 10)
+            {
+                result = "RedCabinet";
+                bestDif = AngleDif(avgH, 358);
+            }
+            else if (AngleDif(avgH, 358) < bestDif)
             {
                 result = "Red";
                 bestDif = AngleDif(avgH, 358);
@@ -504,10 +517,10 @@ namespace Robotics.CoroBot.ImageProcessor
         private bool TestSimilarity(int h0, int s0, int v0, int h1, int s1, int v1, int avgH)
         {
             bool result = true;
-            if (Math.Abs(h0 - h1) > 5) result = false;
-            if (Math.Abs(h0 - avgH) > 5) result = false;
-            if (Math.Abs(s0 - s1) > 7) result = false;
-            if (Math.Abs(v0 - v1) > 7) result = false;
+            if (Math.Abs(h0 - h1) > 7) result = false;
+            if (Math.Abs(h0 - avgH) > 6) result = false;
+            if (Math.Abs(s0 - s1) > 10) result = false;
+            if (Math.Abs(v0 - v1) > 10) result = false;
             return result;
         }
 
