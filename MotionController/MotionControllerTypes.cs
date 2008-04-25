@@ -289,6 +289,10 @@ namespace Robotics.CoroBot.MotionController
         [DataMember]
         public PointF PrevWaypoint { get { return _prevWaypoint; } set { _prevWaypoint = value; } }
 
+        private PointF _destWaypoint;
+        [DataMember]
+        public PointF DestWaypoint { get { return _destWaypoint; } set { _destWaypoint = value; } }
+
         private double _prevHeading;
         [DataMember]
         public double PrevHeading { get { return _prevHeading; } set { _prevHeading = value; } }
@@ -298,7 +302,8 @@ namespace Robotics.CoroBot.MotionController
         public BeginWaypointRequest(PointF prevWaypoint, double prevHeading, PointF point)
             : this(prevWaypoint, prevHeading, new LinkedList<PointF>())
         {
-            Waypoints.AddLast(point);
+            Waypoints.AddLast(DestWaypoint);
+            //Waypoints.AddLast(point);
         }
 
         public BeginWaypointRequest(PointF prevWaypoint, double prevHeading, LinkedList<PointF> waypoints)

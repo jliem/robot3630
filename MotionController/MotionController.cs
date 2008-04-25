@@ -960,6 +960,9 @@ namespace Robotics.CoroBot.MotionController
                 waypoints.AddLast(v);
             }
 
+            // Add member var
+            waypoints.AddLast(new Vector2(calibrate.Body.DestWaypoint));
+
 
             firstWaypoint = true;
 
